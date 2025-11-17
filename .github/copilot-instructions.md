@@ -39,6 +39,9 @@ nexus/
 │   ├── Connector/         # Connector as integration hub engine (if applicable)
 │   ├── Storage/           # Storage engine (if applicable)
 │   ├── Document/          # Document engine (if applicable)
+│   ├── Identity/          # Identity engine (if applicable)
+│   ├── Notifier/          # Notification engine (if applicable)
+│   ├── Connector/         # Connector as integration hub engine (if applicable)
 │   └── Workflow/          # Workflow engine (if applicable)
 |   
 └── apps/
