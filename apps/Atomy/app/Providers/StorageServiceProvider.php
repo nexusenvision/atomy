@@ -25,6 +25,11 @@ class StorageServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Merge package config with application config
+        $this->mergeConfigFrom(
+            __DIR__ . '/../../config/storage.php',
+            'storage'
+        );
         // Bind StorageDriverInterface to FlysystemDriver
         $this->app->singleton(StorageDriverInterface::class, function ($app) {
             $diskName = config('storage.default', 'local');
