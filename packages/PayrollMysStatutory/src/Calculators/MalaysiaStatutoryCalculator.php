@@ -155,7 +155,7 @@ final readonly class MalaysiaStatutoryCalculator implements StatutoryCalculatorI
         ];
     }
     
-    public function validatePayload(PayloadInterface $payload): bool
+    public function validatePayload(PayloadInterface $payload): void
     {
         $employeeMetadata = $payload->getEmployeeMetadata();
         $companyMetadata = $payload->getCompanyMetadata();
@@ -198,8 +198,6 @@ final readonly class MalaysiaStatutoryCalculator implements StatutoryCalculatorI
                 "Gross pay must be greater than zero."
             );
         }
-        
-        return true;
     }
     
     /**

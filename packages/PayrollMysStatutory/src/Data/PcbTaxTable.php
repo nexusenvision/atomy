@@ -23,9 +23,21 @@ final readonly class PcbTaxTable
      * 
      * Simplified calculation using annual tax bands divided by 12.
      * 
+     * NOTE: This implementation uses a simplified Monthly Tax Deduction (MTD) method 
+     * that calculates tax based on monthly income annualized. It does NOT currently 
+     * use the provided YTD (Year-To-Date) values for progressive tax adjustment.
+     * 
+     * For production use with mid-year salary changes or bonuses, this should be 
+     * enhanced to:
+     * 1. Calculate expected annual tax based on YTD income + projected remaining months
+     * 2. Subtract YTD tax already paid
+     * 3. Divide remaining tax by remaining months
+     * 
+     * This ensures accurate tax distribution throughout the year.
+     * 
      * @param float $monthlyTaxableIncome Monthly taxable income (after EPF deduction)
-     * @param float $ytdTaxableIncome Year-to-date taxable income
-     * @param float $ytdTaxPaid Year-to-date tax paid
+     * @param float $ytdTaxableIncome Year-to-date taxable income (currently unused)
+     * @param float $ytdTaxPaid Year-to-date tax paid (currently unused)
      * @param int $dependents Number of dependents (for tax relief)
      * @param string $maritalStatus 'single' or 'married'
      * @return float Monthly PCB amount
@@ -37,7 +49,7 @@ final readonly class PcbTaxTable
         int $dependents = 0,
         string $maritalStatus = 'single'
     ): float {
-        // Calculate annualized taxable income
+        // Calculate annualized taxable income (simplified method)
         $annualTaxableIncome = $monthlyTaxableIncome * 12;
         
         // Apply basic personal relief

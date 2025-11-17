@@ -20,11 +20,6 @@ final readonly class SocsoRateTable
      */
     public static function getContributions(float $monthlySalary): array
     {
-        // SOCSO only applies up to RM5,000
-        if ($monthlySalary > 5000.00) {
-            return ['employee' => 24.75, 'employer' => 84.75];
-        }
-        
         // SOCSO wage brackets with fixed contributions
         return match(true) {
             $monthlySalary <= 30.00 => ['employee' => 0.10, 'employer' => 0.40],
@@ -80,7 +75,8 @@ final readonly class SocsoRateTable
             $monthlySalary <= 4700.00 => ['employee' => 23.25, 'employer' => 81.35],
             $monthlySalary <= 4800.00 => ['employee' => 23.75, 'employer' => 83.05],
             $monthlySalary <= 4900.00 => ['employee' => 24.25, 'employer' => 84.85],
-            default => ['employee' => 24.75, 'employer' => 84.75],
+            // Maximum contribution for salaries >= RM5,000
+            default => ['employee' => 24.75, 'employer' => 86.75],
         };
     }
 }
