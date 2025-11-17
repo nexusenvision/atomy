@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Nexus\Uom\Contracts\UomRepositoryInterface;
-use Nexus\Uom\Services\UomConversionEngine;
 use Nexus\Uom\Services\UomManager;
-use Nexus\Uom\Services\UomValidationService;
 use App\Repositories\DbUomRepository;
+use Illuminate\Support\ServiceProvider;
+use Nexus\Uom\Services\UomConversionEngine;
+use Nexus\Uom\Services\UomValidationService;
+use Nexus\Uom\Contracts\UomRepositoryInterface;
 
 /**
  * Service provider for Unit of Measurement package.

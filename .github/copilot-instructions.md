@@ -316,6 +316,15 @@ The coding agent MUST strictly adhere to these modern conventions to reduce boil
 4.  **`match` Expression:** Use the `match` expression exclusively instead of the traditional `switch` statement.
 5.  **New/Throw in Expressions:** Use `new` and `throw` within expressions for simplified conditional object creation and exception handling (e.g., `?? throw new Exception()`).
 
+## Attributes Over DocBlocks (PHP 8.0+)
+
+The agent **MUST** use native PHP Attributes for all metadata configuration, especially in testing and application-level configuration, instead of relying on DocBlock annotations.
+
+* **Testing:** Use `#[DataProvider]`, `#[Group]`, `#[CoversClass]`, `#[Test]`, etc., instead of the corresponding `@annotation` in DocBlocks.
+* **Custom Metadata:** If generating custom package configuration (e.g., marking a class as tenant-aware), define and use a dedicated Attribute class (e.g., `#[TenantAware]`) placed in a `src/Attributes/` directory.
+* **Laravel Attributes:** When working in `apps/Atomy`, use Laravel's native PHP 8 Attributes for routing, validation, and model casting instead of DocBlock annotations.
+* **No DocBlock Annotations:** Avoid using DocBlock annotations for metadata purposes; reserve DocBlocks for descriptive comments only.
+
 ## Testing Approach
 
 - Package tests should be unit tests (no database)
