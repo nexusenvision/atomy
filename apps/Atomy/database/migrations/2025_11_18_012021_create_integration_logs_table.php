@@ -26,9 +26,6 @@ return new class extends Migration
             $table->integer('attempt_number')->default(1);
             $table->timestamps();
 
-            // Add index on created_at for performance
-            $table->index('created_at');
-
             // Composite indexes for common queries
             $table->index(['service_name', 'created_at']);
             $table->index(['service_name', 'status', 'created_at']);
