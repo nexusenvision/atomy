@@ -183,7 +183,8 @@ readonly class FlysystemDriver implements StorageDriverInterface
                 try {
                     $metadata[] = $this->getMetadata($file);
                 } catch (Throwable $e) {
-                    // Skip files that can't be accessed
+                    // Log the error but continue processing other files
+                    \Log::warning("Failed to get metadata for file: {$file}", ['exception' => $e]);
                     continue;
                 }
             }
