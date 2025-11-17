@@ -18,7 +18,7 @@ class CreateLeaveRequest extends FormRequest
         return [
             'employee_id' => ['required', 'string', 'exists:employees,id'],
             'leave_type_id' => ['required', 'string', 'exists:leave_types,id'],
-            'start_date' => ['required', 'date', 'after_or_equal:today'],
+            'start_date' => ['required', 'date', 'after_or_equal:' . now()->toDateString()],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
             'reason' => ['nullable', 'string', 'max:500'],
             'metadata' => ['nullable', 'array'],

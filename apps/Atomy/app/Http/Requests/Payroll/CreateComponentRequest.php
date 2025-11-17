@@ -17,8 +17,10 @@ class CreateComponentRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenantId = auth()->user()?->tenant_id ?? '';
+        
         return [
-            'code' => ['required', 'string', 'max:50', 'unique:payroll_components,code,NULL,id,tenant_id,' . auth()->user()->tenant_id],
+            'code' => ['required', 'string', 'max:50', 'unique:payroll_components,code,NULL,id,tenant_id,' . $tenantId],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'type' => ['required', 'string', 'in:' . implode(',', array_column(ComponentType::cases(), 'value'))],

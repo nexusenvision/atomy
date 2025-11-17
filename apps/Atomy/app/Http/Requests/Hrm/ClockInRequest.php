@@ -17,7 +17,6 @@ class ClockInRequest extends FormRequest
     {
         return [
             'employee_id' => ['required', 'string', 'exists:employees,id'],
-            'date' => ['required', 'date'],
             'clock_in_time' => ['required', 'date_format:Y-m-d H:i:s'],
             'location' => ['nullable', 'string', 'max:255'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],

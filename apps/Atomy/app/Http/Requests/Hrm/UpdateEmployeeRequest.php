@@ -18,12 +18,13 @@ class UpdateEmployeeRequest extends FormRequest
     public function rules(): array
     {
         $employeeId = $this->route('id');
+        $tenantId = auth()->user()?->tenant_id ?? '';
         
         return [
-            'employee_code' => ['sometimes', 'string', 'max:50', 'unique:employees,employee_code,' . $employeeId . ',id,tenant_id,' . auth()->user()->tenant_id],
+            'employee_code' => ['sometimes', 'string', 'max:50', 'unique:employees,employee_code,' . $employeeId . ',id,tenant_id,' . $tenantId],
             'first_name' => ['sometimes', 'string', 'max:100'],
             'last_name' => ['sometimes', 'string', 'max:100'],
-            'email' => ['sometimes', 'email', 'max:255', 'unique:employees,email,' . $employeeId . ',id,tenant_id,' . auth()->user()->tenant_id],
+            'email' => ['sometimes', 'email', 'max:255', 'unique:employees,email,' . $employeeId . ',id,tenant_id,' . $tenantId],
             'phone_number' => ['nullable', 'string', 'max:20'],
             'date_of_birth' => ['sometimes', 'date', 'before:today'],
             'status' => ['sometimes', 'string', 'in:' . implode(',', array_column(EmployeeStatus::cases(), 'value'))],

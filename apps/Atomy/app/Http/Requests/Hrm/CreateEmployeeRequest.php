@@ -17,11 +17,13 @@ class CreateEmployeeRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenantId = auth()->user()?->tenant_id ?? '';
+        
         return [
-            'employee_code' => ['required', 'string', 'max:50', 'unique:employees,employee_code,NULL,id,tenant_id,' . auth()->user()->tenant_id],
+            'employee_code' => ['required', 'string', 'max:50', 'unique:employees,employee_code,NULL,id,tenant_id,' . $tenantId],
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', 'max:255', 'unique:employees,email,NULL,id,tenant_id,' . auth()->user()->tenant_id],
+            'email' => ['required', 'email', 'max:255', 'unique:employees,email,NULL,id,tenant_id,' . $tenantId],
             'phone_number' => ['nullable', 'string', 'max:20'],
             'date_of_birth' => ['required', 'date', 'before:today'],
             'hire_date' => ['required', 'date'],
