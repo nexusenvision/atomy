@@ -178,4 +178,9 @@ class User extends Model implements UserInterface
     {
         return $this->mfa_enabled;
     }
+
+    public function getMetadata(): ?array
+    {
+        return $this->metadata;
+    }
 }
