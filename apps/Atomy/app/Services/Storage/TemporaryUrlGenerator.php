@@ -93,9 +93,17 @@ readonly class TemporaryUrlGenerator implements PublicUrlGeneratorInterface
                 return true;
             }
 
-            // For other adapters, we need to check if they have the temporaryUrl method
-            // Laravel's local adapter supports signed URLs via Storage::temporaryUrl
-            return method_exists($this->filesystem, 'temporaryUrl');
+            // For other adapters, attempt to generate a temporary URL for a dummy path.
+            // If it succeeds, temporary URLs are supported; otherwise, not.
+            try {
+                // Use a dummy path and short expiration; options can be empty.
+                $dummyPath = 'nexus_temp_url_check.txt';
+                $expiration = now()->addSeconds(5);
+                $this->filesystem->temporaryUrl($dummyPath, $expiration, []);
+                return true;
+            } catch (Throwable) {
+                return false;
+            }
         } catch (Throwable) {
             return false;
         }
