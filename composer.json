@@ -47,6 +47,10 @@
         },
         {
             "type": "path",
+            "url": "./packages/Setting"
+        },
+        {
+            "type": "path"
             "url": "./packages/Storage"
         }
     ],
