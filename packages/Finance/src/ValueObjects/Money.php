@@ -111,7 +111,7 @@ final readonly class Money
      */
     public function divide(float|int|string $divisor): self
     {
-        if ((float)$divisor == 0) {
+        if (bccomp((string)$divisor, '0', self::PRECISION) === 0) {
             throw new InvalidArgumentException('Cannot divide by zero');
         }
         
@@ -176,7 +176,7 @@ final readonly class Money
     public function abs(): self
     {
         if ($this->isNegative()) {
-            return new self(substr($this->amount, 1), $this->currency);
+            return new self(bcmul($this->amount, '-1', self::PRECISION), $this->currency);
         }
         return $this;
     }
@@ -190,10 +190,7 @@ final readonly class Money
             return $this;
         }
         
-        $negated = $this->isNegative() 
-            ? substr($this->amount, 1) 
-            : '-' . $this->amount;
-            
+        $negated = bcmul($this->amount, '-1', self::PRECISION);
         return new self($negated, $this->currency);
     }
 
@@ -221,6 +218,10 @@ final readonly class Money
     {
         if (strlen($currency) !== 3) {
             throw new InvalidArgumentException("Currency must be 3-letter ISO code, got: {$currency}");
+        }
+        
+        if (!ctype_upper($currency)) {
+            throw new InvalidArgumentException("Currency code must be uppercase: {$currency}");
         }
     }
 
