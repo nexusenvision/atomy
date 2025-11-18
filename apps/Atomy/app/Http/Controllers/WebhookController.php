@@ -111,7 +111,7 @@ final class WebhookController extends Controller
             'bounce' => DeliveryStatus::Bounced,
             'dropped' => DeliveryStatus::Failed,
             'deferred' => DeliveryStatus::Pending,
-            'open' => DeliveryStatus::Read,
+            'open' => DeliveryStatus::Delivered, // 'open' indicates delivered and opened
             default => null,
         };
 
@@ -176,8 +176,8 @@ final class WebhookController extends Controller
             $updateData['delivered_at'] = now();
         }
 
-        if ($status === DeliveryStatus::Read && !$record->read_at) {
-            $updateData['read_at'] = now();
+        if ($status === DeliveryStatus::Failed && !$record->failed_at) {
+            $updateData['failed_at'] = now();
         }
 
         $record->update($updateData);
