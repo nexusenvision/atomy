@@ -249,18 +249,6 @@ Complete skeleton for the Nexus {PackageName} package and Atomy implementation.
 
 [Configuration file details and options]
 
-## 📊 Database Schema
-
-[Table structure and column descriptions]
-
-## 🧪 Testing
-
-[How to run tests for package and Atomy implementation]
-
-## 📚 Next Steps
-
-[Numbered list of implementation steps]
-
 ## 🔒 Security Considerations
 
 [Security features and best practices]
