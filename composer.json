@@ -96,6 +96,14 @@
         {
             "type": "path",
             "url": "./packages/EventStream"
+        },
+        {
+            "type": "path",
+            "url": "./packages/Compliance"
+        },
+        {
+            "type": "path",
+            "url": "./packages/Statutory"
         }
     ],
     "minimum-stability": "dev",
