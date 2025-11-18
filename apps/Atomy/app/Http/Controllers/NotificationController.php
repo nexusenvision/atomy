@@ -244,18 +244,19 @@ final class NotificationController extends Controller
         return new class(
             Priority::from($data['priority']),
             isset($data['category']) ? Category::from($data['category']) : Category::System,
-            new NotificationContent(
-                title: $data['title'],
-                body: $data['body'],
-                data: $data['data'] ?? [],
-                actionUrl: $data['action_url'] ?? null
-            ),
+            $data['title'],
+            $data['body'],
+            $data['data'] ?? [],
+            $data['action_url'] ?? null,
             $data['channels'] ?? null
-        ) extends AbstractNotification {
+        ) implements NotificationInterface {
             public function __construct(
                 private readonly Priority $priority,
                 private readonly Category $category,
-                private readonly NotificationContent $content,
+                private readonly string $title,
+                private readonly string $body,
+                private readonly array $data,
+                private readonly ?string $actionUrl,
                 private readonly ?array $channels
             ) {}
 
@@ -271,7 +272,58 @@ final class NotificationController extends Controller
 
             public function getContent(): NotificationContent
             {
-                return $this->content;
+                return new NotificationContent(
+                    emailData: $this->toEmail(),
+                    smsText: $this->toSms(),
+                    pushData: $this->toPush(),
+                    inAppData: $this->toInApp()
+                );
+            }
+
+            public function getType(): string
+            {
+                return 'ad_hoc_notification';
+            }
+
+            public function toEmail(): array
+            {
+                return [
+                    'subject' => $this->title,
+                    'body' => $this->body,
+                ];
+            }
+
+            public function toSms(): string
+            {
+                return "{$this->title}: {$this->body}";
+            }
+
+            public function toPush(): array
+            {
+                $push = [
+                    'title' => $this->title,
+                    'body' => $this->body,
+                ];
+                
+                if ($this->actionUrl) {
+                    $push['action'] = $this->actionUrl;
+                }
+                
+                return $push;
+            }
+
+            public function toInApp(): array
+            {
+                $inApp = [
+                    'title' => $this->title,
+                    'message' => $this->body,
+                ];
+                
+                if ($this->actionUrl) {
+                    $inApp['link'] = $this->actionUrl;
+                }
+                
+                return $inApp;
             }
 
             public function getChannels(): ?array
@@ -288,11 +340,41 @@ final class NotificationController extends Controller
 final class SimpleNotifiable implements \Nexus\Notifier\Contracts\NotifiableInterface
 {
     public function __construct(
-        private readonly string $id
+        private readonly string $id,
+        private readonly ?string $email = null,
+        private readonly ?string $phone = null,
+        private readonly array $deviceTokens = [],
+        private readonly string $locale = 'en',
+        private readonly string $timezone = 'UTC'
     ) {}
 
     public function getNotificationIdentifier(): string
     {
         return $this->id;
+    }
+
+    public function getNotificationEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function getNotificationPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function getNotificationDeviceTokens(): array
+    {
+        return $this->deviceTokens;
+    }
+
+    public function getNotificationLocale(): string
+    {
+        return $this->locale;
+    }
+
+    public function getNotificationTimezone(): string
+    {
+        return $this->timezone;
     }
 }

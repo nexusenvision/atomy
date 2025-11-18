@@ -75,10 +75,16 @@ final class ProcessNotification implements ShouldQueue
                 throw new \RuntimeException("Channel {$queueItem->channel} is not available");
             }
 
+            // Reconstruct recipient and notification from payload
+            $payload = $queueItem->payload;
+            $recipient = $this->createRecipientFromPayload($payload);
+            $notification = $this->createNotificationFromPayload($payload);
+
             // Send notification
             $externalId = $channel->send(
-                $queueItem->recipient_id,
-                $queueItem->content
+                $recipient,
+                $notification,
+                $payload['content']
             );
 
             // Check delivery status
@@ -92,9 +98,7 @@ final class ProcessNotification implements ShouldQueue
                     DeliveryStatus::Bounced => 'failed',
                     default => 'pending',
                 },
-                'external_id' => $externalId,
-                'sent_at' => $status === DeliveryStatus::Delivered ? now() : null,
-                'error_message' => $status === DeliveryStatus::Failed ? 'Delivery failed' : null,
+                'processed_at' => now(),
             ]);
 
             $logger->info('Notification processed successfully', [
@@ -128,12 +132,116 @@ final class ProcessNotification implements ShouldQueue
      */
     private function resolveChannel(string $channelName): NotificationChannelInterface
     {
+        // Get all channel implementations from the container
+        // They should be registered with a key like 'notifier.channel.email'
         return match ($channelName) {
-            'email' => app(\Nexus\Notifier\Contracts\EmailChannelInterface::class),
-            'sms' => app(\Nexus\Notifier\Contracts\SmsChannelInterface::class),
-            'push' => app(\Nexus\Notifier\Contracts\PushChannelInterface::class),
-            'in_app' => app(\Nexus\Notifier\Contracts\InAppChannelInterface::class),
+            'email' => app('notifier.channel.email'),
+            'sms' => app('notifier.channel.sms'),
+            'push' => app('notifier.channel.push'),
+            'in_app' => app('notifier.channel.in_app'),
             default => throw new \InvalidArgumentException("Unknown channel: {$channelName}"),
+        };
+    }
+
+    /**
+     * Create a recipient instance from payload data.
+     */
+    private function createRecipientFromPayload(array $payload): \Nexus\Notifier\Contracts\NotifiableInterface
+    {
+        $recipientData = $payload['recipient_data'] ?? [];
+        
+        return new class($payload['recipient_id'], $recipientData) implements \Nexus\Notifier\Contracts\NotifiableInterface {
+            public function __construct(
+                private readonly string $id,
+                private readonly array $data
+            ) {}
+
+            public function getNotificationIdentifier(): string
+            {
+                return $this->id;
+            }
+
+            public function getNotificationEmail(): ?string
+            {
+                return $this->data['email'] ?? null;
+            }
+
+            public function getNotificationPhone(): ?string
+            {
+                return $this->data['phone'] ?? null;
+            }
+
+            public function getNotificationDeviceTokens(): array
+            {
+                return $this->data['device_tokens'] ?? [];
+            }
+
+            public function getNotificationLocale(): string
+            {
+                return $this->data['locale'] ?? 'en';
+            }
+
+            public function getNotificationTimezone(): string
+            {
+                return $this->data['timezone'] ?? 'UTC';
+            }
+        };
+    }
+
+    /**
+     * Create a notification instance from payload data.
+     */
+    private function createNotificationFromPayload(array $payload): \Nexus\Notifier\Contracts\NotificationInterface
+    {
+        return new class($payload) implements \Nexus\Notifier\Contracts\NotificationInterface {
+            public function __construct(
+                private readonly array $payload
+            ) {}
+
+            public function toEmail(): array
+            {
+                return is_array($this->payload['content']) ? $this->payload['content'] : [];
+            }
+
+            public function toSms(): string
+            {
+                return is_string($this->payload['content']) ? $this->payload['content'] : '';
+            }
+
+            public function toPush(): array
+            {
+                return is_array($this->payload['content']) ? $this->payload['content'] : [];
+            }
+
+            public function toInApp(): array
+            {
+                return is_array($this->payload['content']) ? $this->payload['content'] : [];
+            }
+
+            public function getPriority(): \Nexus\Notifier\ValueObjects\Priority
+            {
+                return \Nexus\Notifier\ValueObjects\Priority::from($this->payload['priority'] ?? 'normal');
+            }
+
+            public function getCategory(): \Nexus\Notifier\ValueObjects\Category
+            {
+                return \Nexus\Notifier\ValueObjects\Category::from($this->payload['category'] ?? 'transactional');
+            }
+
+            public function getContent(): \Nexus\Notifier\ValueObjects\NotificationContent
+            {
+                return new \Nexus\Notifier\ValueObjects\NotificationContent(
+                    emailData: $this->toEmail(),
+                    smsText: $this->toSms(),
+                    pushData: $this->toPush(),
+                    inAppData: $this->toInApp()
+                );
+            }
+
+            public function getType(): string
+            {
+                return $this->payload['notification_type'] ?? 'unknown';
+            }
         };
     }
 
