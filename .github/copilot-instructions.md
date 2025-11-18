@@ -16,11 +16,17 @@ You are working on **Nexus**, a modular PHP monorepo for an ERP system built on 
 ## Directory Structure
 
 ```
+```
 nexus/
 ├── packages/               # Atomic, publishable PHP packages
 │   ├── Accounting/        # Financial accounting
+│   ├── Period/        # Period management
+│   ├── AccountPayable/        # AP accounting
+│   ├── AccountReceivable/        # AR accounting
+│   ├── DataProcessor/        # Data processing capability like OCR, ETL, etc.
 │   ├── Analytics/         # Business intelligence
-│   ├── AuditLogger/       # Audit logging
+│   ├── AuditLogger/       # Audit logging (timeline/feed views)
+│   ├── EventStream/       # Event sourcing engine for critical domains
 │   ├── Backoffice/        # Company structure
 │   ├── Crm/               # Customer relationship management
 │   ├── FieldService/      # Field service management
@@ -44,6 +50,7 @@ nexus/
 │   ├── Connector/         # Connector as integration hub engine (if applicable)
 │   └── Workflow/          # Workflow engine (if applicable)
 |   
+```   
 └── apps/
     ├── Atomy/             # Headless Laravel ERP backend
     └── Edward/            # Terminal UI client (TUI)
@@ -81,6 +88,165 @@ Your package must be a **pure PHP engine** that is ignorant of the application i
 **ACCEPTABLE:**
 - Light dependency on `illuminate/support` for Collections and Contracts (but avoid if possible)
 - Framework-agnostic libraries like `psr/log`
+- Requiring other atomic packages (e.g., `nexus/inventory` can require `nexus/uom`)
+
+## 🔄 Hybrid Approach: Feed vs. Replay (AuditLogger vs. EventStream)
+
+The Nexus monorepo implements a **Hybrid Architecture** for event tracking and state reconstruction:
+
+### The "Feed" View: `Nexus\AuditLogger` (Standard Approach - 95% of Records)
+
+**Purpose:** User-facing timeline/feed displaying "what happened" on an entity's page.
+
+**Use Case:** Customer records, HR data, settings, inventory adjustments, approval workflows.
+
+**Mechanism:**
+- Domain packages call `AuditLogger::log()` **after** transaction commit
+- Records the **result** of an action (e.g., "Invoice status changed to Paid")
+- Simple to query and display in chronological order
+- Human-readable descriptions for non-technical users
+
+**Example:**
+```php
+$this->auditLogger->log(
+    $entityId,
+    'status_change',
+    'Invoice status updated from Draft to Paid by Azahari Zaman'
+);
+```
+
+**Limitations:**
+- Cannot **replay** system state to a specific point in time
+- Only records outcomes, not the underlying business events
+
+-----
+
+### The "Replay" Capability: `Nexus\EventStream` (Event Sourcing - Critical Domains Only)
+
+**Purpose:** Immutable event log enabling **state reconstruction** at any point in history.
+
+**Use Case (Critical Domains Only):**
+- **Finance (GL)**: Every debit/credit is an event (`AccountCreditedEvent`, `AccountDebitedEvent`)
+- **Inventory**: Every stock change is an event (`StockReservedEvent`, `StockAddedEvent`, `StockShippedEvent`)
+- **Large Enterprise AP/AR**: Optional event sourcing for payment lifecycle tracking
+
+**Mechanism:**
+- Aggregate publishes events to `EventStoreInterface`
+- Events are **append-only** (immutable)
+- Read models (projections) are rebuilt from event stream
+- Supports temporal queries: "What was the balance of account 1000 on 2024-10-15?"
+
+**Example:**
+```php
+// Publish event to EventStream
+$this->eventStore->append(
+    $aggregateId,
+    new AccountCreditedEvent(
+        accountId: '1000',
+        amount: Money::of(1000, 'MYR'),
+        description: 'Customer payment received'
+    )
+);
+
+// Rebuild state at specific point in time
+$balance = $this->eventStream->getStateAt($accountId, '2024-10-15');
+```
+
+**Benefits:**
+- **Complete audit trail** with full replay capability
+- **Temporal queries** for compliance and forensic analysis
+- **Event versioning** for schema evolution
+- **Projections** for optimized read models
+
+**Tradeoffs:**
+- **Higher complexity** (snapshots, projections, upcasters)
+- **Storage overhead** (every event is stored forever)
+- **Performance tuning required** (partitioning, snapshots for large streams)
+
+-----
+
+### Decision Matrix: When to Use Which Approach
+
+| Domain | Use AuditLogger (Feed) | Use EventStream (Replay) |
+| :--- | :--- | :--- |
+| **Finance (GL)** | ❌ | ✅ MANDATORY (SOX/IFRS compliance) |
+| **Inventory** | ❌ | ✅ MANDATORY (stock accuracy verification) |
+| **Payable (AP)** | ✅ Small/Medium | ✅ Large Enterprise (optional) |
+| **Receivable (AR)** | ✅ Small/Medium | ✅ Large Enterprise (optional) |
+| **Hrm** | ✅ Always | ❌ Not required |
+| **Payroll** | ✅ Always | ❌ Not required (use AuditLogger for timeline) |
+| **Crm** | ✅ Always | ❌ Not required |
+| **Procurement** | ✅ Always | ❌ Not required |
+| **Workflow** | ✅ Always | ❌ Not required (process tracking via AuditLogger) |
+
+**Rule of Thumb:**
+- **Use AuditLogger** if you only need to show "a timeline of changes" to users
+- **Use EventStream** if you need to answer: *"What was the exact state of this entity on [date]?"* for compliance/legal reasons
+
+-----
+
+### Integration Patterns
+
+#### Pattern 1: AuditLogger for Timeline (Standard)
+```php
+// In Nexus\Hrm\Services\EmployeeManager
+public function updateEmployee(string $id, array $data): void
+{
+    $employee = $this->repository->findById($id);
+    $oldData = $employee->toArray();
+    
+    $employee->update($data);
+    $this->repository->save($employee);
+    
+    // Log the result for timeline feed
+    $this->auditLogger->log(
+        $id,
+        'employee_updated',
+        "Employee {$employee->getName()} updated by {$this->authContext->getCurrentUser()}"
+    );
+}
+```
+
+#### Pattern 2: EventStream for Replay (Critical Domains)
+```php
+// In Nexus\Finance\Services\LedgerManager
+public function postJournalEntry(JournalEntry $entry): void
+{
+    // Publish events to EventStream
+    foreach ($entry->getLines() as $line) {
+        if ($line->isDebit()) {
+            $this->eventStore->append(
+                $line->getAccountId(),
+                new AccountDebitedEvent(
+                    accountId: $line->getAccountId(),
+                    amount: $line->getAmount(),
+                    journalEntryId: $entry->getId()
+                )
+            );
+        } else {
+            $this->eventStore->append(
+                $line->getAccountId(),
+                new AccountCreditedEvent(
+                    accountId: $line->getAccountId(),
+                    amount: $line->getAmount(),
+                    journalEntryId: $entry->getId()
+                )
+            );
+        }
+    }
+    
+    // Projection updates the "current balance" read model
+    // AuditLogger separately logs "Journal Entry #JE-2024-001 posted" for timeline
+}
+```
+
+**Key Architectural Principle:**
+- `Nexus\AuditLogger` logs **outcomes** for display (timeline/feed views)
+- `Nexus\EventStream` stores **events** for replay (state reconstruction)
+- Both can coexist: EventStream for technical accuracy, AuditLogger for user-friendly timelines
+
+-----
+
 - Requiring other atomic packages (e.g., `nexus/inventory` can require `nexus/uom`)
 
 ### 🧱 Package Design Principles

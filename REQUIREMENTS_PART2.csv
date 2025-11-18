@@ -1,0 +1,808 @@
+Package Namespace	Requiremets Type	Code	Requirement Statements	Files/Folders/ or Class/Methods Responible to deliver this requirements	Status	Notes on Status	Date Last Updated
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2001	Package MUST be framework-agnostic with no Laravel dependencies in core services				
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2002	All data structures defined via interfaces (JournalEntryInterface, AccountInterface, LedgerLineInterface)				
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2003	All persistence operations via repository interfaces (LedgerRepositoryInterface, AccountRepositoryInterface)				
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2004	Business logic concentrated in service layer (FinanceManager, JournalEntryService)				
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2005	All database migrations in application layer (apps/Atomy)				
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2006	All Eloquent models in application layer implementing package interfaces				
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2007	Repository implementations in application layer				
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2008	Package composer.json MUST NOT depend on laravel/framework				
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2009	MUST inject PeriodManagerInterface from Nexus\Period for period validation				
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2010	MUST inject SequencingInterface from Nexus\Sequencing for JE number generation				
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2011	MUST inject UomManagerInterface from Nexus\Uom for currency management				
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2012	MUST inject IdentityInterface from Nexus\Identity for user context				
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2013	Use Value Objects for Money (amount + currency), ExchangeRate, and JournalEntryNumber				
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2014	Separate Core/ folder for internal engine (PostingEngine, BalanceCalculator)				
+`Nexus\Finance`	Architechtural Requirement	ARC-FIN-2015	Define internal contracts in Core/Contracts/ (PostingEngineInterface)				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2101	All journal entries MUST be balanced (total debits = total credits) before posting				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2102	Posted journal entries are immutable; cannot be modified or deleted				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2103	Reversal entries MUST reference the original entry via reversal_of_id				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2104	Journal entries can only be posted to open fiscal periods (validated via Nexus\Period)				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2105	Each journal entry MUST have a unique, sequential journal entry number				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2106	Multi-currency transactions MUST record exchange rate at transaction time				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2107	Account codes MUST be unique within tenant scope				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2108	Only leaf accounts (accounts without children) can have transactions posted				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2109	Account deletion prohibited if account has transactions or child accounts				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2110	All financial amounts stored with precision of 4 decimal places				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2111	Base currency (tenant's functional currency) MUST be defined at tenant level				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2112	Exchange rates MUST be effective-dated to support historical conversions				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2113	Foreign currency transactions stored in both transaction currency and base currency				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2114	Chart of Accounts structure supports unlimited hierarchical depth				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2115	Each account MUST belong to one of 5 types: Asset, Liability, Equity, Revenue, Expense				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2116	Account type inheritance: child accounts inherit parent's root type				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2117	Journal entries support batch posting with single transaction validation				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2118	System-generated entries (auto-postings) MUST be flagged with source system identifier				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2119	Manual journal entries require approval workflow for Critical level entries				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2120	Small business (< 50 transactions/day): Basic COA with 50-200 accounts				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2121	Medium business (50-500 transactions/day): Extended COA with 200-1000 accounts				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2122	Large enterprise (> 500 transactions/day): Full COA with 1000+ accounts, multi-entity consolidation				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2123	Support intercompany eliminations for multi-entity consolidation				
+`Nexus\Finance`	Business Requirements	BUS-FIN-2124	Dimension tagging: Support cost center, project, department dimensions on journal line items				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2201	Maintain hierarchical Chart of Accounts using nested set model or materialized path				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2202	Support flexible account code formats (numeric, alphanumeric, dot-separated, dash-separated)				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2203	Provide account activation/deactivation without deletion to preserve audit trail				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2204	Support account templates for industry-specific COA (manufacturing, retail, service, non-profit)				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2205	Tag accounts with categories and reporting groups for financial statement mapping				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2206	Create journal entries with multiple line items (minimum 2 for double-entry)				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2207	Validate journal entry balance before persisting (sum debits = sum credits)				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2208	Generate sequential journal entry numbers using Nexus\Sequencing with pattern support				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2209	Stamp journal entries with posting date, period, user, and timestamp				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2210	Support recurring journal entries with configurable frequency (monthly, quarterly, annual)				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2211	Reverse posted journal entries by creating offsetting entry with reversal reference				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2212	Query ledger by account, date range, period, source, and dimensions				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2213	Calculate account balance as of specific date (point-in-time balance)				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2214	Calculate account balance for date range (period balance)				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2215	Support drill-down from account balance to individual journal line items				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2216	Manage exchange rates with effective date, currency pair, and rate type (buy/sell/average)				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2217	Auto-apply latest effective exchange rate for multi-currency transactions				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2218	Store both foreign currency amount and base currency equivalent on each line item				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2219	Calculate unrealized gain/loss for open foreign currency positions				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2220	Support dimension-based reporting (cost center, project, department) on line items				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2221	Provide LedgerRepositoryInterface with read-only query methods for ledger data				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2222	Provide AccountRepositoryInterface for COA management operations				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2223	Provide JournalEntryRepositoryInterface for JE persistence and retrieval				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2224	Provide ExchangeRateRepositoryInterface for currency rate management				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2225	Implement batch posting service for high-volume transaction processing				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2226	Support allocation rules for distributing amounts across multiple accounts				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2227	Implement budget vs actual comparison at account level				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2228	Support consolidation of multiple entities with intercompany elimination entries				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2229	Small business: Pre-configured simple COA with common accounts (cash, AR, AP, sales, expenses)				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2230	Medium business: Departmental segmentation, project tracking, multi-location support				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2231	Large enterprise: Multi-entity consolidation, intercompany transactions, global currency management				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2232	Large enterprise: Support for thousands of accounts with efficient hierarchical queries				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2233	Large enterprise: Parallel posting of batch transactions for performance				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2234	Provide trial balance extract service (all accounts with debit/credit balances)				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2235	Support fiscal year-end closing process with automated retained earnings transfer				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2236	Implement audit trail for all COA modifications (account creation, updates, deactivation)				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2237	Support multiple fiscal calendars per tenant (standard, 4-4-5, custom)				
+`Nexus\Finance`	Functional Requirement	FUN-FIN-2238	Provide source document attachment support on journal entries (PDF, images)				
+`Nexus\Finance`	Performance Requirement	PER-FIN-2301	Journal entry validation (balance check) < 100ms for entries with up to 100 line items				
+`Nexus\Finance`	Performance Requirement	PER-FIN-2302	Single journal entry posting < 200ms (p95) including all validations				
+`Nexus\Finance`	Performance Requirement	PER-FIN-2303	Batch posting throughput: 1000 journal entries per minute (small entries, 2-5 lines each)				
+`Nexus\Finance`	Performance Requirement	PER-FIN-2304	Account balance calculation < 500ms for accounts with up to 100K transactions				
+`Nexus\Finance`	Performance Requirement	PER-FIN-2305	Chart of accounts hierarchical query < 200ms for up to 10K accounts				
+`Nexus\Finance`	Performance Requirement	PER-FIN-2306	Ledger query by date range < 1s for up to 50K line items with proper indexing				
+`Nexus\Finance`	Performance Requirement	PER-FIN-2307	Exchange rate lookup < 50ms using effective date index				
+`Nexus\Finance`	Performance Requirement	PER-FIN-2308	Trial balance generation < 3s for 100K transactions and 1K accounts				
+`Nexus\Finance`	Performance Requirement	PER-FIN-2309	Small business: Support up to 10K transactions per year with < 2s report generation				
+`Nexus\Finance`	Performance Requirement	PER-FIN-2310	Medium business: Support up to 100K transactions per year with < 5s report generation				
+`Nexus\Finance`	Performance Requirement	PER-FIN-2311	Large enterprise: Support 1M+ transactions per year with < 10s report generation using partitioning				
+`Nexus\Finance`	Performance Requirement	PER-FIN-2312	Consolidation processing: 100 entities in < 30s using parallel processing				
+`Nexus\Finance`	Reliability Requirement	REL-FIN-2401	Journal entry posting operations use database transactions (ACID compliance)				
+`Nexus\Finance`	Reliability Requirement	REL-FIN-2402	Failed postings MUST rollback completely with no partial data persisted				
+`Nexus\Finance`	Reliability Requirement	REL-FIN-2403	Concurrent posting to same account MUST use pessimistic locking to prevent race conditions				
+`Nexus\Finance`	Reliability Requirement	REL-FIN-2404	Period close validation MUST prevent posting after period is locked				
+`Nexus\Finance`	Reliability Requirement	REL-FIN-2405	Exchange rate cache with 5-minute TTL to reduce database queries				
+`Nexus\Finance`	Reliability Requirement	REL-FIN-2406	Automatic retry for transient failures (max 3 retries with exponential backoff)				
+`Nexus\Finance`	Reliability Requirement	REL-FIN-2407	Data corruption detection using checksum validation on critical financial data				
+`Nexus\Finance`	Reliability Requirement	REL-FIN-2408	Maintain referential integrity between journal entries, line items, and accounts				
+`Nexus\Finance`	Reliability Requirement	REL-FIN-2409	Support point-in-time recovery for financial data with transaction log archiving				
+`Nexus\Finance`	Reliability Requirement	REL-FIN-2410	Automated backup verification for ledger data				
+`Nexus\Finance`	Security and Compliance Requirement	SEC-FIN-2501	Implement audit logging for all journal entry postings using AuditLoggerContract				
+`Nexus\Finance`	Security and Compliance Requirement	SEC-FIN-2502	Enforce tenant isolation for all financial data via tenant scoping				
+`Nexus\Finance`	Security and Compliance Requirement	SEC-FIN-2503	Support role-based access control for journal entry creation, posting, and reversal				
+`Nexus\Finance`	Security and Compliance Requirement	SEC-FIN-2504	Validate business rules at service layer before persistence				
+`Nexus\Finance`	Security and Compliance Requirement	SEC-FIN-2505	Implement immutable posting (entries cannot be modified once posted)				
+`Nexus\Finance`	Security and Compliance Requirement	SEC-FIN-2506	Encrypt sensitive financial data at rest (account balances, amounts)				
+`Nexus\Finance`	Security and Compliance Requirement	SEC-FIN-2507	Mask account numbers in logs and audit trails (show only last 4 digits)				
+`Nexus\Finance`	Security and Compliance Requirement	SEC-FIN-2508	Implement field-level access control for sensitive account details				
+`Nexus\Finance`	Security and Compliance Requirement	SEC-FIN-2509	Support SOX compliance with segregation of duties (creator != approver)				
+`Nexus\Finance`	Security and Compliance Requirement	SEC-FIN-2510	Maintain immutable audit trail of all COA changes				
+`Nexus\Finance`	Security and Compliance Requirement	SEC-FIN-2511	Support GDPR compliance with data retention and deletion policies				
+`Nexus\Finance`	Security and Compliance Requirement	SEC-FIN-2512	Implement rate limiting for API endpoints to prevent abuse				
+`Nexus\Finance`	Security and Compliance Requirement	SEC-FIN-2513	Log all failed posting attempts with reason codes for security monitoring				
+`Nexus\Finance`	Integration Requirement	INT-FIN-2601	MUST integrate with Nexus\Period for fiscal period validation before posting				
+`Nexus\Finance`	Integration Requirement	INT-FIN-2602	MUST integrate with Nexus\Sequencing for journal entry number generation				
+`Nexus\Finance`	Integration Requirement	INT-FIN-2603	MUST integrate with Nexus\Uom for currency and exchange rate management				
+`Nexus\Finance`	Integration Requirement	INT-FIN-2604	MUST integrate with Nexus\Identity for user context and authentication				
+`Nexus\Finance`	Integration Requirement	INT-FIN-2605	MUST integrate with Nexus\AuditLogger for comprehensive audit trails				
+`Nexus\Finance`	Integration Requirement	INT-FIN-2606	MUST integrate with Nexus\Workflow for approval routing of manual journal entries				
+`Nexus\Finance`	Integration Requirement	INT-FIN-2607	Provide FinanceInterface for consumption by AP, AR, Payroll packages				
+`Nexus\Finance`	Integration Requirement	INT-FIN-2608	Expose LedgerRepositoryInterface for consumption by Nexus\Accounting reporting				
+`Nexus\Finance`	Integration Requirement	INT-FIN-2609	Support webhook notifications for critical events (posting errors, balance discrepancies)				
+`Nexus\Finance`	Integration Requirement	INT-FIN-2610	Provide batch import API for migration from legacy systems				
+`Nexus\Finance`	Integration Requirement	INT-FIN-2611	MUST integrate with Nexus\EventStream for journal entry event sourcing (AccountCreditedEvent, AccountDebitedEvent, JournalPostedEvent)				
+`Nexus\Finance`	Integration Requirement	INT-FIN-2612	Publish domain events to EventStream for complete GL audit trail with replay capability				
+`Nexus\Finance`	Integration Requirement	INT-FIN-2613	Support temporal queries via EventStream: "What was the balance of account 1000 on 2024-10-15?"				
+`Nexus\Finance`	Usability Requirement	USA-FIN-2701	Provide clear validation error messages for unbalanced journal entries				
+`Nexus\Finance`	Usability Requirement	USA-FIN-2702	Support bulk import of journal entries via CSV/Excel with validation preview				
+`Nexus\Finance`	Usability Requirement	USA-FIN-2703	Provide account search with autocomplete (code and name)				
+`Nexus\Finance`	Usability Requirement	USA-FIN-2704	Support account aliasing for common account nicknames				
+`Nexus\Finance`	Usability Requirement	USA-FIN-2705	Provide journal entry templates for recurring transactions				
+`Nexus\Finance`	Usability Requirement	USA-FIN-2706	Display warning when posting to inactive periods (with override option)				
+`Nexus\Finance`	Usability Requirement	USA-FIN-2707	Show real-time balance updates during journal entry creation				
+`Nexus\Finance`	Usability Requirement	USA-FIN-2708	Provide multi-currency calculator widget for exchange rate conversions				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2001	Package MUST be framework-agnostic with no Laravel dependencies in core services				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2002	All data structures defined via interfaces (FinancialStatementInterface, ReportInterface)				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2003	All persistence operations via repository interfaces				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2004	Business logic concentrated in service layer (AccountingManager, ReportingService)				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2005	All database migrations in application layer (apps/Atomy)				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2006	All Eloquent models in application layer implementing package interfaces				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2007	Repository implementations in application layer				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2008	Package composer.json MUST NOT depend on laravel/framework				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2009	MUST inject LedgerRepositoryInterface from Nexus\Finance for reading GL data				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2010	MUST inject PeriodManagerInterface from Nexus\Period for fiscal period operations				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2011	MUST inject AnalyticsInterface from Nexus\Analytics for budget/forecast data				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2012	MUST inject SettingsManagerInterface from Nexus\Setting for configuration				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2013	Use Value Objects for ReportingPeriod, StatementLineItem, ComplianceStandard				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2014	Separate Core/ folder for report generation engine (ReportBuilder, StatementCompiler)				
+`Nexus\Accounting`	Architechtural Requirement	ARC-ACC-2015	Define internal contracts in Core/Contracts/ (ReportBuilderInterface, StatementFormatterInterface)				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-0126	All journal entries MUST be balanced (debit = credit) before posting				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-0127	Posted entries cannot be modified; only reversed with offsetting entries				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-0128	Prevent deletion of accounts with associated transactions or child accounts				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-0129	Account codes MUST be unique within tenant scope				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-0130	Only leaf accounts (no children) can have transactions posted to them				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-0131	Entries can only be posted to active fiscal periods; closed periods reject entries				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-0132	Foreign currency transactions MUST record both base and foreign amounts with exchange rate				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-0133	Three-way matching required for vendor invoice posting (PO, GR, Invoice)				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-0134	Customer payments MUST be allocated to specific invoices for proper aging tracking				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2101	Financial statements MUST reflect data as of specific point in time (reporting date)				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2102	Balance Sheet MUST balance (Assets = Liabilities + Equity)				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2103	Income Statement MUST show Net Income = Revenue - Expenses				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2104	Cash Flow Statement MUST reconcile to cash account changes				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2105	Trial Balance MUST show total debits = total credits				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2106	Fiscal period closing MUST validate all entries are balanced before lock				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2107	Year-end close MUST transfer net income to retained earnings				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2108	Month-end close MUST calculate and post accruals automatically				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2109	Financial reports MUST support comparative periods (current vs prior year)				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2110	Budget variance reports MUST show actual vs budget with percentage variance				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2111	Consolidated statements MUST eliminate intercompany transactions				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2112	Support GAAP and IFRS reporting standards via configurable templates				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2113	Audit trail required for all period close and financial statement generation				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2114	Small business: Basic financial statements (Balance Sheet, P&L) monthly				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2115	Medium business: Full financial statements monthly, budget variance quarterly				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2116	Large enterprise: Consolidated statements, segment reporting, intercompany eliminations				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2117	Support multiple reporting currencies for multinational enterprises				
+`Nexus\Accounting`	Business Requirements	BUS-ACC-2118	Financial statements must be version-controlled for restatements				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-0179	Maintain hierarchical chart of accounts with unlimited depth using nested set model				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-0180	Support 5 standard account types (Asset, Liability, Equity, Revenue, Expense) with type inheritance				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-0181	Allow tagging accounts by category and reporting group for financial statement organization				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-0182	Support flexible account code format (e.g., 1000-00, 1.1.1) per tenant configuration				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-0183	Provide account activation/deactivation without deletion to preserve history				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-0184	Support account templates for quick COA setup (manufacturing, retail, services)				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2201	Generate Balance Sheet with Assets, Liabilities, and Equity sections				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2202	Generate Income Statement (P&L) with Revenue and Expense sections				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2203	Generate Statement of Cash Flows using direct or indirect method				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2204	Generate Statement of Changes in Equity				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2205	Generate Trial Balance with account-level detail				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2206	Generate General Ledger report with transaction details				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2207	Generate Chart of Accounts report with hierarchical structure				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2208	Support comparative financial statements (side-by-side periods)				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2209	Support consolidated financial statements across multiple entities				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2210	Execute fiscal period close with validation and locking				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2211	Execute fiscal year-end close with automated closing entries				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2212	Post automated accrual entries at month-end				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2213	Post automated depreciation entries at period-end				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2214	Transfer net income to retained earnings at year-end				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2215	Generate budget vs actual variance reports				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2216	Support budget import from Nexus\Analytics forecasts				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2217	Calculate key financial ratios (current ratio, debt-to-equity, ROA, ROE)				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2218	Generate aging reports (AR and AP)				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2219	Generate account reconciliation worksheets				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2220	Support drill-down from statement line items to source transactions				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2221	Export financial statements to PDF, Excel, CSV formats				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2222	Support custom financial report templates with drag-and-drop builder				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2223	Generate segment reports by division, department, or location				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2224	Support multi-currency financial statements with translation adjustments				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2225	Generate intercompany elimination entries for consolidation				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2226	Support GAAP financial statement templates (standard format)				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2227	Support IFRS financial statement templates (international format)				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2228	Version control for financial statements (support restatements)				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2229	Small business: Simplified statements, monthly P&L, quarterly balance sheet				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2230	Medium business: Full monthly statements, budget tracking, departmental reporting				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2231	Large enterprise: Consolidated statements, segment reporting, intercompany eliminations				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2232	Large enterprise: Multi-GAAP reporting (simultaneous GAAP and IFRS)				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2233	Support audit preparation reports (trial balance with adjustments)				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2234	Generate tax preparation worksheets				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2235	Support footnote management for financial statements				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2236	Schedule automated report generation and distribution				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2237	Support report subscriptions with email delivery				
+`Nexus\Accounting`	Functional Requirement	FUN-ACC-2238	Provide financial dashboard with key metrics and trends				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-0359	Trial balance generation for 100K transactions < 3 seconds				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-0360	Account balance inquiry with drill-down < 1 second				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-0361	Bank reconciliation for 10K transactions < 2 seconds				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-0362	Aging report generation (30/60/90 days) < 2 seconds				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-0363	Chart of accounts hierarchical query performance < 500ms				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-2301	Balance Sheet generation < 5 seconds for 1K accounts				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-2302	Income Statement generation < 5 seconds for 1K accounts				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-2303	Cash Flow Statement generation < 10 seconds using indirect method				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-2304	Trial Balance generation < 3 seconds for 100K transactions				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-2305	Comparative statements (2 periods) < 8 seconds				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-2306	Consolidated statements (10 entities) < 30 seconds				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-2307	Budget variance report < 5 seconds for 1K accounts				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-2308	Financial ratio calculation < 1 second				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-2309	Period close validation < 10 seconds for 10K transactions				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-2310	Year-end close processing < 60 seconds with automated entries				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-2311	Small business: All reports < 3 seconds for up to 10K transactions				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-2312	Medium business: All reports < 8 seconds for up to 100K transactions				
+`Nexus\Accounting`	Performance Requirement	PER-ACC-2313	Large enterprise: All reports < 30 seconds for 1M+ transactions with caching				
+`Nexus\Accounting`	Reliability Requirement	REL-ACC-2401	Period close operations use database transactions (ACID compliance)				
+`Nexus\Accounting`	Reliability Requirement	REL-ACC-2402	Failed period close MUST rollback completely				
+`Nexus\Accounting`	Reliability Requirement	REL-ACC-2403	Financial statement generation is idempotent (repeated calls yield same result)				
+`Nexus\Accounting`	Reliability Requirement	REL-ACC-2404	Cache financial statements with 15-minute TTL for performance				
+`Nexus\Accounting`	Reliability Requirement	REL-ACC-2405	Support report generation retry on transient failures				
+`Nexus\Accounting`	Reliability Requirement	REL-ACC-2406	Validate data integrity before period close (balanced entries check)				
+`Nexus\Accounting`	Reliability Requirement	REL-ACC-2407	Maintain referential integrity between reports and source GL data				
+`Nexus\Accounting`	Reliability Requirement	REL-ACC-2408	Support parallel report generation for multi-entity consolidation				
+`Nexus\Accounting`	Reliability Requirement	REL-ACC-2409	Implement circuit breaker for external data source failures				
+`Nexus\Accounting`	Reliability Requirement	REL-ACC-2410	Archive financial statements for historical compliance				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-0475	Implement audit logging for all GL postings using ActivityLoggerContract				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-0476	Enforce tenant isolation for all accounting data via tenant scoping				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-0477	Support authorization policies through contract-based permission system				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-0478	Validate business rules at domain layer (before orchestration)				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-0479	Implement immutable posting (entries cannot be modified once posted)				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-2501	Implement audit logging for period close and financial statement generation				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-2502	Support role-based access control for financial reports (viewer, preparer, approver)				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-2503	Encrypt sensitive financial reports at rest				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-2504	Implement digital signatures for finalized financial statements				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-2505	Support SOX compliance with maker-checker for period close				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-2506	Maintain immutable audit trail of all financial report generations				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-2507	Support GDPR compliance with data retention policies for financial records				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-2508	Implement watermarking for exported financial statements				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-2509	Log all report access and downloads for compliance monitoring				
+`Nexus\Accounting`	Security and Compliance Requirement	SEC-ACC-2510	Support report access expiration for time-limited sharing				
+`Nexus\Accounting`	Integration Requirement	INT-ACC-2601	MUST integrate with Nexus\Finance for reading GL data via LedgerRepositoryInterface				
+`Nexus\Accounting`	Integration Requirement	INT-ACC-2602	MUST integrate with Nexus\Period for fiscal period operations				
+`Nexus\Accounting`	Integration Requirement	INT-ACC-2603	MUST integrate with Nexus\Analytics for budget and forecast data				
+`Nexus\Accounting`	Integration Requirement	INT-ACC-2604	MUST integrate with Nexus\Setting for report configuration and preferences				
+`Nexus\Accounting`	Integration Requirement	INT-ACC-2605	MUST integrate with Nexus\AuditLogger for comprehensive audit trails				
+`Nexus\Accounting`	Integration Requirement	INT-ACC-2606	MUST integrate with Nexus\Notifier for report distribution and alerts				
+`Nexus\Accounting`	Integration Requirement	INT-ACC-2607	MUST integrate with Nexus\Storage for financial statement archiving				
+`Nexus\Accounting`	Integration Requirement	INT-ACC-2608	Expose AccountingInterface for consumption by external systems				
+`Nexus\Accounting`	Integration Requirement	INT-ACC-2609	Support webhook notifications for period close completion				
+`Nexus\Accounting`	Integration Requirement	INT-ACC-2610	Provide REST API for financial statement retrieval				
+`Nexus\Accounting`	Integration Requirement	INT-ACC-2611	Support GraphQL queries for flexible report data access				
+`Nexus\Accounting`	Integration Requirement	INT-ACC-2612	Optional integration with Nexus\EventStream for period close event tracking (large enterprise only)				
+`Nexus\Accounting`	Usability Requirement	USA-ACC-2701	Provide report preview before finalization				
+`Nexus\Accounting`	Usability Requirement	USA-ACC-2702	Support report customization with user-defined columns and groupings				
+`Nexus\Accounting`	Usability Requirement	USA-ACC-2703	Provide report templates library for common financial reports				
+`Nexus\Accounting`	Usability Requirement	USA-ACC-2704	Support drill-down from summary to detail in all reports				
+`Nexus\Accounting`	Usability Requirement	USA-ACC-2705	Provide visual financial statement designer (drag-and-drop)				
+`Nexus\Accounting`	Usability Requirement	USA-ACC-2706	Display clear error messages for period close failures with remediation steps				
+`Nexus\Accounting`	Usability Requirement	USA-ACC-2707	Provide period close checklist with progress indicators				
+`Nexus\Accounting`	Usability Requirement	USA-ACC-2708	Support report scheduling with recurrence patterns (daily, weekly, monthly)				
+`Nexus\Accounting`	Usability Requirement	USA-ACC-2709	Provide financial statement comparison tool (side-by-side periods)				
+`Nexus\Accounting`	Usability Requirement	USA-ACC-2710	Support report favoriting and quick access				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3001	Package MUST be framework-agnostic with no Laravel dependencies in core services				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3002	All data structures defined via interfaces (VendorBillInterface, PaymentInterface, MatchingInterface)				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3003	All persistence operations via repository interfaces (BillRepositoryInterface, PaymentRepositoryInterface)				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3004	Business logic concentrated in service layer (PayableManager, PaymentSchedulingService)				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3005	All database migrations in application layer (apps/Atomy)				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3006	All Eloquent models in application layer implementing package interfaces				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3007	Repository implementations in application layer				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3008	Package composer.json MUST NOT depend on laravel/framework				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3009	MUST inject FinanceInterface from Nexus\Finance for journal entry posting				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3010	MUST inject ProcurementInterface from Nexus\Procurement for PO matching				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3011	MUST inject InventoryInterface from Nexus\Inventory for GR matching				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3012	MUST inject TaxCalculatorInterface for tax credit calculations				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3013	MUST inject DocumentRecognizerInterface from Nexus\DataProcessor for OCR				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3014	MUST inject ConnectorInterface from Nexus\Connector for payment gateway integration				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3015	Use Value Objects for PaymentAmount, PaymentTerm, VendorBillNumber				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3016	Separate Core/ folder for internal engine (MatchingEngine, PaymentScheduler)				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3017	Define internal contracts in Core/Contracts/ (ThreeWayMatcherInterface, PaymentBatchProcessorInterface)				
+`Nexus\Payable`	Architechtural Requirement	ARC-PAY-3018	Support Segregation of Duties (SOD) via SoDEnforcerInterface injection				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3101	Vendor bills MUST be matched to PO and GR before posting (3-way matching)				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3102	Bills cannot be paid without approval workflow completion				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3103	Duplicate bill detection required (vendor + bill number + amount matching)				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3104	Payment terms MUST be validated against vendor master data				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3105	Early payment discounts calculated automatically based on payment date				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3106	Vendor bill approval hierarchy based on amount thresholds				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3107	Payment batches MUST be approved before transmission to banking system				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3108	Partial payments allowed with allocation to specific bill line items				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3109	Vendor credit memos applied automatically to outstanding bills				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3110	Disputed bills placed on hold with reason tracking				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3111	Support vendor prepayments with amortization schedule				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3112	Multi-currency bills recorded with exchange rate at bill date				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3113	Payment method selection: Check, EFT, ACH, Wire Transfer, Credit Card				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3114	Recurring bills supported with automatic posting schedule				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3115	Small business: Basic bill entry, simple payment scheduling (< 100 vendors)				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3116	Medium business: 3-way matching, approval workflows, payment optimization (100-1000 vendors)				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3117	Large enterprise: OCR integration, SOD enforcement, batch payment processing (1000+ vendors, 10K+ bills/month)				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3118	Support vendor statement reconciliation with auto-matching				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3119	Enforce purchase order commitment tracking (encumbrance accounting)				
+`Nexus\Payable`	Business Requirements	BUS-PAY-3120	Support 1099 reporting for US tax compliance (vendor classification)				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3201	Create and manage vendor bills with line item detail				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3202	Support bill status lifecycle: Draft, Pending Approval, Approved, Paid, Disputed, Cancelled				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3203	Implement 3-way matching: PO + GR + Bill with configurable tolerance thresholds				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3204	Post vendor bills to GL: Debit Expense/Inventory, Credit Accounts Payable				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3205	Calculate and record tax credits (GST/VAT input tax) on bills				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3206	Generate payment proposals based on due dates and cash flow strategy				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3207	Create payment batches with multiple bills for single vendor or multiple vendors				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3208	Generate payment files for banking system (NACHA, ISO20022, proprietary formats)				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3209	Record payments with posting to GL: Debit Accounts Payable, Credit Cash				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3210	Support partial payments with allocation to bill line items				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3211	Apply early payment discounts automatically based on terms				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3212	Generate and apply vendor credit memos with reason tracking				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3213	Support vendor prepayments with application to future bills				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3214	Generate aging reports (30/60/90 days) by vendor				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3215	Generate cash requirements forecast based on payment due dates				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3216	Support recurring bill templates with auto-posting				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3217	Integrate with OCR service via DocumentRecognizerInterface for bill capture				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3218	Implement duplicate bill detection algorithm				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3219	Support multi-approval workflow with amount-based routing				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3220	Enforce Segregation of Duties rules (creator cannot approve own bills)				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3221	Support vendor self-service portal for bill inquiry				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3222	Generate payment advice/remittance documents for vendors				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3223	Support check printing with MICR encoding				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3224	Implement payment reversal with accounting adjustment				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3225	Support vendor statement reconciliation with variance analysis				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3226	Generate 1099 tax forms for qualifying vendors (US)				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3227	Track payment status via banking integration (sent, cleared, rejected)				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3228	Small business: Simple bill entry, basic payment scheduling, check printing				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3229	Medium business: 3-way matching, approval routing, payment optimization				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3230	Large enterprise: OCR automation, SOD enforcement, bulk payment processing, vendor portal				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3231	Support positive pay file generation for fraud prevention				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3232	Implement spend analysis by vendor, category, and department				
+`Nexus\Payable`	Functional Requirement	FUN-PAY-3233	Support vendor performance tracking (on-time delivery, quality scores)				
+`Nexus\Payable`	Performance Requirement	PER-PAY-3301	Bill creation and validation < 200ms				
+`Nexus\Payable`	Performance Requirement	PER-PAY-3302	3-way matching validation < 500ms per bill				
+`Nexus\Payable`	Performance Requirement	PER-PAY-3303	Payment batch processing: 1000 payments per minute				
+`Nexus\Payable`	Performance Requirement	PER-PAY-3304	Aging report generation < 3s for 10K outstanding bills				
+`Nexus\Payable`	Performance Requirement	PER-PAY-3305	Duplicate bill detection scan < 1s using indexed queries				
+`Nexus\Payable`	Performance Requirement	PER-PAY-3306	Payment proposal generation < 5s for 5K unpaid bills				
+`Nexus\Payable`	Performance Requirement	PER-PAY-3307	OCR processing < 10s per document via async queue				
+`Nexus\Payable`	Performance Requirement	PER-PAY-3308	Small business: Support 100 vendors, 500 bills/month with < 2s response				
+`Nexus\Payable`	Performance Requirement	PER-PAY-3309	Medium business: Support 1K vendors, 5K bills/month with < 5s response				
+`Nexus\Payable`	Performance Requirement	PER-PAY-3310	Large enterprise: Support 10K+ vendors, 50K+ bills/month with < 10s response using partitioning				
+`Nexus\Payable`	Reliability Requirement	REL-PAY-3401	Bill posting uses database transactions (ACID compliance)				
+`Nexus\Payable`	Reliability Requirement	REL-PAY-3402	Failed payments MUST rollback with payment status tracking				
+`Nexus\Payable`	Reliability Requirement	REL-PAY-3403	Payment batch processing supports retry on transient failures				
+`Nexus\Payable`	Reliability Requirement	REL-PAY-3404	Duplicate payment prevention using idempotency keys				
+`Nexus\Payable`	Reliability Requirement	REL-PAY-3405	Concurrent bill approval uses pessimistic locking				
+`Nexus\Payable`	Reliability Requirement	REL-PAY-3406	Payment file generation is idempotent (repeated calls yield same output)				
+`Nexus\Payable`	Reliability Requirement	REL-PAY-3407	Support payment reconciliation with bank statement import				
+`Nexus\Payable`	Reliability Requirement	REL-PAY-3408	Maintain referential integrity between bills, payments, and GL entries				
+`Nexus\Payable`	Reliability Requirement	REL-PAY-3409	Archive historical payment data with retention policies				
+`Nexus\Payable`	Reliability Requirement	REL-PAY-3410	Support point-in-time recovery for payment data				
+`Nexus\Payable`	Security and Compliance Requirement	SEC-PAY-3501	Implement audit logging for all bill and payment operations				
+`Nexus\Payable`	Security and Compliance Requirement	SEC-PAY-3502	Enforce tenant isolation for all AP data				
+`Nexus\Payable`	Security and Compliance Requirement	SEC-PAY-3503	Support RBAC for bill entry, approval, and payment processing				
+`Nexus\Payable`	Security and Compliance Requirement	SEC-PAY-3504	Implement Segregation of Duties (SOD) controls via SoDEnforcerInterface				
+`Nexus\Payable`	Security and Compliance Requirement	SEC-PAY-3505	Encrypt vendor banking details at rest				
+`Nexus\Payable`	Security and Compliance Requirement	SEC-PAY-3506	Mask bank account numbers in UI and logs (show last 4 digits only)				
+`Nexus\Payable`	Security and Compliance Requirement	SEC-PAY-3507	Implement dual authorization for high-value payments (> threshold)				
+`Nexus\Payable`	Security and Compliance Requirement	SEC-PAY-3508	Support SOX compliance with maker-checker workflows				
+`Nexus\Payable`	Security and Compliance Requirement	SEC-PAY-3509	Log all failed payment attempts with reason codes				
+`Nexus\Payable`	Security and Compliance Requirement	SEC-PAY-3510	Implement payment velocity checks for fraud detection				
+`Nexus\Payable`	Security and Compliance Requirement	SEC-PAY-3511	Support GDPR compliance with vendor data retention policies				
+`Nexus\Payable`	Security and Compliance Requirement	SEC-PAY-3512	Implement rate limiting for payment API endpoints				
+`Nexus\Payable`	Security and Compliance Requirement	SEC-PAY-3513	Support digital signatures for payment authorization				
+`Nexus\Payable`	Integration Requirement	INT-PAY-3601	MUST integrate with Nexus\Finance for journal entry posting via FinanceInterface				
+`Nexus\Payable`	Integration Requirement	INT-PAY-3602	MUST integrate with Nexus\Procurement for PO data via ProcurementInterface				
+`Nexus\Payable`	Integration Requirement	INT-PAY-3603	MUST integrate with Nexus\Inventory for GR data via InventoryInterface				
+`Nexus\Payable`	Integration Requirement	INT-PAY-3604	MUST integrate with Nexus\Workflow for approval routing				
+`Nexus\Payable`	Integration Requirement	INT-PAY-3605	MUST integrate with Nexus\Connector for banking/payment gateway integration				
+`Nexus\Payable`	Integration Requirement	INT-PAY-3606	MUST integrate with Nexus\DataProcessor for OCR via DocumentRecognizerInterface				
+`Nexus\Payable`	Integration Requirement	INT-PAY-3607	MUST integrate with Nexus\AuditLogger for comprehensive audit trails				
+`Nexus\Payable`	Integration Requirement	INT-PAY-3608	MUST integrate with Nexus\Notifier for payment notifications				
+`Nexus\Payable`	Integration Requirement	INT-PAY-3609	Expose PayableInterface for consumption by reporting systems				
+`Nexus\Payable`	Integration Requirement	INT-PAY-3610	Support webhook notifications for payment status changes				
+`Nexus\Payable`	Integration Requirement	INT-PAY-3611	Provide REST API for vendor bill inquiry				
+`Nexus\Payable`	Integration Requirement	INT-PAY-3612	Optional integration with Nexus\EventStream for payment lifecycle event sourcing (large enterprise only)				
+`Nexus\Payable`	Integration Requirement	INT-PAY-3613	Publish payment events to EventStream: BillCreatedEvent, BillMatchedEvent, PaymentProcessedEvent				
+`Nexus\Payable`	Usability Requirement	USA-PAY-3701	Provide bill entry wizard with validation feedback				
+`Nexus\Payable`	Usability Requirement	USA-PAY-3702	Support bill import from email/PDF with OCR pre-population				
+`Nexus\Payable`	Usability Requirement	USA-PAY-3703	Display real-time matching status during 3-way match				
+`Nexus\Payable`	Usability Requirement	USA-PAY-3704	Provide payment calendar view showing upcoming due dates				
+`Nexus\Payable`	Usability Requirement	USA-PAY-3705	Support bulk bill approval with multi-select				
+`Nexus\Payable`	Usability Requirement	USA-PAY-3706	Display early payment discount opportunities prominently				
+`Nexus\Payable`	Usability Requirement	USA-PAY-3707	Provide vendor lookup with autocomplete				
+`Nexus\Payable`	Usability Requirement	USA-PAY-3708	Show payment status tracking with visual timeline				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4001	Package MUST be framework-agnostic with no Laravel dependencies in core services				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4002	All data structures defined via interfaces (InvoiceInterface, ReceiptInterface, CreditMemoInterface)				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4003	All persistence operations via repository interfaces (InvoiceRepositoryInterface, ReceiptRepositoryInterface)				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4004	Business logic concentrated in service layer (ReceivableManager, CollectionsService)				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4005	All database migrations in application layer (apps/Atomy)				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4006	All Eloquent models in application layer implementing package interfaces				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4007	Repository implementations in application layer				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4008	Package composer.json MUST NOT depend on laravel/framework				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4009	MUST inject FinanceInterface from Nexus\Finance for journal entry posting				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4010	MUST inject CrmInterface from Nexus\Crm for customer data				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4011	MUST inject TaxCalculatorInterface for tax calculations				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4012	MUST inject NotifierInterface from Nexus\Notifier for invoice delivery				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4013	MUST inject ConnectorInterface from Nexus\Connector for payment gateway integration				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4014	Use Value Objects for InvoiceAmount, PaymentTerm, InvoiceNumber				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4015	Separate Core/ folder for internal engine (AgingCalculator, CollectionScheduler)				
+`Nexus\Receivable`	Architechtural Requirement	ARC-REC-4016	Define internal contracts in Core/Contracts/ (InvoiceGeneratorInterface, AllocationEngineInterface)				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4101	Invoices MUST be linked to sales order or contract for tracking				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4102	Revenue recognition follows delivery/service completion date				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4103	Partial payments allocated to specific invoice line items				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4104	Payment terms MUST be validated against customer master data				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4105	Credit limit checks required before invoice creation				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4106	Overdue invoices automatically flagged for collections				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4107	Write-off authorization required for bad debt above threshold				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4108	Credit memos require reason code and approval				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4109	Cash receipts MUST be allocated to specific invoices for aging accuracy				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4110	Unallocated receipts held in suspense account				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4111	Multi-currency invoices recorded with exchange rate at invoice date				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4112	Support recurring invoices with configurable frequency				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4113	Invoice amendments tracked with version history				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4114	Support milestone billing for long-term projects				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4115	Small business: Basic invoicing, simple payment tracking (< 100 customers)				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4116	Medium business: Automated collections, credit management, recurring billing (100-1000 customers)				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4117	Large enterprise: Advanced collections, bad debt reserves, multi-entity consolidation (1000+ customers, 50K+ invoices/month)				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4118	Support customer statement generation and auto-delivery				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4119	Implement dunning process with escalating reminders				
+`Nexus\Receivable`	Business Requirements	BUS-REC-4120	Support contract-based revenue recognition (ASC 606/IFRS 15 compliance)				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4201	Create and manage customer invoices with line item detail				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4202	Support invoice status lifecycle: Draft, Sent, Partially Paid, Paid, Overdue, Written Off, Cancelled				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4203	Post invoices to GL: Debit Accounts Receivable, Credit Sales Revenue				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4204	Calculate and record tax liabilities (GST/VAT output tax) on invoices				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4205	Generate invoice numbers using Nexus\Sequencing with pattern support				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4206	Send invoices to customers via email with PDF attachment				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4207	Record cash receipts with allocation to specific invoices				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4208	Post cash receipts to GL: Debit Cash, Credit Accounts Receivable				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4209	Support partial payment allocation with remaining balance tracking				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4210	Apply payment discounts automatically based on terms				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4211	Generate and apply customer credit memos with reason tracking				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4212	Process refunds with GL posting and payment reversal				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4213	Generate aging reports (30/60/90/120+ days) by customer				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4214	Calculate bad debt reserves based on aging buckets				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4215	Generate cash forecast based on expected collection dates				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4216	Support recurring invoice templates with auto-generation				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4217	Implement automated collections workflow with dunning letters				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4218	Assign collection tasks to agents based on workload				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4219	Track collection activities and outcomes				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4220	Generate customer statements with transaction detail				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4221	Support customer self-service portal for invoice inquiry and payment				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4222	Integrate with payment gateways via ConnectorInterface (credit card, ACH)				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4223	Implement credit limit checks before invoice posting				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4224	Support payment plans for overdue invoices with installment tracking				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4225	Write off uncollectible invoices with approval workflow				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4226	Recover previously written-off amounts with reinstatement process				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4227	Support milestone billing with percentage completion tracking				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4228	Small business: Simple invoicing, basic collections reminders				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4229	Medium business: Automated dunning, credit management, recurring billing				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4230	Large enterprise: Advanced collections, reserve calculations, customer portal, payment gateway integration				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4231	Generate revenue recognition schedules for deferred revenue				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4232	Support invoice factoring with third-party financing				
+`Nexus\Receivable`	Functional Requirement	FUN-REC-4233	Implement lockbox processing for bulk payment imports				
+`Nexus\Receivable`	Performance Requirement	PER-REC-4301	Invoice creation and validation < 200ms				
+`Nexus\Receivable`	Performance Requirement	PER-REC-4302	Invoice posting to GL < 300ms				
+`Nexus\Receivable`	Performance Requirement	PER-REC-4303	Cash receipt allocation < 500ms per payment				
+`Nexus\Receivable`	Performance Requirement	PER-REC-4304	Aging report generation < 3s for 10K outstanding invoices				
+`Nexus\Receivable`	Performance Requirement	PER-REC-4305	Customer statement generation < 2s per customer				
+`Nexus\Receivable`	Performance Requirement	PER-REC-4306	Collections dashboard load < 1s for 1K overdue accounts				
+`Nexus\Receivable`	Performance Requirement	PER-REC-4307	Bulk invoice generation: 1000 invoices per minute				
+`Nexus\Receivable`	Performance Requirement	PER-REC-4308	Small business: Support 100 customers, 1K invoices/month with < 2s response				
+`Nexus\Receivable`	Performance Requirement	PER-REC-4309	Medium business: Support 1K customers, 10K invoices/month with < 5s response				
+`Nexus\Receivable`	Performance Requirement	PER-REC-4310	Large enterprise: Support 10K+ customers, 100K+ invoices/month with < 10s response using partitioning				
+`Nexus\Receivable`	Reliability Requirement	REL-REC-4401	Invoice posting uses database transactions (ACID compliance)				
+`Nexus\Receivable`	Reliability Requirement	REL-REC-4402	Failed payment allocations MUST rollback completely				
+`Nexus\Receivable`	Reliability Requirement	REL-REC-4403	Concurrent payment allocation uses pessimistic locking				
+`Nexus\Receivable`	Reliability Requirement	REL-REC-4404	Duplicate payment detection using idempotency keys				
+`Nexus\Receivable`	Reliability Requirement	REL-REC-4405	Support payment reconciliation with bank statement import				
+`Nexus\Receivable`	Reliability Requirement	REL-REC-4406	Invoice generation is idempotent (repeated calls yield same result)				
+`Nexus\Receivable`	Reliability Requirement	REL-REC-4407	Maintain referential integrity between invoices, receipts, and GL entries				
+`Nexus\Receivable`	Reliability Requirement	REL-REC-4408	Archive historical invoice data with retention policies				
+`Nexus\Receivable`	Reliability Requirement	REL-REC-4409	Support point-in-time recovery for receivables data				
+`Nexus\Receivable`	Reliability Requirement	REL-REC-4410	Retry transient failures for payment gateway integration				
+`Nexus\Receivable`	Security and Compliance Requirement	SEC-REC-4501	Implement audit logging for all invoice and payment operations				
+`Nexus\Receivable`	Security and Compliance Requirement	SEC-REC-4502	Enforce tenant isolation for all AR data				
+`Nexus\Receivable`	Security and Compliance Requirement	SEC-REC-4503	Support RBAC for invoice creation, credit memos, write-offs				
+`Nexus\Receivable`	Security and Compliance Requirement	SEC-REC-4504	Encrypt customer payment information at rest				
+`Nexus\Receivable`	Security and Compliance Requirement	SEC-REC-4505	Mask credit card numbers in UI and logs (PCI-DSS compliance)				
+`Nexus\Receivable`	Security and Compliance Requirement	SEC-REC-4506	Implement dual authorization for high-value write-offs				
+`Nexus\Receivable`	Security and Compliance Requirement	SEC-REC-4507	Support SOX compliance with maker-checker for credit memos				
+`Nexus\Receivable`	Security and Compliance Requirement	SEC-REC-4508	Log all failed payment gateway transactions				
+`Nexus\Receivable`	Security and Compliance Requirement	SEC-REC-4509	Implement fraud detection for payment anomalies				
+`Nexus\Receivable`	Security and Compliance Requirement	SEC-REC-4510	Support GDPR compliance with customer data retention policies				
+`Nexus\Receivable`	Security and Compliance Requirement	SEC-REC-4511	Implement rate limiting for payment API endpoints				
+`Nexus\Receivable`	Security and Compliance Requirement	SEC-REC-4512	Support PCI-DSS compliance for credit card processing				
+`Nexus\Receivable`	Security and Compliance Requirement	SEC-REC-4513	Implement invoice tampering detection with digital signatures				
+`Nexus\Receivable`	Integration Requirement	INT-REC-4601	MUST integrate with Nexus\Finance for journal entry posting via FinanceInterface				
+`Nexus\Receivable`	Integration Requirement	INT-REC-4602	MUST integrate with Nexus\Crm for customer data via CrmInterface				
+`Nexus\Receivable`	Integration Requirement	INT-REC-4603	MUST integrate with Nexus\Workflow for approval routing				
+`Nexus\Receivable`	Integration Requirement	INT-REC-4604	MUST integrate with Nexus\Connector for payment gateway integration				
+`Nexus\Receivable`	Integration Requirement	INT-REC-4605	MUST integrate with Nexus\Notifier for invoice delivery and collections reminders				
+`Nexus\Receivable`	Integration Requirement	INT-REC-4606	MUST integrate with Nexus\AuditLogger for comprehensive audit trails				
+`Nexus\Receivable`	Integration Requirement	INT-REC-4607	MUST integrate with Nexus\Sequencing for invoice number generation				
+`Nexus\Receivable`	Integration Requirement	INT-REC-4608	Expose ReceivableInterface for consumption by reporting systems				
+`Nexus\Receivable`	Integration Requirement	INT-REC-4609	Support webhook notifications for payment status changes				
+`Nexus\Receivable`	Integration Requirement	INT-REC-4610	Provide REST API for customer invoice inquiry				
+`Nexus\Receivable`	Integration Requirement	INT-REC-4611	Support GraphQL queries for flexible receivables data access				
+`Nexus\Receivable`	Integration Requirement	INT-REC-4612	Optional integration with Nexus\EventStream for invoice lifecycle event sourcing (large enterprise only)				
+`Nexus\Receivable`	Integration Requirement	INT-REC-4613	Publish invoice events to EventStream: InvoiceCreatedEvent, PaymentReceivedEvent, InvoiceWrittenOffEvent				
+`Nexus\Receivable`	Usability Requirement	USA-REC-4701	Provide invoice entry wizard with real-time validation				
+`Nexus\Receivable`	Usability Requirement	USA-REC-4702	Support invoice templates with pre-filled customer data				
+`Nexus\Receivable`	Usability Requirement	USA-REC-4703	Display customer credit status during invoice creation				
+`Nexus\Receivable`	Usability Requirement	USA-REC-4704	Provide collections dashboard with priority indicators				
+`Nexus\Receivable`	Usability Requirement	USA-REC-4705	Support bulk payment allocation with auto-matching				
+`Nexus\Receivable`	Usability Requirement	USA-REC-4706	Display aging visualization with color-coded buckets				
+`Nexus\Receivable`	Usability Requirement	USA-REC-4707	Provide customer lookup with autocomplete				
+`Nexus\Receivable`	Usability Requirement	USA-REC-4708	Show payment history timeline for each customer				
+`Nexus\DataProcessor`	Architechtural Requirement	ARC-DPR-5001	Package MUST be framework-agnostic with no Laravel dependencies				
+`Nexus\DataProcessor`	Architechtural Requirement	ARC-DPR-5002	All data structures defined via interfaces (StructuredDataInterface, DocumentInterface)				
+`Nexus\DataProcessor`	Architechtural Requirement	ARC-DPR-5003	Define contracts for specialized data processing tasks (OCR, parsing, transformation)				
+`Nexus\DataProcessor`	Architechtural Requirement	ARC-DPR-5004	All implementations MUST be in application layer (apps/Atomy) due to vendor dependencies				
+`Nexus\DataProcessor`	Architechtural Requirement	ARC-DPR-5005	Package provides ONLY interfaces, no concrete implementations				
+`Nexus\DataProcessor`	Architechtural Requirement	ARC-DPR-5006	Use Value Objects for ProcessingResult, DocumentMetadata, ExtractionConfidence				
+`Nexus\DataProcessor`	Architechtural Requirement	ARC-DPR-5007	Support multiple vendor implementations via strategy pattern				
+`Nexus\DataProcessor`	Architechtural Requirement	ARC-DPR-5008	Package composer.json MUST NOT depend on external vendor SDKs				
+`Nexus\DataProcessor`	Business Requirements	BUS-DPR-5101	OCR processing MUST extract structured data from unstructured documents				
+`Nexus\DataProcessor`	Business Requirements	BUS-DPR-5102	Extraction results MUST include confidence scores for validation				
+`Nexus\DataProcessor`	Business Requirements	BUS-DPR-5103	Support multiple document types: invoices, receipts, contracts, IDs, passports				
+`Nexus\DataProcessor`	Business Requirements	BUS-DPR-5104	Failed extractions require manual review queue				
+`Nexus\DataProcessor`	Business Requirements	BUS-DPR-5105	Processing MUST be asynchronous to prevent blocking operations				
+`Nexus\DataProcessor`	Business Requirements	BUS-DPR-5106	Support batch processing for high-volume document ingestion				
+`Nexus\DataProcessor`	Business Requirements	BUS-DPR-5107	Extracted data MUST be validated against business rules before acceptance				
+`Nexus\DataProcessor`	Business Requirements	BUS-DPR-5108	Support multi-language document processing				
+`Nexus\DataProcessor`	Business Requirements	BUS-DPR-5109	Small business: Manual data entry with optional OCR assist (< 100 docs/month)				
+`Nexus\DataProcessor`	Business Requirements	BUS-DPR-5110	Medium business: Semi-automated OCR with validation workflow (100-1000 docs/month)				
+`Nexus\DataProcessor`	Business Requirements	BUS-DPR-5111	Large enterprise: Fully automated OCR pipeline with ML-based validation (1000+ docs/day)				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5201	Define DocumentRecognizerInterface for OCR services				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5202	Define DocumentParserInterface for structured data extraction				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5203	Define DocumentClassifierInterface for document type identification				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5204	Define DataTransformerInterface for data format conversions				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5205	Define DataValidatorInterface for extracted data validation				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5206	Support image preprocessing (deskew, noise reduction, contrast enhancement)				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5207	Extract key-value pairs from documents (field name + value)				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5208	Extract tabular data from documents (line items, tables)				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5209	Return confidence scores for each extracted field				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5210	Support document templates for improved extraction accuracy				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5211	Provide manual correction interface for low-confidence extractions				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5212	Track processing history and accuracy metrics				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5213	Support webhook notifications for processing completion				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5214	Define BatchProcessorInterface for bulk document processing				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5215	Support vendor-agnostic implementations (Azure Cognitive Services, AWS Textract, Google Vision)				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5216	Provide fallback mechanisms if primary OCR service fails				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5217	Support document archiving with original and processed versions				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5218	Small business: Basic OCR for common document types				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5219	Medium business: Advanced OCR with field mapping and validation				
+`Nexus\DataProcessor`	Functional Requirement	FUN-DPR-5220	Large enterprise: ML-powered OCR with continuous learning from corrections				
+`Nexus\DataProcessor`	Performance Requirement	PER-DPR-5301	OCR processing < 10s per document (single page) via async queue				
+`Nexus\DataProcessor`	Performance Requirement	PER-DPR-5302	Batch processing: 100 documents per hour minimum				
+`Nexus\DataProcessor`	Performance Requirement	PER-DPR-5303	Image preprocessing < 2s per document				
+`Nexus\DataProcessor`	Performance Requirement	PER-DPR-5304	Document classification < 1s per document				
+`Nexus\DataProcessor`	Performance Requirement	PER-DPR-5305	Small business: Process 100 docs/month with < 15s per document				
+`Nexus\DataProcessor`	Performance Requirement	PER-DPR-5306	Medium business: Process 1K docs/month with < 10s per document				
+`Nexus\DataProcessor`	Performance Requirement	PER-DPR-5307	Large enterprise: Process 1K+ docs/day with < 5s per document using parallel processing				
+`Nexus\DataProcessor`	Reliability Requirement	REL-DPR-5401	Support retry on transient OCR service failures (max 3 attempts)				
+`Nexus\DataProcessor`	Reliability Requirement	REL-DPR-5402	Failed processing jobs queued for manual review				
+`Nexus\DataProcessor`	Reliability Requirement	REL-DPR-5403	Maintain processing status tracking (queued, processing, completed, failed)				
+`Nexus\DataProcessor`	Reliability Requirement	REL-DPR-5404	Support circuit breaker pattern for degraded OCR services				
+`Nexus\DataProcessor`	Reliability Requirement	REL-DPR-5405	Archive source documents for reprocessing if needed				
+`Nexus\DataProcessor`	Reliability Requirement	REL-DPR-5406	Implement processing timeouts to prevent hung jobs				
+`Nexus\DataProcessor`	Reliability Requirement	REL-DPR-5407	Support fallback to alternative OCR vendors on primary failure				
+`Nexus\DataProcessor`	Security and Compliance Requirement	SEC-DPR-5501	Implement audit logging for all document processing operations				
+`Nexus\DataProcessor`	Security and Compliance Requirement	SEC-DPR-5502	Enforce tenant isolation for all processed documents				
+`Nexus\DataProcessor`	Security and Compliance Requirement	SEC-DPR-5503	Encrypt documents at rest and in transit				
+`Nexus\DataProcessor`	Security and Compliance Requirement	SEC-DPR-5504	Support RBAC for document upload and review				
+`Nexus\DataProcessor`	Security and Compliance Requirement	SEC-DPR-5505	Sanitize extracted data to prevent injection attacks				
+`Nexus\DataProcessor`	Security and Compliance Requirement	SEC-DPR-5506	Support GDPR compliance with document retention and deletion policies				
+`Nexus\DataProcessor`	Security and Compliance Requirement	SEC-DPR-5507	Log all document access and processing events				
+`Nexus\DataProcessor`	Security and Compliance Requirement	SEC-DPR-5508	Implement rate limiting for OCR API usage				
+`Nexus\DataProcessor`	Security and Compliance Requirement	SEC-DPR-5509	Support digital signatures for processed document integrity				
+`Nexus\DataProcessor`	Integration Requirement	INT-DPR-5601	Expose DocumentRecognizerInterface for consumption by Nexus\Payable				
+`Nexus\DataProcessor`	Integration Requirement	INT-DPR-5602	Expose DocumentRecognizerInterface for consumption by Nexus\Hrm (document verification)				
+`Nexus\DataProcessor`	Integration Requirement	INT-DPR-5603	MUST integrate with Nexus\Storage for document archiving				
+`Nexus\DataProcessor`	Integration Requirement	INT-DPR-5604	MUST integrate with Nexus\AuditLogger for processing audit trails				
+`Nexus\DataProcessor`	Integration Requirement	INT-DPR-5605	MUST integrate with Nexus\Notifier for processing completion notifications				
+`Nexus\DataProcessor`	Integration Requirement	INT-DPR-5606	Support webhook notifications for processing status updates				
+`Nexus\DataProcessor`	Integration Requirement	INT-DPR-5607	Provide REST API for document submission and status inquiry				
+`Nexus\DataProcessor`	Integration Requirement	INT-DPR-5608	Support multiple vendor adapter implementations in Atomy layer				
+`Nexus\DataProcessor`	Usability Requirement	USA-DPR-5701	Provide drag-and-drop document upload interface				
+`Nexus\DataProcessor`	Usability Requirement	USA-DPR-5702	Display real-time processing status with progress indicators				
+`Nexus\DataProcessor`	Usability Requirement	USA-DPR-5703	Show confidence scores with visual indicators (color-coded)				
+`Nexus\DataProcessor`	Usability Requirement	USA-DPR-5704	Provide side-by-side view of original document and extracted data				
+`Nexus\DataProcessor`	Usability Requirement	USA-DPR-5705	Support inline editing of extracted data with validation				
+`Nexus\DataProcessor`	Usability Requirement	USA-DPR-5706	Display processing errors with actionable remediation steps				
+`Nexus\AuditLogger`	Architechtural Requirement	ARC-AUD-6001	Define StructuredLogInterface for logging specialized task execution (OCR, payments, API calls)				
+`Nexus\AuditLogger`	Architechtural Requirement	ARC-AUD-6002	Define IntegrationLogInterface for external service call tracking				
+`Nexus\AuditLogger`	Architechtural Requirement	ARC-AUD-6003	Define ProcessAuditInterface for multi-step workflow/process tracking				
+`Nexus\AuditLogger`	Architechtural Requirement	ARC-AUD-6004	Support vendor-agnostic log destination contracts (database, file, cloud storage, SIEM)				
+`Nexus\AuditLogger`	Architechtural Requirement	ARC-AUD-6005	Use Value Objects for CorrelationId, TraceContext, IntegrationMetrics				
+`Nexus\AuditLogger`	Architechtural Requirement	ARC-AUD-6006	Define LogChannelInterface for multi-destination logging strategies				
+`Nexus\AuditLogger`	Architechtural Requirement	ARC-AUD-6007	Support contextual enrichment via LogEnricherInterface				
+`Nexus\AuditLogger`	Architechtural Requirement	ARC-AUD-6008	Define PerformanceMetricsInterface for tracking external service performance				
+`Nexus\AuditLogger`	Business Requirements	BUS-AUD-6101	All external service calls MUST be logged with request/response metadata				
+`Nexus\AuditLogger`	Business Requirements	BUS-AUD-6102	Integration logs MUST include correlation ID for distributed tracing				
+`Nexus\AuditLogger`	Business Requirements	BUS-AUD-6103	Process audit trails MUST link related operations across package boundaries				
+`Nexus\AuditLogger`	Business Requirements	BUS-AUD-6104	OCR processing logs MUST include document type, confidence scores, and processing duration				
+`Nexus\AuditLogger`	Business Requirements	BUS-AUD-6105	Payment gateway logs MUST include transaction ID, status, and response codes				
+`Nexus\AuditLogger`	Business Requirements	BUS-AUD-6106	API call logs MUST include endpoint, method, status code, duration, and payload size				
+`Nexus\AuditLogger`	Business Requirements	BUS-AUD-6107	Failed integration attempts MUST log error details for troubleshooting				
+`Nexus\AuditLogger`	Business Requirements	BUS-AUD-6108	Performance metrics MUST be tracked for all external service integrations				
+`Nexus\AuditLogger`	Business Requirements	BUS-AUD-6109	Workflow audit trails MUST capture state transitions with timestamps				
+`Nexus\AuditLogger`	Business Requirements	BUS-AUD-6110	Support categorization by integration type (OCR, Payment, Banking, Tax, Connector)				
+`Nexus\AuditLogger`	Business Requirements	BUS-AUD-6111	Small business: Basic integration logging for critical operations				
+`Nexus\AuditLogger`	Business Requirements	BUS-AUD-6112	Medium business: Detailed integration logs with performance tracking				
+`Nexus\AuditLogger`	Business Requirements	BUS-AUD-6113	Large enterprise: Full distributed tracing, SLA monitoring, compliance reporting				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6201	Log OCR processing operations with document metadata and extraction results				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6202	Log payment gateway transactions with sanitized payment details				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6203	Log banking integration calls with transaction status tracking				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6204	Log external API calls with request/response summaries (sanitized)				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6205	Generate correlation IDs for tracking operations across package boundaries				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6206	Support parent-child log relationships for nested operations				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6207	Track process execution with start/end timestamps and intermediate steps				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6208	Log 3-way matching process with PO/GR/Bill comparison details				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6209	Log approval workflow transitions with approver details				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6210	Record performance metrics: response time, throughput, error rates				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6211	Support structured logging with key-value pairs for filtering				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6212	Enrich logs with contextual data (tenant, user, IP, service version)				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6213	Support log aggregation by correlation ID for end-to-end visibility				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6214	Filter logs by integration type, status, date range, correlation ID				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6215	Generate integration health reports (success rate, avg response time, error patterns)				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6216	Alert on integration failures exceeding threshold (circuit breaker events)				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6217	Export integration logs to external SIEM systems (Splunk, ELK, Azure Monitor)				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6218	Support log streaming for real-time monitoring				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6219	Implement log sampling for high-volume integrations				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6220	Support multi-destination logging (database + file + cloud)				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6221	Track vendor-specific adapter usage and performance				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6222	Log vendor failover events (primary to fallback service)				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6223	Support log retention by category (critical logs retained longer)				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6224	Generate compliance reports for audit requirements (SOX, PCI-DSS, GDPR)				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6225	Track SOD violations with detailed user and action context				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6226	Log data processor operations: document classification, extraction, validation				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6227	Log connector operations: authentication, data sync, webhook delivery				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6228	Support log replay for debugging failed integrations				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6229	Small business: Basic integration audit trail with error logging				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6230	Medium business: Structured logging, correlation IDs, performance tracking				
+`Nexus\AuditLogger`	Functional Requirement	FUN-AUD-6231	Large enterprise: Distributed tracing, SLA monitoring, advanced analytics, SIEM integration				
+`Nexus\AuditLogger`	Performance Requirement	PER-AUD-6301	Integration log creation < 20ms (async processing)				
+`Nexus\AuditLogger`	Performance Requirement	PER-AUD-6302	Correlation ID lookup across logs < 500ms				
+`Nexus\AuditLogger`	Performance Requirement	PER-AUD-6303	Process audit trail query < 1s for up to 100 related operations				
+`Nexus\AuditLogger`	Performance Requirement	PER-AUD-6304	Integration health report generation < 5s for 10K log entries				
+`Nexus\AuditLogger`	Performance Requirement	PER-AUD-6305	Log streaming throughput: 10K logs per second minimum				
+`Nexus\AuditLogger`	Performance Requirement	PER-AUD-6306	Small business: Support 1K integration logs/day with < 100ms write time				
+`Nexus\AuditLogger`	Performance Requirement	PER-AUD-6307	Medium business: Support 10K integration logs/day with buffered writes				
+`Nexus\AuditLogger`	Performance Requirement	PER-AUD-6308	Large enterprise: Support 100K+ integration logs/day with partitioning and archival				
+`Nexus\AuditLogger`	Reliability Requirement	REL-AUD-6401	Integration log writes MUST NOT block business operations				
+`Nexus\AuditLogger`	Reliability Requirement	REL-AUD-6402	Support buffered logging with automatic flush on buffer full				
+`Nexus\AuditLogger`	Reliability Requirement	REL-AUD-6403	Failed log writes retry to fallback destination (file system)				
+`Nexus\AuditLogger`	Reliability Requirement	REL-AUD-6404	Maintain log sequence integrity with monotonic ordering				
+`Nexus\AuditLogger`	Reliability Requirement	REL-AUD-6405	Support log compression for long-term storage				
+`Nexus\AuditLogger`	Reliability Requirement	REL-AUD-6406	Implement log rotation with configurable size/time thresholds				
+`Nexus\AuditLogger`	Reliability Requirement	REL-AUD-6407	Archive old integration logs to cold storage automatically				
+`Nexus\AuditLogger`	Security and Compliance Requirement	SEC-AUD-6501	Sanitize sensitive data in integration logs (API keys, tokens, passwords, PII)				
+`Nexus\AuditLogger`	Security and Compliance Requirement	SEC-AUD-6502	Mask credit card numbers and bank account details in payment logs				
+`Nexus\AuditLogger`	Security and Compliance Requirement	SEC-AUD-6503	Support configurable data masking rules per log category				
+`Nexus\AuditLogger`	Security and Compliance Requirement	SEC-AUD-6504	Encrypt integration logs at rest and in transit				
+`Nexus\AuditLogger`	Security and Compliance Requirement	SEC-AUD-6505	Implement access control for viewing integration-specific logs				
+`Nexus\AuditLogger`	Security and Compliance Requirement	SEC-AUD-6506	Generate audit reports for regulatory compliance (PCI-DSS transaction logs)				
+`Nexus\AuditLogger`	Security and Compliance Requirement	SEC-AUD-6507	Track all access to sensitive integration logs (meta-auditing)				
+`Nexus\AuditLogger`	Security and Compliance Requirement	SEC-AUD-6508	Support tamper-evident logging with cryptographic signatures				
+`Nexus\AuditLogger`	Security and Compliance Requirement	SEC-AUD-6509	Alert on suspicious integration patterns (repeated failures, unusual volumes)				
+`Nexus\AuditLogger`	Security and Compliance Requirement	SEC-AUD-6510	Comply with SOX requirements for financial transaction audit trails				
+`Nexus\AuditLogger`	Security and Compliance Requirement	SEC-AUD-6511	Support GDPR right-to-be-forgotten for customer-related logs				
+`Nexus\AuditLogger`	Integration Requirement	INT-AUD-6601	Provide IntegrationLogInterface for consumption by Nexus\Connector				
+`Nexus\AuditLogger`	Integration Requirement	INT-AUD-6602	Provide ProcessAuditInterface for consumption by Nexus\Workflow				
+`Nexus\AuditLogger`	Integration Requirement	INT-AUD-6603	Provide StructuredLogInterface for consumption by Nexus\DataProcessor				
+`Nexus\AuditLogger`	Integration Requirement	INT-AUD-6604	Support logging from Nexus\Payable for payment processing audit trail				
+`Nexus\AuditLogger`	Integration Requirement	INT-AUD-6605	Support logging from Nexus\Receivable for payment gateway transactions				
+`Nexus\AuditLogger`	Integration Requirement	INT-AUD-6606	Support logging from Nexus\Finance for journal entry lineage tracking				
+`Nexus\AuditLogger`	Integration Requirement	INT-AUD-6607	MUST integrate with Nexus\Storage for log archiving				
+`Nexus\AuditLogger`	Integration Requirement	INT-AUD-6608	MUST integrate with Nexus\Notifier for alerting on critical log events				
+`Nexus\AuditLogger`	Integration Requirement	INT-AUD-6609	Support webhook notifications for integration failure alerts				
+`Nexus\AuditLogger`	Integration Requirement	INT-AUD-6610	Provide REST API for log query and export				
+`Nexus\AuditLogger`	Integration Requirement	INT-AUD-6611	Support push to external monitoring systems (Datadog, New Relic, Prometheus)				
+`Nexus\AuditLogger`	Usability Requirement	USA-AUD-6701	Provide visual correlation trace viewer showing operation flow				
+`Nexus\AuditLogger`	Usability Requirement	USA-AUD-6702	Display integration health dashboard with real-time metrics				
+`Nexus\AuditLogger`	Usability Requirement	USA-AUD-6703	Support log search with advanced filters (correlation ID, status, vendor, duration)				
+`Nexus\AuditLogger`	Usability Requirement	USA-AUD-6704	Provide log timeline visualization for process audit trails				
+`Nexus\AuditLogger`	Usability Requirement	USA-AUD-6705	Display performance trends for external service integrations				
+`Nexus\AuditLogger`	Usability Requirement	USA-AUD-6706	Show error rate trends with anomaly detection				
+`Nexus\AuditLogger`	Usability Requirement	USA-AUD-6707	Support log export in multiple formats (JSON, CSV, PDF, log file)				
+`Nexus\AuditLogger`	Usability Requirement	USA-AUD-6708	Provide integration troubleshooting wizard with common failure patterns				
+`Nexus\EventStream`	Architechtural Requirement	ARC-EVS-7001	Package MUST be framework-agnostic with no Laravel dependencies				
+`Nexus\EventStream`	Architechtural Requirement	ARC-EVS-7002	All data structures defined via interfaces (EventInterface, StreamInterface, ProjectionInterface)				
+`Nexus\EventStream`	Architechtural Requirement	ARC-EVS-7003	All persistence operations via EventStoreInterface repository contract				
+`Nexus\EventStream`	Architechtural Requirement	ARC-EVS-7004	Business logic in service layer (EventStreamManager, ProjectionEngine)				
+`Nexus\EventStream`	Architechtural Requirement	ARC-EVS-7005	All database migrations in application layer (apps/Atomy)				
+`Nexus\EventStream`	Architechtural Requirement	ARC-EVS-7006	All Eloquent models in application layer implementing package interfaces				
+`Nexus\EventStream`	Architechtural Requirement	ARC-EVS-7007	Package provides ONLY contracts - no concrete event store implementations				
+`Nexus\EventStream`	Architechtural Requirement	ARC-EVS-7008	Support multiple event store backends via adapter pattern (SQL, MongoDB, EventStoreDB)				
+`Nexus\EventStream`	Architechtural Requirement	ARC-EVS-7009	Use Value Objects for StreamId, EventId, EventVersion, AggregateId				
+`Nexus\EventStream`	Architechtural Requirement	ARC-EVS-7010	Separate Core/ folder for internal engine (StreamProjector, SnapshotManager)				
+`Nexus\EventStream`	Architechtural Requirement	ARC-EVS-7011	Define EventSerializerInterface for event payload serialization (JSON, Avro, Protobuf)				
+`Nexus\EventStream`	Architechtural Requirement	ARC-EVS-7012	MUST inject AuditLoggerInterface for meta-logging of event store operations				
+`Nexus\EventStream`	Architechtural Requirement	ARC-EVS-7013	MUST inject StorageInterface for snapshot archival				
+`Nexus\EventStream`	Architechtural Requirement	ARC-EVS-7014	Support stream partitioning for high-volume event streams (> 10K events per aggregate)				
+`Nexus\EventStream`	Business Requirements	BUS-EVS-7101	Event Sourcing RESERVED for critical domains requiring state replay: Finance (GL), Inventory (Stock)				
+`Nexus\EventStream`	Business Requirements	BUS-EVS-7102	All other domains use standard AuditLogger for timeline/feed views				
+`Nexus\EventStream`	Business Requirements	BUS-EVS-7103	Events are immutable - once appended to stream, cannot be modified or deleted				
+`Nexus\EventStream`	Business Requirements	BUS-EVS-7104	Each event MUST contain: aggregate ID, event type, version, timestamp, payload				
+`Nexus\EventStream`	Business Requirements	BUS-EVS-7105	Event streams MUST support optimistic concurrency control to prevent version conflicts				
+`Nexus\EventStream`	Business Requirements	BUS-EVS-7106	Snapshots created periodically to optimize replay performance for long streams				
+`Nexus\EventStream`	Business Requirements	BUS-EVS-7107	Projections (read models) rebuilt from event streams on demand or via background jobs				
+`Nexus\EventStream`	Business Requirements	BUS-EVS-7108	Support temporal queries: "What was the stock quantity of SKU-1234 on 2024-10-15?"				
+`Nexus\EventStream`	Business Requirements	BUS-EVS-7109	Failed projections MUST be retryable without corrupting the event stream				
+`Nexus\EventStream`	Business Requirements	BUS-EVS-7110	Small business: Optional Event Sourcing (use AuditLogger if replay not needed)				
+`Nexus\EventStream`	Business Requirements	BUS-EVS-7111	Medium business: Event Sourcing for Finance and Inventory with daily snapshots				
+`Nexus\EventStream`	Business Requirements	BUS-EVS-7112	Large enterprise: Full Event Sourcing for Finance, Inventory, Payable, Receivable with hourly snapshots				
+`Nexus\EventStream`	Business Requirements	BUS-EVS-7113	Support event versioning for schema evolution (EventV1, EventV2 with upcasters)				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7201	Define EventStoreInterface for appending events to streams				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7202	Define StreamReaderInterface for reading event streams with filtering				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7203	Define ProjectorInterface for rebuilding state from event streams				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7204	Define SnapshotRepositoryInterface for storing/retrieving aggregate snapshots				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7205	Append events to stream with automatic version increment and concurrency check				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7206	Read event stream by aggregate ID with optional version range filtering				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7207	Read event stream by event type (e.g., all "StockReservedEvent" across all aggregates)				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7208	Replay event stream to rebuild aggregate state at specific point in time				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7209	Create snapshots automatically after N events (configurable threshold, default 100)				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7210	Restore aggregate from latest snapshot + subsequent events for performance				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7211	Support batch event appending for transaction consistency				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7212	Generate unique EventId (ULID) for each event with monotonic timestamp				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7213	Track event metadata: causation ID (triggering event), correlation ID (distributed trace)				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7214	Support event enrichment with tenant context, user context, and timestamp				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7215	Provide projection engine for building read models from event streams				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7216	Support multiple projections per stream (e.g., "CurrentStockProjection", "StockHistoryProjection")				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7217	Rebuild projections from scratch by replaying entire stream				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7218	Resume projection from last processed event on failure/restart				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7219	Support subscription to event streams for real-time projection updates				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7220	Generate event notifications for external consumers (e.g., analytics, reporting)				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7221	Support upcasting for event schema migration (EventV1 → EventV2)				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7222	Provide temporal query API: getStateAt(aggregateId, timestamp)				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7223	Small business: Optional Event Sourcing with basic replay capability				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7224	Medium business: Event Sourcing for critical domains with snapshot support				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7225	Large enterprise: Advanced Event Sourcing with partitioning, upcasting, and multi-projection support				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7226	Archive old events to cold storage after N days (configurable, default 365)				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7227	Support event stream compaction by replacing old events with snapshots				
+`Nexus\EventStream`	Functional Requirement	FUN-EVS-7228	Provide event stream health monitoring: stream size, event count, projection lag				
+`Nexus\EventStream`	Performance Requirement	PER-EVS-7301	Event append < 50ms (p95) with database transaction				
+`Nexus\EventStream`	Performance Requirement	PER-EVS-7302	Stream read < 100ms for 1000 events from database				
+`Nexus\EventStream`	Performance Requirement	PER-EVS-7303	Snapshot restoration < 10ms (in-memory cache)				
+`Nexus\EventStream`	Performance Requirement	PER-EVS-7304	Replay 10K events < 5s for aggregate state reconstruction				
+`Nexus\EventStream`	Performance Requirement	PER-EVS-7305	Projection update < 200ms per event (real-time subscription)				
+`Nexus\EventStream`	Performance Requirement	PER-EVS-7306	Temporal query (getStateAt) < 3s for aggregates with < 10K events				
+`Nexus\EventStream`	Performance Requirement	PER-EVS-7307	Small business: Support 10K events/day with < 100ms append time				
+`Nexus\EventStream`	Performance Requirement	PER-EVS-7308	Medium business: Support 100K events/day with snapshot optimization				
+`Nexus\EventStream`	Performance Requirement	PER-EVS-7309	Large enterprise: Support 1M+ events/day with partitioning and parallel projection				
+`Nexus\EventStream`	Reliability Requirement	REL-EVS-7401	Event appending uses database transactions (ACID compliance)				
+`Nexus\EventStream`	Reliability Requirement	REL-EVS-7402	Optimistic concurrency control prevents lost updates (version conflict detection)				
+`Nexus\EventStream`	Reliability Requirement	REL-EVS-7403	Failed event append throws ConcurrencyException with retry guidance				
+`Nexus\EventStream`	Reliability Requirement	REL-EVS-7404	Projection failures logged without corrupting event stream				
+`Nexus\EventStream`	Reliability Requirement	REL-EVS-7405	Support idempotent event appending (duplicate event detection via EventId)				
+`Nexus\EventStream`	Reliability Requirement	REL-EVS-7406	Snapshots validated before use (checksum verification)				
+`Nexus\EventStream`	Reliability Requirement	REL-EVS-7407	Corrupted snapshots trigger automatic stream replay				
+`Nexus\EventStream`	Reliability Requirement	REL-EVS-7408	Support point-in-time recovery by replaying events from backup				
+`Nexus\EventStream`	Reliability Requirement	REL-EVS-7409	Archive event streams to immutable storage (S3, Azure Blob) for disaster recovery				
+`Nexus\EventStream`	Reliability Requirement	REL-EVS-7410	Projection lag monitoring with alerting for delayed projections				
+`Nexus\EventStream`	Security and Compliance Requirement	SEC-EVS-7501	Immutable event streams - events cannot be modified or deleted (append-only)				
+`Nexus\EventStream`	Security and Compliance Requirement	SEC-EVS-7502	Enforce tenant isolation for all event streams				
+`Nexus\EventStream`	Security and Compliance Requirement	SEC-EVS-7503	Encrypt event payloads at rest and in transit				
+`Nexus\EventStream`	Security and Compliance Requirement	SEC-EVS-7504	Support RBAC for event stream access (read, write, replay)				
+`Nexus\EventStream`	Security and Compliance Requirement	SEC-EVS-7505	Audit all event store operations via AuditLogger (meta-auditing)				
+`Nexus\EventStream`	Security and Compliance Requirement	SEC-EVS-7506	Mask sensitive data in event payloads (credit cards, SSNs, passwords)				
+`Nexus\EventStream`	Security and Compliance Requirement	SEC-EVS-7507	Support event stream tampering detection via cryptographic hashing				
+`Nexus\EventStream`	Security and Compliance Requirement	SEC-EVS-7508	Implement event stream access logging for compliance audits				
+`Nexus\EventStream`	Security and Compliance Requirement	SEC-EVS-7509	Support GDPR right-to-erasure with event stream anonymization (not deletion)				
+`Nexus\EventStream`	Security and Compliance Requirement	SEC-EVS-7510	Comply with SOX requirements for immutable financial event trails				
+`Nexus\EventStream`	Integration Requirement	INT-EVS-7601	Expose EventStoreInterface for consumption by Nexus\Finance (GL events)				
+`Nexus\EventStream`	Integration Requirement	INT-EVS-7602	Expose EventStoreInterface for consumption by Nexus\Inventory (stock events)				
+`Nexus\EventStream`	Integration Requirement	INT-EVS-7603	Optional integration with Nexus\Payable for AP event streams (large enterprise only)				
+`Nexus\EventStream`	Integration Requirement	INT-EVS-7604	Optional integration with Nexus\Receivable for AR event streams (large enterprise only)				
+`Nexus\EventStream`	Integration Requirement	INT-EVS-7605	MUST integrate with Nexus\AuditLogger for event store operation audit trails				
+`Nexus\EventStream`	Integration Requirement	INT-EVS-7606	MUST integrate with Nexus\Storage for snapshot and archive storage				
+`Nexus\EventStream`	Integration Requirement	INT-EVS-7607	MUST integrate with Nexus\Notifier for projection failure alerts				
+`Nexus\EventStream`	Integration Requirement	INT-EVS-7608	Support webhook notifications for new events in stream				
+`Nexus\EventStream`	Integration Requirement	INT-EVS-7609	Provide REST API for event stream query and temporal queries				
+`Nexus\EventStream`	Integration Requirement	INT-EVS-7610	Support GraphQL subscriptions for real-time event stream monitoring				
+`Nexus\EventStream`	Usability Requirement	USA-EVS-7701	Provide event stream visualization showing aggregate timeline				
+`Nexus\EventStream`	Usability Requirement	USA-EVS-7702	Display projection status dashboard (last processed event, lag, errors)				
+`Nexus\EventStream`	Usability Requirement	USA-EVS-7703	Support temporal query UI for "time travel" state inspection				
+`Nexus\EventStream`	Usability Requirement	USA-EVS-7704	Show snapshot creation history and storage usage				
+`Nexus\EventStream`	Usability Requirement	USA-EVS-7705	Provide event replay simulator for testing projections				
+`Nexus\EventStream`	Usability Requirement	USA-EVS-7706	Display concurrency conflict warnings with resolution guidance				
+`Nexus\EventStream`	Usability Requirement	USA-EVS-7707	Show event stream health metrics (throughput, size, version distribution)				
+`Nexus\EventStream`	Usability Requirement	USA-EVS-7708	Support event payload inspection with pretty-printed JSON/YAML				
