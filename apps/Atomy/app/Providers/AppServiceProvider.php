@@ -8,6 +8,10 @@ use App\Models\User;
 use App\Repositories\DbPermissionRepository;
 use App\Repositories\DbRoleRepository;
 use App\Repositories\DbUserRepository;
+use App\Repositories\DbNotificationHistoryRepository;
+use App\Repositories\DbNotificationPreferenceRepository;
+use App\Repositories\DbNotificationQueue;
+use App\Repositories\DbNotificationTemplateRepository;
 use App\Services\LaravelPasswordHasher;
 use App\Services\LaravelPasswordValidator;
 use App\Services\LaravelSessionManager;
@@ -31,6 +35,12 @@ use Nexus\Identity\Services\PermissionChecker;
 use Nexus\Identity\Services\PermissionManager;
 use Nexus\Identity\Services\RoleManager;
 use Nexus\Identity\Services\UserManager;
+use Nexus\Notifier\Contracts\NotificationHistoryRepositoryInterface;
+use Nexus\Notifier\Contracts\NotificationManagerInterface;
+use Nexus\Notifier\Contracts\NotificationPreferenceRepositoryInterface;
+use Nexus\Notifier\Contracts\NotificationQueueInterface;
+use Nexus\Notifier\Contracts\NotificationTemplateRepositoryInterface;
+use Nexus\Notifier\Services\NotificationManager;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -59,6 +69,25 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->singleton(PermissionManagerInterface::class, PermissionManager::class);
         $this->app->singleton(PermissionCheckerInterface::class, PermissionChecker::class);
         $this->app->singleton(AuthenticationService::class);
+
+        // Notifier Package Bindings
+
+        // Repositories (Essential - Interface to Concrete)
+        $this->app->singleton(NotificationTemplateRepositoryInterface::class, DbNotificationTemplateRepository::class);
+        $this->app->singleton(NotificationHistoryRepositoryInterface::class, DbNotificationHistoryRepository::class);
+        $this->app->singleton(NotificationPreferenceRepositoryInterface::class, DbNotificationPreferenceRepository::class);
+        $this->app->singleton(NotificationQueueInterface::class, DbNotificationQueue::class);
+
+        // Package Services (Essential - Interface to Package Default)
+        $this->app->singleton(NotificationManagerInterface::class, function ($app) {
+            return new NotificationManager(
+                channels: [], // Will be populated with channel implementations
+                queue: $app->make(NotificationQueueInterface::class),
+                history: $app->make(NotificationHistoryRepositoryInterface::class),
+                preferences: $app->make(NotificationPreferenceRepositoryInterface::class),
+                logger: $app->make(\Psr\Log\LoggerInterface::class)
+            );
+        });
     }
 
     /**
