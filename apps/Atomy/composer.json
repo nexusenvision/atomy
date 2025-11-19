@@ -21,6 +21,7 @@
         "nexus/finance": "*@dev",
         "nexus/hrm": "*@dev",
         "nexus/identity": "*@dev",
+        "nexus/import": "*@dev",
         "nexus/notifier": "*@dev",
         "nexus/payroll": "*@dev",
         "nexus/payroll-mys-statutory": "*@dev",
@@ -145,6 +146,10 @@
         {
             "type": "path",
             "url": "../../packages/Export"
+        },
+        {
+            "type": "path",
+            "url": "../../packages/Import"
         }
     ],
     "scripts": {
