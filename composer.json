@@ -4,13 +4,7 @@
     "type": "project",
     "license": "MIT",
     "require": {
-        "php": "^8.3",
-        "nexus/connector": "*@dev",
-        "nexus/payroll-mys-statutory": "*@dev",
-        "nexus/storage": "*@dev",
-        "nexus/identity": "*@dev",
-        "nexus/notifier": "*@dev",
-        "nexus/period": "*@dev"
+        "php": "^8.3"
     },
     "repositories": [
         {
@@ -104,6 +98,14 @@
         {
             "type": "path",
             "url": "./packages/Statutory"
+        },
+        {
+            "type": "path",
+            "url": "./packages/Analytics"
+        },
+        {
+            "type": "path",
+            "url": "./packages/Export"
         }
     ],
     "minimum-stability": "dev",

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Nexus\Connector\Services;
 
-use Nexus\Connector\Contracts\{CredentialProviderInterface, IntegrationLoggerInterface};
-use Nexus\Connector\Exceptions\{CircuitBreakerOpenException, ConnectionException};
-use Nexus\Connector\ValueObjects\{CircuitBreakerState, CircuitState, Endpoint, HttpMethod, IntegrationLog, IntegrationStatus};
+use Nexus\Connector\Contracts\{CircuitBreakerStorageInterface, CredentialProviderInterface, HttpClientInterface, IdempotencyStoreInterface, IntegrationLoggerInterface};
+use Nexus\Connector\Exceptions\{CircuitBreakerOpenException, ConnectionException, RateLimitExceededException};
+use Nexus\Connector\ValueObjects\{CircuitBreakerState, CircuitState, Endpoint, HttpMethod, IdempotencyKey, IntegrationLog, IntegrationStatus};
 use Symfony\Component\Uid\Ulid;
 
 /**
@@ -15,18 +15,25 @@ use Symfony\Component\Uid\Ulid;
  * This service orchestrates:
  * - Circuit breaker pattern
  * - Retry logic with exponential backoff
+ * - Rate limiting with token bucket algorithm
+ * - Idempotency key handling
  * - Integration logging
  * - Credential management
+ * - OAuth token refresh
+ *
+ * STATELESS: All state is delegated to injected storage interfaces.
+ * This ensures horizontal scalability across PHP-FPM workers and Laravel Octane.
  */
 final class ConnectorManager
 {
-    /** @var array<string, CircuitBreakerState> Circuit breaker states per service */
-    private array $circuitStates = [];
-
     public function __construct(
         private readonly CredentialProviderInterface $credentialProvider,
         private readonly IntegrationLoggerInterface $integrationLogger,
         private readonly RetryHandler $retryHandler,
+        private readonly RateLimiter $rateLimiter,
+        private readonly HttpClientInterface $httpClient,
+        private readonly IdempotencyStoreInterface $idempotencyStore,
+        private readonly CircuitBreakerStorageInterface $circuitBreakerStorage,
     ) {}
 
     /**
@@ -36,16 +43,27 @@ final class ConnectorManager
      * @param Endpoint $endpoint Endpoint configuration
      * @param array<string, mixed> $payload Request payload
      * @param string|null $tenantId Optional tenant identifier
+     * @param IdempotencyKey|null $idempotencyKey Optional idempotency key for duplicate prevention
      * @return array<string, mixed> Response data
      * @throws CircuitBreakerOpenException If circuit breaker is open
+     * @throws RateLimitExceededException If rate limit is exceeded
      * @throws ConnectionException If all retry attempts fail
      */
     public function execute(
         string $serviceName,
         Endpoint $endpoint,
         array $payload = [],
-        ?string $tenantId = null
+        ?string $tenantId = null,
+        ?IdempotencyKey $idempotencyKey = null
     ): array {
+        // Check idempotency - return cached response if exists
+        if ($idempotencyKey !== null) {
+            $cachedResponse = $this->idempotencyStore->retrieve($idempotencyKey, $serviceName);
+            if ($cachedResponse !== null) {
+                return $cachedResponse;
+            }
+        }
+
         // Check circuit breaker
         $circuit = $this->getCircuitState($serviceName);
         
@@ -56,8 +74,17 @@ final class ConnectorManager
             throw CircuitBreakerOpenException::open($serviceName, max(0, $secondsRemaining));
         }
 
-        // Get credentials
+        // Check rate limit
+        if ($endpoint->rateLimitConfig !== null) {
+            $this->rateLimiter->checkAndConsume($serviceName, $endpoint->rateLimitConfig);
+        }
+
+        // Get credentials and refresh if expired
         $credentials = $this->credentialProvider->getCredentials($serviceName, $tenantId);
+        
+        if ($credentials->isExpired() && $credentials->refreshToken !== null) {
+            $credentials = $this->credentialProvider->refreshCredentials($serviceName, $tenantId);
+        }
 
         // Execute with retry logic
         $startTime = hrtime(true);
@@ -65,16 +92,21 @@ final class ConnectorManager
 
         try {
             $response = $this->retryHandler->execute(
-                callback: fn(int $attempt) => $this->sendRequest(
+                callback: fn(int $attempt) => $this->httpClient->send(
                     $endpoint,
                     $payload,
-                    $credentials->data,
-                    $attempt
+                    $credentials->data
                 ),
                 retryPolicy: $endpoint->retryPolicy
             );
 
             $duration = (int) ((hrtime(true) - $startTime) / 1_000_000);
+            $responseBody = $response['body'] ?? [];
+
+            // Store idempotency result
+            if ($idempotencyKey !== null) {
+                $this->idempotencyStore->store($idempotencyKey, $responseBody, $serviceName);
+            }
 
             // Log success
             $this->integrationLogger->log(
@@ -86,7 +118,7 @@ final class ConnectorManager
                     httpStatusCode: $response['status_code'] ?? 200,
                     durationMs: $duration,
                     requestData: $this->sanitizeData($payload),
-                    responseData: $this->sanitizeData($response['body'] ?? []),
+                    responseData: $this->sanitizeData($responseBody),
                     tenantId: $tenantId
                 )
             );
@@ -94,7 +126,7 @@ final class ConnectorManager
             // Record success in circuit breaker
             $this->updateCircuitState($serviceName, $circuit->recordSuccess());
 
-            return $response['body'] ?? [];
+            return $responseBody;
 
         } catch (\Throwable $e) {
             $duration = (int) ((hrtime(true) - $startTime) / 1_000_000);
@@ -122,43 +154,22 @@ final class ConnectorManager
     }
 
     /**
-     * Send HTTP request (to be implemented by application layer or using HTTP client).
-     * This is a placeholder - actual implementation should use Guzzle, cURL, or similar.
-     *
-     * @param Endpoint $endpoint
-     * @param array<string, mixed> $payload
-     * @param array<string, mixed> $credentials
-     * @param int $attempt
-     * @return array{status_code: int, body: array<string, mixed>}
-     */
-    private function sendRequest(
-        Endpoint $endpoint,
-        array $payload,
-        array $credentials,
-        int $attempt
-    ): array {
-        // This method should be overridden or delegated to an HTTP client implementation
-        // For now, it's a placeholder that throws an exception
-        throw new \LogicException(
-            'sendRequest must be implemented by providing an HttpClientInterface implementation'
-        );
-    }
-
-    /**
      * Get circuit breaker state for a service.
      */
     private function getCircuitState(string $serviceName): CircuitBreakerState
     {
-        if (!isset($this->circuitStates[$serviceName])) {
-            $this->circuitStates[$serviceName] = CircuitBreakerState::closed();
+        if (!$this->circuitBreakerStorage->hasState($serviceName)) {
+            $initialState = CircuitBreakerState::closed();
+            $this->circuitBreakerStorage->setState($serviceName, $initialState);
+            return $initialState;
         }
 
-        $circuit = $this->circuitStates[$serviceName];
+        $circuit = $this->circuitBreakerStorage->getState($serviceName);
 
         // Transition to half-open if timeout has passed
         if ($circuit->state === CircuitState::OPEN && $circuit->shouldAttemptReset()) {
             $circuit = $circuit->halfOpen();
-            $this->circuitStates[$serviceName] = $circuit;
+            $this->circuitBreakerStorage->setState($serviceName, $circuit);
         }
 
         return $circuit;
@@ -169,7 +180,7 @@ final class ConnectorManager
      */
     private function updateCircuitState(string $serviceName, CircuitBreakerState $state): void
     {
-        $this->circuitStates[$serviceName] = $state;
+        $this->circuitBreakerStorage->setState($serviceName, $state);
     }
 
     /**

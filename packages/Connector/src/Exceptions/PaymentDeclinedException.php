@@ -32,4 +32,16 @@ class PaymentDeclinedException extends ConnectorException
             declineReason: $reason
         );
     }
+
+    /**
+     * Create exception for declined payment.
+     */
+    public static function declined(string $reason, string $code = 'DECLINED'): self
+    {
+        return new self(
+            message: "Payment declined: {$reason}",
+            declineCode: $code,
+            declineReason: $reason
+        );
+    }
 }

@@ -242,6 +242,47 @@ This design ensures that any future regulatory body or compliance scheme can be 
 
 ____
 
+# 🚫 The Principle of Atomic Package Statelessness
+
+## 1. Core Principle: No Internal State
+
+All Core and Atomic packages (e.g., `Nexus\Connector`, `Nexus\Events`, `Nexus\Security`) **must be stateless** across execution cycles. An instance of a service class must contain only **immutable dependencies** (interfaces) and **ephemeral, runtime data** required for the current method execution.
+
+This rule is enforced to ensure services are **horizontally scalable** and **resilient** in a modern, distributed, or multi-process environment (e.g., PHP-FPM, Dockerized Microservices, Laravel Octane).
+
+## 2. The Contradiction: The Circuit Breaker Problem
+
+A common architectural error is managing application state internally.
+
+| Anti-Pattern | Impact in a Distributed System |
+| :--- | :--- |
+| **Storing State in Instance Properties** | When a critical feature like the **Circuit Breaker** uses an internal array (`$this->circuitStates`), the state is isolated to a single PHP-FPM worker or process. |
+| **Failure to Scale** | If **Worker A** fails 10 times, the circuit opens **only** for Worker A. Workers B, C, and D are still unaware, and will continue to hammer the failing external service, causing instability and defeating the entire purpose of the pattern. |
+
+## 3. The Solution: Dependency Inversion for State
+
+State management must be explicitly delegated to a **shared, persistent store** (Redis, Database, etc.) via a dedicated **Storage Interface**. This ensures that state changes recorded by any worker are instantly visible to all other workers.
+
+### 🔑 The Storage Interface Requirement
+
+Any service requiring long-term state (e.g., Circuit Breaker thresholds, Rate Limiter counters, Idempotency keys) **must** accept a `StorageInterface` dependency in its constructor.
+
+| Pattern | Description | Example |
+| :--- | :--- | :--- |
+| **DO** | Delegate the state management to an external, injected service. | `ConnectorManager` must be injected with `CircuitBreakerStorageInterface`. |
+| **DON'T** | Use internal properties for state tracking. | The `ConnectorManager` class must **NOT** contain `private array $circuitStates = [];`. |
+
+---
+
+## 4. Coding Agent Instructions (Mandatory Checks)
+
+The coding agent must validate the following when developing or refactoring atomic services:
+
+1.  **Stateless Check:** If a class property holds data that needs to persist or be synchronized across multiple requests (e.g., configuration, counters, flags), that property **must be removed**.
+2.  **Interface Requirement:** All state-related logic (read/write/update) must be implemented by invoking a method on an injected, **immutable interface**.
+3.  **No Direct Implementation:** The atomic package (`Nexus\Connector`) **MUST NOT** include any concrete implementation of the storage interface (e.g., `RedisCircuitBreakerStorage`). That implementation is reserved for the `Nexus\Atomy` integration layer.
+
+This principle ensures that the `Nexus\Connector` package remains atomic, has **zero infrastructure coupling**, and can be effortlessly scaled horizontally.
 
 -----
 

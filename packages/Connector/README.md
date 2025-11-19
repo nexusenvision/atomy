@@ -75,14 +75,18 @@ Each service type has a dedicated interface:
 
 - **Retry Handler**: Exponential backoff with configurable attempts
 - **Circuit Breaker**: Prevents cascading failures (opens after N failures)
-- **Rate Limiter**: Token bucket algorithm per endpoint
-- **Timeout Management**: Prevents indefinite blocking
+- **Rate Limiter**: Token bucket algorithm per service/endpoint
+- **Timeout Management**: Configurable request timeouts per endpoint
+- **Idempotency Keys**: Prevents duplicate operations (e.g., duplicate payments)
+- **OAuth Token Refresh**: Automatic access token renewal
 
 ### 3. Supporting Contracts
 
-- `CredentialProviderInterface`: Secure credential retrieval
+- `CredentialProviderInterface`: Secure credential retrieval with OAuth refresh
 - `IntegrationLoggerInterface`: Audit trail for all external calls
 - `WebhookVerifierInterface`: Signature validation
+- `HttpClientInterface`: HTTP client abstraction for timeout enforcement
+- `IdempotencyStoreInterface`: Response caching for duplicate prevention
 
 ## Usage
 
@@ -103,6 +107,43 @@ class NotificationService
             recipient: $recipient,
             subject: 'Welcome to Nexus',
             body: 'Thank you for joining us!'
+        );
+    }
+}
+```
+
+### Advanced Usage with Resilience Patterns
+
+```php
+use Nexus\Connector\Services\ConnectorManager;
+use Nexus\Connector\ValueObjects\{Endpoint, HttpMethod, RateLimitConfig, IdempotencyKey};
+
+class PaymentService
+{
+    public function __construct(
+        private readonly ConnectorManager $connector
+    ) {}
+
+    public function processPayment(float $amount, string $currency, array $paymentData): array
+    {
+        // Create endpoint with rate limiting and custom timeout
+        $endpoint = Endpoint::create('https://api.stripe.com/v1/charges', HttpMethod::POST)
+            ->withRateLimit(RateLimitConfig::perSecond(100))
+            ->withTimeout(45);
+
+        // Generate idempotency key to prevent duplicate charges
+        $idempotencyKey = IdempotencyKey::generate('payment');
+
+        // Execute with automatic retry, circuit breaker, and OAuth refresh
+        return $this->connector->execute(
+            serviceName: 'stripe',
+            endpoint: $endpoint,
+            payload: [
+                'amount' => (int)($amount * 100),
+                'currency' => $currency,
+                'source' => $paymentData['token'],
+            ],
+            idempotencyKey: $idempotencyKey
         );
     }
 }

@@ -44,6 +44,79 @@ return [
             'auth_token' => env('TWILIO_AUTH_TOKEN'),
             'from_number' => env('TWILIO_FROM_NUMBER'),
         ],
+
+        'aws_sns' => [
+            'region' => env('AWS_REGION', 'us-east-1'),
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'sender_id' => env('AWS_SNS_SENDER_ID'),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Payment Gateway Configuration
+    |--------------------------------------------------------------------------
+    */
+    'payment_vendor' => env('CONNECTOR_PAYMENT_VENDOR', 'stripe'),
+
+    'payment' => [
+        'stripe' => [
+            'secret_key' => env('STRIPE_SECRET_KEY'),
+            'publishable_key' => env('STRIPE_PUBLISHABLE_KEY'),
+            'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        ],
+
+        'paypal' => [
+            'mode' => env('PAYPAL_MODE', 'sandbox'), // 'sandbox' or 'live'
+            'client_id' => env('PAYPAL_CLIENT_ID'),
+            'client_secret' => env('PAYPAL_CLIENT_SECRET'),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rate Limiting Configuration
+    |--------------------------------------------------------------------------
+    */
+    'rate_limits' => [
+        'stripe' => [
+            'max_requests' => 100,
+            'window_seconds' => 1, // 100 requests per second
+        ],
+        'paypal' => [
+            'max_requests' => 50,
+            'window_seconds' => 1,
+        ],
+        'twilio' => [
+            'max_requests' => 3600,
+            'window_seconds' => 3600, // 3600 per hour
+        ],
+        'sendgrid' => [
+            'max_requests' => 600,
+            'window_seconds' => 60,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Timeout Configuration
+    |--------------------------------------------------------------------------
+    */
+    'timeouts' => [
+        'default' => 30,
+        'payment' => 45,
+        'email' => 20,
+        'sms' => 15,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Idempotency Configuration
+    |--------------------------------------------------------------------------
+    */
+    'idempotency' => [
+        'default_ttl_hours' => env('CONNECTOR_IDEMPOTENCY_TTL', 24),
     ],
 
     /*
