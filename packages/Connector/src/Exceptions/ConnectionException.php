@@ -47,4 +47,20 @@ class ConnectionException extends ConnectorException
             httpStatusCode: $statusCode
         );
     }
+
+    /**
+     * Create exception for failed request.
+     */
+    public static function requestFailed(
+        string $message,
+        ?int $httpStatusCode = null,
+        ?\Throwable $previous = null
+    ): self {
+        return new self(
+            message: $message,
+            serviceName: 'unknown',
+            httpStatusCode: $httpStatusCode,
+            previous: $previous
+        );
+    }
 }

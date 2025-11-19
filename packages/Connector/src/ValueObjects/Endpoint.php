@@ -10,6 +10,7 @@ namespace Nexus\Connector\ValueObjects;
 final class Endpoint
 {
     public readonly RetryPolicy $retryPolicy;
+    public readonly ?RateLimitConfig $rateLimitConfig;
 
     /**
      * @param string $url Full URL or base URL for the endpoint
@@ -17,6 +18,7 @@ final class Endpoint
      * @param array<string, string> $headers Additional headers
      * @param int $timeout Request timeout in seconds
      * @param RetryPolicy|null $retryPolicy Retry configuration
+     * @param RateLimitConfig|null $rateLimitConfig Rate limiting configuration
      */
     public function __construct(
         public readonly string $url,
@@ -24,8 +26,10 @@ final class Endpoint
         public readonly array $headers = [],
         public readonly int $timeout = 30,
         ?RetryPolicy $retryPolicy = null,
+        ?RateLimitConfig $rateLimitConfig = null,
     ) {
         $this->retryPolicy = $retryPolicy ?? new RetryPolicy();
+        $this->rateLimitConfig = $rateLimitConfig;
     }
 
     /**
@@ -46,7 +50,8 @@ final class Endpoint
             method: $this->method,
             headers: array_merge($this->headers, $headers),
             timeout: $this->timeout,
-            retryPolicy: $this->retryPolicy
+            retryPolicy: $this->retryPolicy,
+            rateLimitConfig: $this->rateLimitConfig
         );
     }
 
@@ -60,7 +65,8 @@ final class Endpoint
             method: $this->method,
             headers: $this->headers,
             timeout: $timeout,
-            retryPolicy: $this->retryPolicy
+            retryPolicy: $this->retryPolicy,
+            rateLimitConfig: $this->rateLimitConfig
         );
     }
 
@@ -74,7 +80,23 @@ final class Endpoint
             method: $this->method,
             headers: $this->headers,
             timeout: $this->timeout,
-            retryPolicy: $retryPolicy
+            retryPolicy: $retryPolicy,
+            rateLimitConfig: $this->rateLimitConfig
+        );
+    }
+
+    /**
+     * Create a new endpoint with rate limit configuration.
+     */
+    public function withRateLimit(RateLimitConfig $rateLimitConfig): self
+    {
+        return new self(
+            url: $this->url,
+            method: $this->method,
+            headers: $this->headers,
+            timeout: $this->timeout,
+            retryPolicy: $this->retryPolicy,
+            rateLimitConfig: $rateLimitConfig
         );
     }
 }
