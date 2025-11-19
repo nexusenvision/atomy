@@ -42,11 +42,4 @@ interface AnalyticsContextInterface
      * Get the user agent
      */
     public function getUserAgent(): ?string;
-
-    /**
-     * Set context data
-     *
-     * @param array<string, mixed> $data
-     */
-    public function setContextData(array $data): void;
 }

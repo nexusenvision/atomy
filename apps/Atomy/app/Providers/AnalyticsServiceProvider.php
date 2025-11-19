@@ -44,27 +44,11 @@ class AnalyticsServiceProvider extends ServiceProvider
         // Bind transaction manager
         $this->app->singleton(TransactionManagerInterface::class, LaravelTransactionManager::class);
 
-        // Bind internal components
-        $this->app->singleton(GuardEvaluator::class);
+        // Bind data source aggregator
         $this->app->singleton(DataSourceAggregatorInterface::class, DataSourceAggregator::class);
 
         // Bind query executor
-        $this->app->singleton(QueryExecutorInterface::class, function ($app) {
-            return new QueryExecutor(
-                transactionManager: $app->make(TransactionManagerInterface::class),
-                guardEvaluator: $app->make(GuardEvaluator::class)
-            );
-        });
-
-        // Bind main manager
-        $this->app->singleton(AnalyticsManager::class, function ($app) {
-            return new AnalyticsManager(
-                repository: $app->make(AnalyticsRepositoryInterface::class),
-                authorizer: $app->make(AnalyticsAuthorizerInterface::class),
-                executor: $app->make(QueryExecutorInterface::class),
-                context: $app->make(AnalyticsContextInterface::class)
-            );
-        });
+        $this->app->singleton(QueryExecutorInterface::class, QueryExecutor::class);
     }
 
     /**

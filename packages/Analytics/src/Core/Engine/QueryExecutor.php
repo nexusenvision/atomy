@@ -49,7 +49,8 @@ final readonly class QueryExecutor implements QueryExecutorInterface
             return QueryResult::success($query->getId(), $data, $durationMs);
         } catch (GuardConditionFailedException $e) {
             $durationMs = (int) ((hrtime(true) - $startTime) / 1_000_000);
-            throw $e;
+            // Return failure result to maintain audit trail consistency
+            return QueryResult::failure($query->getId(), $e->getMessage(), $durationMs);
         } catch (\Throwable $e) {
             $durationMs = (int) ((hrtime(true) - $startTime) / 1_000_000);
             

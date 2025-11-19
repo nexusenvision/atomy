@@ -72,6 +72,7 @@ final readonly class AnalyticsManager
         // Store result in history
         $this->repository->storeQueryResult([
             'query_id' => $query->getId(),
+            'query_name' => $query->getName(),
             'model_type' => $modelType,
             'model_id' => $modelId,
             'executed_by' => $userId,

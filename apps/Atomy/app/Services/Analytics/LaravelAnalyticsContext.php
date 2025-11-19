@@ -11,13 +11,8 @@ use Nexus\Analytics\Contracts\AnalyticsContextInterface;
  * 
  * Provides current execution context (user, tenant, request data)
  */
-final class LaravelAnalyticsContext implements AnalyticsContextInterface
+final readonly class LaravelAnalyticsContext implements AnalyticsContextInterface
 {
-    /**
-     * @var array<string, mixed>
-     */
-    private array $contextData = [];
-
     /**
      * {@inheritdoc}
      */
@@ -69,13 +64,13 @@ final class LaravelAnalyticsContext implements AnalyticsContextInterface
      */
     public function getContextData(): array
     {
-        return array_merge([
+        return [
             'user_id' => $this->getUserId(),
             'tenant_id' => $this->getTenantId(),
             'ip_address' => $this->getIpAddress(),
             'user_agent' => $this->getUserAgent(),
             'roles' => $this->getUserRoles(),
-        ], $this->contextData);
+        ];
     }
 
     /**
@@ -92,13 +87,5 @@ final class LaravelAnalyticsContext implements AnalyticsContextInterface
     public function getUserAgent(): ?string
     {
         return request()->userAgent();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setContextData(array $data): void
-    {
-        $this->contextData = array_merge($this->contextData, $data);
     }
 }

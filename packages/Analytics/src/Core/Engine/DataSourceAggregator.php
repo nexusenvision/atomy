@@ -10,7 +10,7 @@ use Nexus\Analytics\Exceptions\DataSourceException;
 /**
  * Aggregates data from multiple parallel sources
  */
-final class DataSourceAggregator implements DataSourceAggregatorInterface
+final readonly class DataSourceAggregator implements DataSourceAggregatorInterface
 {
     /**
      * {@inheritdoc}
