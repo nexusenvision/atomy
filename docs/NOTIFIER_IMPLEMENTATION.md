@@ -1843,5 +1843,5 @@ The **Nexus\Notifier** package is a production-ready, multi-channel notification
 ---
 
 **Documentation Version:** 1.0  
-**Last Updated:** November 18, 2025  
+**Last Updated:** January 19, 2025  
 **Status:** Production Ready
