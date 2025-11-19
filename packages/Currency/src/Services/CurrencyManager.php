@@ -22,10 +22,13 @@ use Psr\Log\NullLogger;
  */
 class CurrencyManager implements CurrencyManagerInterface
 {
+    private readonly LoggerInterface $logger;
+
     public function __construct(
         private readonly CurrencyRepositoryInterface $repository,
-        private readonly LoggerInterface $logger = new NullLogger()
+        ?LoggerInterface $logger = null
     ) {
+        $this->logger = $logger ?? new NullLogger();
     }
 
     /**

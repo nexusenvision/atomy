@@ -26,12 +26,15 @@ use Psr\Log\NullLogger;
  */
 class ExchangeRateService
 {
+    private readonly LoggerInterface $logger;
+
     public function __construct(
         private readonly ExchangeRateProviderInterface $provider,
         private readonly RateStorageInterface $storage,
         private readonly CurrencyManagerInterface $currencyManager,
-        private readonly LoggerInterface $logger = new NullLogger()
+        ?LoggerInterface $logger = null
     ) {
+        $this->logger = $logger ?? new NullLogger();
     }
 
     /**
