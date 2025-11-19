@@ -4,17 +4,36 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Connectors\Adapters\{MailchimpEmailAdapter, SendGridEmailAdapter, TwilioSmsAdapter};
-use App\Repositories\{DbIntegrationLogger, LaravelCredentialProvider};
+use App\Connectors\Adapters\{
+    AwsSnsAdapter,
+    MailchimpEmailAdapter,
+    PayPalPaymentAdapter,
+    SendGridEmailAdapter,
+    StripePaymentAdapter,
+    TwilioSmsAdapter
+};
+use App\Repositories\{
+    CacheIdempotencyStore,
+    DbIntegrationLogger,
+    LaravelCredentialProvider,
+    RedisCircuitBreakerStorage,
+    RedisRateLimiterStorage
+};
+use App\Services\GuzzleHttpClient;
 use Illuminate\Support\ServiceProvider;
 use Nexus\Connector\Contracts\{
+    CircuitBreakerStorageInterface,
     CredentialProviderInterface,
     EmailServiceConnectorInterface,
+    HttpClientInterface,
+    IdempotencyStoreInterface,
     IntegrationLoggerInterface,
+    PaymentGatewayConnectorInterface,
+    RateLimiterStorageInterface,
     SmsServiceConnectorInterface,
     WebhookVerifierInterface
 };
-use Nexus\Connector\Services\{ConnectorManager, RetryHandler, WebhookVerifier};
+use Nexus\Connector\Services\{ConnectorManager, RateLimiter, RetryHandler, WebhookVerifier};
 
 class ConnectorServiceProvider extends ServiceProvider
 {
@@ -23,12 +42,21 @@ class ConnectorServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Register storage interfaces (REQUIRED for statelessness)
+        $this->app->singleton(CircuitBreakerStorageInterface::class, RedisCircuitBreakerStorage::class);
+        $this->app->singleton(RateLimiterStorageInterface::class, RedisRateLimiterStorage::class);
+        $this->app->singleton(IdempotencyStoreInterface::class, CacheIdempotencyStore::class);
+        
+        // Register HTTP client
+        $this->app->singleton(HttpClientInterface::class, GuzzleHttpClient::class);
+
         // Register core implementations
         $this->app->singleton(CredentialProviderInterface::class, LaravelCredentialProvider::class);
         $this->app->singleton(IntegrationLoggerInterface::class, DbIntegrationLogger::class);
         $this->app->singleton(WebhookVerifierInterface::class, WebhookVerifier::class);
 
         // Register core services
+        $this->app->singleton(RateLimiter::class);
         $this->app->singleton(RetryHandler::class);
         $this->app->singleton(ConnectorManager::class);
 
@@ -63,7 +91,31 @@ class ConnectorServiceProvider extends ServiceProvider
                     authToken: $config['auth_token'],
                     fromNumber: $config['from_number']
                 ),
+                'aws_sns' => new AwsSnsAdapter(
+                    region: $config['region'],
+                    key: $config['key'],
+                    secret: $config['secret'],
+                    senderId: $config['sender_id'] ?? null
+                ),
                 default => throw new \InvalidArgumentException("Unsupported SMS vendor: {$vendor}")
+            };
+        });
+
+        // Register payment adapter based on configuration
+        $this->app->singleton(PaymentGatewayConnectorInterface::class, function ($app) {
+            $vendor = config('connector.payment_vendor');
+            $config = config("connector.payment.{$vendor}");
+
+            return match ($vendor) {
+                'stripe' => new StripePaymentAdapter(
+                    secretKey: $config['secret_key']
+                ),
+                'paypal' => new PayPalPaymentAdapter(
+                    mode: $config['mode'],
+                    clientId: $config['client_id'],
+                    clientSecret: $config['client_secret']
+                ),
+                default => throw new \InvalidArgumentException("Unsupported payment vendor: {$vendor}")
             };
         });
     }
@@ -88,3 +140,4 @@ class ConnectorServiceProvider extends ServiceProvider
         }
     }
 }
+
