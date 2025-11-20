@@ -7,6 +7,8 @@ namespace Nexus\EventStream\Core\Engine;
 use Nexus\EventStream\Contracts\EventStoreInterface;
 use Nexus\EventStream\Contracts\SnapshotRepositoryInterface;
 use Nexus\EventStream\Exceptions\InvalidSnapshotException;
+use Nexus\Crypto\Contracts\HasherInterface;
+use Nexus\Crypto\Enums\HashAlgorithm;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -14,6 +16,10 @@ use Psr\Log\LoggerInterface;
  *
  * Internal engine for managing snapshots.
  * Handles snapshot creation, validation, and restoration.
+ *
+ * Supports dual code paths:
+ * - Legacy mode: Direct hash() calls
+ * - Crypto mode: Nexus\Crypto interfaces (CRYPTO_LEGACY_MODE=false)
  *
  * Requirements satisfied:
  * - ARC-EVS-7010: Separate Core/ folder for internal engine (SnapshotManager)
@@ -29,7 +35,8 @@ final readonly class SnapshotManager
         private SnapshotRepositoryInterface $snapshotRepository,
         private EventStoreInterface $eventStore,
         private LoggerInterface $logger,
-        private int $snapshotThreshold = 100
+        private int $snapshotThreshold = 100,
+        private ?HasherInterface $hasher = null,
     ) {
     }
 
@@ -99,6 +106,36 @@ final readonly class SnapshotManager
      */
     public function calculateChecksum(array $state): string
     {
-        return hash('sha256', json_encode($state, JSON_THROW_ON_ERROR));
+        $data = json_encode($state, JSON_THROW_ON_ERROR);
+        
+        // Check if legacy mode is enabled
+        if ($this->isLegacyMode()) {
+            return hash('sha256', $data);
+        }
+        
+        // Use Nexus\Crypto implementation
+        if ($this->hasher !== null) {
+            $result = $this->hasher->hash($data, HashAlgorithm::SHA256);
+            return $result->hash;
+        }
+        
+        // Fallback to legacy
+        return hash('sha256', $data);
+    }
+    
+    /**
+     * Check if legacy mode is enabled
+     */
+    private function isLegacyMode(): bool
+    {
+        // Check config if available (Laravel environment)
+        if (function_exists('config')) {
+            return config('crypto.legacy_mode', true);
+        }
+        
+        // Check environment variable
+        $legacyMode = getenv('CRYPTO_LEGACY_MODE');
+        return $legacyMode === false || $legacyMode === 'true' || $legacyMode === '1';
     }
 }
+

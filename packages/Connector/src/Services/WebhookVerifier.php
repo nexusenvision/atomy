@@ -5,16 +5,57 @@ declare(strict_types=1);
 namespace Nexus\Connector\Services;
 
 use Nexus\Connector\Contracts\WebhookVerifierInterface;
+use Nexus\Crypto\Contracts\AsymmetricSignerInterface;
+use Nexus\Crypto\Enums\AsymmetricAlgorithm;
 
 /**
  * Default webhook signature verifier using HMAC.
+ * 
+ * Supports dual code paths:
+ * - Legacy mode: Direct hash_hmac() calls
+ * - Crypto mode: Nexus\Crypto interfaces (CRYPTO_LEGACY_MODE=false)
  */
 final class WebhookVerifier implements WebhookVerifierInterface
 {
     /**
+     * @param AsymmetricSignerInterface|null $signer Optional Nexus\Crypto signer (injected when available)
+     */
+    public function __construct(
+        private readonly ?AsymmetricSignerInterface $signer = null
+    ) {}
+    
+    /**
      * Verify webhook signature using HMAC comparison.
      */
     public function verify(string $payload, string $signature, string $secret): bool
+    {
+        // Check if legacy mode is enabled
+        if ($this->isLegacyMode()) {
+            return $this->verifyLegacy($payload, $signature, $secret);
+        }
+        
+        // Use Nexus\Crypto implementation
+        return $this->verifyCrypto($payload, $signature, $secret);
+    }
+
+    /**
+     * Generate HMAC signature for a payload.
+     */
+    public function generateSignature(string $payload, string $secret, string $algorithm = 'sha256'): string
+    {
+        // Check if legacy mode is enabled
+        if ($this->isLegacyMode()) {
+            return hash_hmac($algorithm, $payload, $secret);
+        }
+        
+        // Use Nexus\Crypto implementation
+        return $this->signer?->hmac($payload, $secret) ?? hash_hmac($algorithm, $payload, $secret);
+    }
+    
+    /**
+     * Legacy verification implementation
+     */
+    private function verifyLegacy(string $payload, string $signature, string $secret): bool
     {
         // Remove common signature prefixes (e.g., "sha256=")
         $signature = preg_replace('/^(sha256|sha1)=/', '', $signature) ?? $signature;
@@ -23,7 +64,7 @@ final class WebhookVerifier implements WebhookVerifierInterface
         $algorithms = ['sha256', 'sha1'];
         
         foreach ($algorithms as $algorithm) {
-            $expectedSignature = $this->generateSignature($payload, $secret, $algorithm);
+            $expectedSignature = hash_hmac($algorithm, $payload, $secret);
             
             if (hash_equals($expectedSignature, $signature)) {
                 return true;
@@ -32,12 +73,37 @@ final class WebhookVerifier implements WebhookVerifierInterface
 
         return false;
     }
-
+    
     /**
-     * Generate HMAC signature for a payload.
+     * Crypto implementation using Nexus\Crypto
      */
-    public function generateSignature(string $payload, string $secret, string $algorithm = 'sha256'): string
+    private function verifyCrypto(string $payload, string $signature, string $secret): bool
     {
-        return hash_hmac($algorithm, $payload, $secret);
+        if ($this->signer === null) {
+            // Fallback to legacy if signer not available
+            return $this->verifyLegacy($payload, $signature, $secret);
+        }
+        
+        // Remove common signature prefixes
+        $signature = preg_replace('/^(sha256|sha1)=/', '', $signature) ?? $signature;
+        
+        // Verify using Nexus\Crypto
+        return $this->signer->verifyHmac($payload, $signature, $secret, AsymmetricAlgorithm::HMACSHA256);
+    }
+    
+    /**
+     * Check if legacy mode is enabled
+     */
+    private function isLegacyMode(): bool
+    {
+        // Check config if available (Laravel environment)
+        if (function_exists('config')) {
+            return config('crypto.legacy_mode', true);
+        }
+        
+        // Check environment variable
+        $legacyMode = getenv('CRYPTO_LEGACY_MODE');
+        return $legacyMode === false || $legacyMode === 'true' || $legacyMode === '1';
     }
 }
+
