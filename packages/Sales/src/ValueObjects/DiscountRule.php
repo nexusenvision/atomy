@@ -26,6 +26,8 @@ final readonly class DiscountRule
         $this->validate();
     }
 
+    // All properties are public readonly; direct property access is preferred per monorepo architecture.
+
     /**
      * Validate discount rule data.
      */
