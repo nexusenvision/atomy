@@ -26,7 +26,7 @@ return new class extends Migration
             // Model association (optional - queries can be global)
             $table->string('model_type')->nullable()->index();
             $table->string('model_id')->nullable();
-            $table->index(['model_type', 'model_id'], 'model_index');
+            $table->index(['model_type', 'model_id'], 'query_definitions_model_index');
             
             // Query configuration (JSON)
             $table->json('parameters')->nullable();

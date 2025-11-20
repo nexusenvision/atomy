@@ -25,7 +25,7 @@ return new class extends Migration
             // Permission subject (user or role)
             $table->string('subject_type')->index(); // user, role
             $table->string('subject_id');
-            $table->index(['subject_type', 'subject_id'], 'subject_index');
+            $table->index(['subject_type', 'subject_id'], 'analytics_permissions_subject_index');
             
             // Actions granted
             $table->json('actions'); // ['execute', 'view', 'modify', 'delete']

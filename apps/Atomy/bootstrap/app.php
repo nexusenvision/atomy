@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withProviders([
         App\Providers\CryptoServiceProvider::class,
         App\Providers\SchedulerServiceProvider::class,
-        Atomy\Providers\PayableServiceProvider::class,
+        App\Providers\ProcurementServiceProvider::class,
+        App\Providers\PayableServiceProvider::class,
     ])
     ->create();

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Atomy\Repositories;
+namespace App\Repositories;
 
 use Nexus\Payable\Contracts\GoodsReceivedRepositoryInterface;
 use Nexus\Payable\Contracts\GoodsReceivedLineInterface;

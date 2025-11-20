@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Atomy\Repositories;
+namespace App\Repositories;
 
 use Atomy\Models\VendorBill;
 use Atomy\Models\VendorBillLine;

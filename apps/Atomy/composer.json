@@ -27,6 +27,7 @@
         "nexus/payroll": "*@dev",
         "nexus/payroll-mys-statutory": "*@dev",
         "nexus/period": "*@dev",
+        "nexus/procurement": "*@dev",
         "nexus/scheduler": "*@dev",
         "nexus/sequencing": "*@dev",
         "nexus/setting": "*@dev",
@@ -64,6 +65,10 @@
         {
             "type": "path",
             "url": "../../packages/Connector"
+        },
+        {
+            "type": "path",
+            "url": "../../packages/Crypto"
         },
         {
             "type": "path",
@@ -156,6 +161,10 @@
         {
             "type": "path",
             "url": "../../packages/Scheduler"
+        },
+        {
+            "type": "path",
+            "url": "../../packages/Procurement"
         }
     ],
     "scripts": {

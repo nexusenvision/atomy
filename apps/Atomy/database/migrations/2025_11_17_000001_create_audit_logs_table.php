@@ -26,7 +26,7 @@ return new class extends Migration
             // Subject (entity being acted upon)
             $table->string('subject_type')->nullable()->index();
             $table->unsignedBigInteger('subject_id')->nullable();
-            $table->index(['subject_type', 'subject_id'], 'subject_index');
+            $table->index(['subject_type', 'subject_id'], 'audit_logs_subject_index');
             
             // Causer (who performed the action)
             // NULL for system activities per BUS-AUD-0148

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Atomy\Http\Controllers\Api;
+namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;

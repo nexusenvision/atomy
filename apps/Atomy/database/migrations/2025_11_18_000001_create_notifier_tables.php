@@ -66,7 +66,7 @@ return new class extends Migration
 
         Schema::create('notification_queue', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->string('notification_id')->index();
+            $table->string('notification_id');
             $table->string('recipient_id')->index();
             $table->string('channel');
             $table->string('priority');

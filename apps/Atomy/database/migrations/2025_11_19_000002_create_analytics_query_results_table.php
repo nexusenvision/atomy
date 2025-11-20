@@ -23,9 +23,9 @@ return new class extends Migration
             $table->string('query_name')->index();
             
             // Model association
-            $table->string('model_type')->index();
+            $table->string('model_type');
             $table->string('model_id');
-            $table->index(['model_type', 'model_id'], 'model_index');
+            $table->index(['model_type', 'model_id'], 'query_results_model_index');
             
             // Execution metadata
             $table->string('executed_by')->nullable()->index();

@@ -44,7 +44,7 @@ return new class extends Migration
             $table->string('user_id', 100)->nullable();
             
             // Timestamp
-            $table->dateTime('occurred_at')->index(); // When the event occurred
+            $table->dateTime('occurred_at'); // When the event occurred
             $table->timestamps(); // Laravel created_at (immutable after creation)
             
             // Indexes for performance
