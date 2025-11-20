@@ -119,7 +119,37 @@ final readonly class Currency
     public function formatAmount(string $amount, bool $includeSymbol = true, bool $includeCode = false): string
     {
         $rounded = bcadd($amount, '0', $this->decimalPlaces);
-        $formatted = number_format((float)$rounded, $this->decimalPlaces, '.', ',');
+        // BCMath-safe formatting: split integer and fractional parts
+        $negative = false;
+        $roundedStr = $rounded;
+        if (str_starts_with($roundedStr, '-')) {
+            $negative = true;
+            $roundedStr = substr($roundedStr, 1);
+        }
+        $partsArr = explode('.', $roundedStr, 2);
+        $integerPart = $partsArr[0];
+        $fractionalPart = $partsArr[1] ?? '';
+        // Pad/truncate fractional part
+        $fractionalPart = str_pad($fractionalPart, $this->decimalPlaces, '0');
+        if (strlen($fractionalPart) > $this->decimalPlaces) {
+            $fractionalPart = substr($fractionalPart, 0, $this->decimalPlaces);
+        }
+        // Add thousands separator to integer part
+        $integerPartWithSep = '';
+        $len = strlen($integerPart);
+        for ($i = 0; $i < $len; $i++) {
+            if ($i > 0 && (($len - $i) % 3 === 0)) {
+                $integerPartWithSep .= ',';
+            }
+            $integerPartWithSep .= $integerPart[$i];
+        }
+        $formatted = $integerPartWithSep;
+        if ($this->decimalPlaces > 0) {
+            $formatted .= '.' . $fractionalPart;
+        }
+        if ($negative) {
+            $formatted = '-' . $formatted;
+        }
 
         $parts = [];
         if ($includeSymbol) {
