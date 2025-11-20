@@ -126,6 +126,10 @@
         {
             "type": "path",
             "url": "./packages/Procurement"
+        },
+        {
+            "type": "path",
+            "url": "./packages/Party"
         }
     ],
     "minimum-stability": "dev",
