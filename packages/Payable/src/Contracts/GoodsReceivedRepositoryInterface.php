@@ -19,7 +19,7 @@ interface GoodsReceivedRepositoryInterface
      * Find goods received note line by reference.
      *
      * @param string $lineReference GRN line reference (e.g., "GRN-2024-001-L1")
-     * @return object|null GRN line object with getQuantity() method
+     * @return GoodsReceivedLineInterface|null GRN line entity
      */
-    public function findLineByReference(string $lineReference): ?object;
+    public function findLineByReference(string $lineReference): ?GoodsReceivedLineInterface;
 }

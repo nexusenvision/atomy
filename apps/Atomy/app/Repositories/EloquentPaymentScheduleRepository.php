@@ -84,7 +84,7 @@ final class EloquentPaymentScheduleRepository implements PaymentScheduleReposito
      */
     public function create(string $tenantId, array $data): PaymentScheduleInterface
     {
-        $data['id'] = Str::uuid()->toString();
+        $data['id'] = Str::ulid()->toString();
         $data['tenant_id'] = $tenantId;
 
         return PaymentSchedule::create($data);

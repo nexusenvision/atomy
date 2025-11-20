@@ -37,27 +37,13 @@ final class EloquentPaymentRepository implements PaymentRepositoryInterface
      */
     public function getByVendor(string $tenantId, string $vendorId, array $filters = []): array
     {
-        $query = Payment::where('tenant_id', $tenantId);
-
-        // Filter by vendor through payment allocations
-        $query->whereJsonContains('allocations', function ($allocation) use ($vendorId) {
-            // This would require a join with vendor_bills table
-            // For now, returning all payments for the tenant
-        });
-
-        if (isset($filters['status'])) {
-            $query->where('status', $filters['status']);
-        }
-
-        if (isset($filters['from_date'])) {
-            $query->where('payment_date', '>=', $filters['from_date']);
-        }
-
-        if (isset($filters['to_date'])) {
-            $query->where('payment_date', '<=', $filters['to_date']);
-        }
-
-        return $query->orderBy('payment_date', 'desc')->get()->all();
+        // TODO: Implement proper vendor filtering via join with vendor_bills table.
+        // Current limitation: Payment allocations are stored as JSON, making vendor filtering complex.
+        // Proper implementation requires joining through vendor_bills.vendor_id.
+        throw new \LogicException(
+            'getByVendor is not yet implemented. Vendor filtering requires a join with ' .
+            'vendor_bills table to correlate payment allocations. Use getByStatus() for now.'
+        );
     }
 
     /**
@@ -77,7 +63,7 @@ final class EloquentPaymentRepository implements PaymentRepositoryInterface
      */
     public function create(string $tenantId, array $data): PaymentInterface
     {
-        $data['id'] = Str::uuid()->toString();
+        $data['id'] = Str::ulid()->toString();
         $data['tenant_id'] = $tenantId;
 
         return Payment::create($data);

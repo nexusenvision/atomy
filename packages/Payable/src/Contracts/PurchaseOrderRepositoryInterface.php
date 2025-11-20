@@ -19,7 +19,7 @@ interface PurchaseOrderRepositoryInterface
      * Find purchase order line by reference.
      *
      * @param string $lineReference PO line reference (e.g., "PO-2024-001-L1")
-     * @return object|null PO line object with getQuantity() and getUnitPrice() methods
+     * @return PurchaseOrderLineInterface|null PO line entity
      */
-    public function findLineByReference(string $lineReference): ?object;
+    public function findLineByReference(string $lineReference): ?PurchaseOrderLineInterface;
 }
