@@ -34,7 +34,8 @@ class ExchangeRateService
 
     /**
      * Cache TTL for historical exchange rates (in seconds).
-     * Historical rates are cached for 24 hours as they are immutable.
+     * Historical rates are cached for 24 hours as they rarely change,
+     * but may occasionally be revised or corrected by data providers.
      */
     private const HISTORICAL_RATE_TTL = 86400;
 
