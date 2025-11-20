@@ -193,9 +193,9 @@ final readonly class Currency
 
     private function validateDecimalPlaces(int $decimalPlaces): void
     {
-        if ($decimalPlaces < 0 || $decimalPlaces > 4) {
+        if ($decimalPlaces < 0 || $decimalPlaces > 3) {
             throw new InvalidArgumentException(
-                "Decimal places must be between 0 and 4 per ISO 4217, got: {$decimalPlaces}"
+                "Decimal places must be between 0 and 3 per ISO 4217, got: {$decimalPlaces}"
             );
         }
     }
