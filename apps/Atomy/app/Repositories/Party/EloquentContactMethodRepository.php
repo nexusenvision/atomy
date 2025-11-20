@@ -55,9 +55,7 @@ final readonly class EloquentContactMethodRepository implements ContactMethodRep
 
     public function save(array $data): ContactMethodInterface
     {
-        $contactMethod = new PartyContactMethod($data);
-        $contactMethod->save();
-        return $contactMethod;
+        return PartyContactMethod::create($data);
     }
 
     public function update(string $id, array $data): ContactMethodInterface
