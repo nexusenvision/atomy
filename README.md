@@ -1,50 +1,95 @@
-Package Description:
+# Nexus ERP Monorepo
 
-## Nexus\Tenant: Context and Isolation Engine
-This Composer package provides the pure business logic and contracts necessary to manage multi-tenancy context, session, and administrative lifecycle. It is the central engine for identifying and validating the current tenant across the entire ERP system.
+Nexus is a modern, modular, and headless ERP (Enterprise Resource Planning) system designed with a strict separation of concerns. It leverages a monorepo architecture to decouple pure business logic from framework implementations, ensuring scalability, maintainability, and testability.
 
-### Core Architecture & Provisions
-The package is framework-agnostic and provides the following core components:
+## 📖 The Story: "Logic in Packages, Implementation in Applications"
 
-### Tenant Context Manager (TenantContextManager.php):
+The core philosophy of Nexus is **Decoupling**. We believe that business rules should not be tightly bound to a specific framework or database implementation.
 
-Provides the primary service for setting and retrieving the current active tenant ID during a request, process, or queue job.
+- **Atomic Packages (`packages/`)**: These are the "engines." They contain pure, framework-agnostic business logic. They define *what* needs to be done and *what* data is needed via **Contracts (Interfaces)**, but they don't care *how* it's stored.
+- **Applications (`apps/`)**: These are the "cars." They consume the packages, implement the persistence contracts (using Eloquent, etc.), and expose the functionality to the world via APIs.
 
-Enables global access to the current tenant ID via a contract (TenantContextInterface), ensuring other packages can read the context.
+## 🏗️ Architecture
 
-### Tenant Impersonation Service:
+### 📦 Atomic Packages
+Located in `packages/`, these are self-contained units of functionality. They are designed to be:
+- **Framework-Agnostic:** Pure PHP logic.
+- **Persistence-Agnostic:** No migrations or models. Data access is defined via Interfaces.
+- **Publishable:** Each package can be published independently to Packagist.
 
-Contains the validation and session logic to securely enable support staff impersonation, including tracking the original user and the tenant being accessed.
+**Available Packages:**
 
-### Tenant Lifecycle Service:
+| Domain | Package | Description |
+| :--- | :--- | :--- |
+| **Core** | `Nexus\Tenant` | Multi-tenancy context and isolation engine. |
+| | `Nexus\Setting` | Global and tenant-specific configuration management. |
+| | `Nexus\Identity` | User identity, authentication, and authorization contracts. |
+| | `Nexus\Notifier` | Notification dispatching and management. |
+| | `Nexus\Scheduler` | Task scheduling and background job management. |
+| | `Nexus\EventStream` | Event sourcing and stream processing capabilities. |
+| | `Nexus\AuditLogger` | Comprehensive audit trails for system activities. |
+| **Finance** | `Nexus\Accounting` | Double-entry bookkeeping and general ledger. |
+| | `Nexus\Finance` | Financial management and reporting. |
+| | `Nexus\Currency` | Currency management and exchange rates. |
+| | `Nexus\Payable` | Accounts payable management. |
+| | `Nexus\Receivable` | Accounts receivable management. |
+| **HR & Payroll** | `Nexus\Hrm` | Human Resource Management (Employees, Departments). |
+| | `Nexus\Payroll` | Payroll processing engine. |
+| | `Nexus\PayrollMysStatutory` | Malaysian statutory payroll calculations (EPF, SOCSO, PCB). |
+| **Operations** | `Nexus\Workflow` | Workflow engine for process automation and approvals. |
+| | `Nexus\Uom` | Unit of Measurement management and conversion. |
+| | `Nexus\Storage` | File and asset storage abstraction. |
+| | `Nexus\Sequencing` | Number sequence generation (e.g., Invoice #). |
+| **Integration** | `Nexus\Connector` | External system integration and API connectors. |
+| | `Nexus\Import` | Data import utilities. |
+| | `Nexus\Export` | Data export utilities. |
+| | `Nexus\DataProcessor` | ETL and data transformation logic. |
+| **Compliance** | `Nexus\Compliance` | Regulatory compliance management. |
+| | `Nexus\Statutory` | General statutory reporting and requirements. |
+| **Analytics** | `Nexus\Analytics` | Business intelligence and data analysis. |
 
-Manages the pure business logic for administrative operations (creation, suspension, activation). This service relies on external contracts for actual persistence.
+### 🚀 Applications
+Located in `apps/`, these are the deployable units.
 
-### Tenant Events:
+- **Atomy (`apps/Atomy`)**: The Headless Orchestrator.
+    - Built with **Laravel**.
+    - Implements all package Contracts (Repositories, Models).
+    - Manages the Database and Migrations.
+    - Exposes a unified **API** for clients.
 
-Defines and dispatches framework-agnostic events for all lifecycle state changes (TenantCreatedEvent, TenantSuspendedEvent).
+## 🛠️ Getting Started
 
-### Contracts (src/Contracts/):
+### Prerequisites
+- PHP 8.3+
+- Composer
 
-Defines interfaces for all external dependencies: TenantRepositoryInterface, TenantContextInterface, and CacheRepositoryInterface.
+### Installation
 
-## ⚠️ Implementation Requirements for Consuming Application (Nexus\Atomy)
-The following critical features are not implemented by this package and must be provided by the application layer to achieve full functionality:
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url> nexus
+    cd nexus
+    ```
 
-Data Isolation (Query Scoping):
+2.  **Install Monorepo Dependencies:**
+    ```bash
+    composer install
+    ```
 
-The package DOES NOT provide database query scoping (automatic WHERE tenant_id = X clauses).
+3.  **Setup Atomy (The Application):**
+    ```bash
+    cd apps/Atomy
+    cp .env.example .env
+    composer install
+    php artisan key:generate
+    php artisan migrate
+    ```
 
-Implementation Requirement: The consuming application (Nexus\Atomy) must implement the database-specific feature (e.g., a Laravel Global Scope applied to all tenant-isolated Eloquent Models) using the tenant ID provided by the package's TenantContextInterface.
+## 🤝 Contribution
 
-Persistence:
+Please refer to [ARCHITECTURE.md](ARCHITECTURE.md) for detailed architectural guidelines and rules for creating new packages or features.
 
-The package DOES NOT contain migrations or database logic.
-
-Implementation Requirement: Nexus\Atomy must create the necessary migrations and implement the TenantRepositoryInterface using Eloquent models.
-
-Cache Integration:
-
-The package DOES NOT use any specific cache facade or driver.
-
-Implementation Requirement: Nexus\Atomy must create a concrete class that implements the package's CacheRepositoryInterface using the framework's native cache solution and bind it in the service provider.
+### Key Rules:
+1.  **Packages** must never depend on **Applications**.
+2.  **Packages** must define persistence needs via **Contracts**.
+3.  **Applications** implement the Contracts and provide the Database.
