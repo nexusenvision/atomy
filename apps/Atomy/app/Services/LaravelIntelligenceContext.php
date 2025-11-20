@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use Nexus\Identity\Contracts\AuthContextInterface;
 use Nexus\Intelligence\Contracts\IntelligenceContextInterface;
 use Nexus\Setting\Services\SettingsManager;
 use Nexus\Tenant\Contracts\TenantContextInterface;
@@ -15,7 +16,8 @@ final readonly class LaravelIntelligenceContext implements IntelligenceContextIn
 {
     public function __construct(
         private TenantContextInterface $tenantContext,
-        private SettingsManager $settings
+        private SettingsManager $settings,
+        private AuthContextInterface $authContext
     ) {}
 
     public function getCurrentTenantId(): string
@@ -25,7 +27,7 @@ final readonly class LaravelIntelligenceContext implements IntelligenceContextIn
 
     public function getCurrentUserId(): ?string
     {
-        return auth()->id();
+        return $this->authContext->getCurrentUserId();
     }
 
     public function hasConsentForTraining(): bool

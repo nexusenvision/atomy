@@ -58,6 +58,8 @@ final class DbIntelligenceRepository implements ModelRepositoryInterface
 
     public function recordUsage(string $tenantId, string $modelName, string $domainContext, array $metrics): void
     {
+        $now = new \DateTimeImmutable();
+        
         IntelligenceUsage::create([
             'tenant_id' => $tenantId,
             'model_name' => $modelName,
@@ -65,8 +67,8 @@ final class DbIntelligenceRepository implements ModelRepositoryInterface
             'tokens_used' => $metrics['tokens_used'] ?? 0,
             'api_calls' => $metrics['api_calls'] ?? 1,
             'api_cost' => $metrics['api_cost'] ?? 0.0,
-            'period_month' => now()->format('Y-m'),
-            'created_at' => now(),
+            'period_month' => $now->format('Y-m'),
+            'created_at' => $now,
         ]);
     }
 
