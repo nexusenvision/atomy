@@ -26,45 +26,7 @@ final readonly class DiscountRule
         $this->validate();
     }
 
-    /**
-     * Get the discount type.
-     */
-    public function getType(): DiscountType
-    {
-        return $this->type;
-    }
-
-    /**
-     * Get the discount value.
-     */
-    public function getValue(): float
-    {
-        return $this->value;
-    }
-
-    /**
-     * Get the minimum quantity required for this discount.
-     */
-    public function getMinQuantity(): ?float
-    {
-        return $this->minQuantity;
-    }
-
-    /**
-     * Get the start date of discount validity.
-     */
-    public function getValidFrom(): ?DateTimeImmutable
-    {
-        return $this->validFrom;
-    }
-
-    /**
-     * Get the end date of discount validity.
-     */
-    public function getValidUntil(): ?DateTimeImmutable
-    {
-        return $this->validUntil;
-    }
+    // All properties are public readonly; direct property access is preferred per monorepo architecture.
 
     /**
      * Validate discount rule data.
