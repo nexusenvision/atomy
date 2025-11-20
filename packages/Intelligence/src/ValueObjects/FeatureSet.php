@@ -11,9 +11,9 @@ use Nexus\Intelligence\Contracts\FeatureSetInterface;
  * 
  * Immutable container for ML features with versioning and hashing.
  */
-final readonly class FeatureSet implements FeatureSetInterface
+final class FeatureSet implements FeatureSetInterface
 {
-    private string $hash;
+    private readonly string $hash;
 
     /**
      * @param array<string, mixed> $features Feature name => value
@@ -21,9 +21,9 @@ final readonly class FeatureSet implements FeatureSetInterface
      * @param array<string, mixed> $metadata Additional metadata
      */
     public function __construct(
-        private array $features,
-        private string $schemaVersion,
-        private array $metadata = []
+        private readonly array $features,
+        private readonly string $schemaVersion,
+        private readonly array $metadata = []
     ) {
         $this->hash = hash('xxh3', json_encode($features));
     }

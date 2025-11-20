@@ -8,6 +8,7 @@ use Nexus\Intelligence\Contracts\FeatureExtractorInterface;
 use Nexus\Intelligence\Contracts\FeatureSetInterface;
 use Nexus\Intelligence\ValueObjects\FeatureSet;
 use Nexus\Procurement\Contracts\HistoricalDataRepositoryInterface;
+use Nexus\Scheduler\Contracts\ClockInterface;
 
 /**
  * Procurement PO quantity feature extractor
@@ -20,7 +21,8 @@ final readonly class ProcurementPOQtyExtractor implements FeatureExtractorInterf
     private const SCHEMA_VERSION = '1.0';
 
     public function __construct(
-        private HistoricalDataRepositoryInterface $historicalRepo
+        private HistoricalDataRepositoryInterface $historicalRepo,
+        private ClockInterface $clock
     ) {}
 
     /**
@@ -103,7 +105,7 @@ final readonly class ProcurementPOQtyExtractor implements FeatureExtractorInterf
                 'entity_type' => 'purchase_order_line',
                 'product_id' => $productId,
                 'vendor_id' => $vendorId,
-                'extracted_at' => date('Y-m-d H:i:s'),
+                'extracted_at' => $this->clock->now()->format('Y-m-d H:i:s'),
             ]
         );
     }

@@ -95,7 +95,8 @@ final readonly class AnomalyResult implements AnomalyResultInterface
      */
     public function getTopFeatures(int $n = 3): array
     {
-        arsort($this->featureImportance);
-        return array_slice($this->featureImportance, 0, $n, true);
+        $sorted = $this->featureImportance;
+        arsort($sorted);
+        return array_slice($sorted, 0, $n, true);
     }
 }
