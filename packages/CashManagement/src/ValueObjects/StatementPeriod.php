@@ -79,7 +79,8 @@ final readonly class StatementPeriod
         $nextDay = $this->endDate->modify('+1 day');
         $prevDay = $this->startDate->modify('-1 day');
         
-        return $nextDay == $other->startDate || $prevDay == $other->endDate;
+        return $nextDay->format('Y-m-d') === $other->startDate->format('Y-m-d') || 
+               $prevDay->format('Y-m-d') === $other->endDate->format('Y-m-d');
     }
 
     /**
