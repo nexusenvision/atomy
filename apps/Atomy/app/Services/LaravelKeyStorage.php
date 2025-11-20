@@ -176,12 +176,13 @@ final class LaravelKeyStorage implements KeyStorageInterface
     }
     
     /**
-     * Get current version for key ID
+     * Get current version for key ID with pessimistic lock
      */
     private function getCurrentVersion(string $keyId): int
     {
         return (int) DB::table($this->table)
             ->where('key_id', $keyId)
+            ->lockForUpdate()
             ->max('version') ?? 0;
     }
     
