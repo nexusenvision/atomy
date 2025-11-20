@@ -73,8 +73,7 @@ final readonly class EloquentPartyRepository implements PartyRepositoryInterface
 
     public function save(array $data): PartyInterface
     {
-        $party = new Party($data);
-        $party->save();
+        $party = Party::create($data);
         return $party;
     }
 
