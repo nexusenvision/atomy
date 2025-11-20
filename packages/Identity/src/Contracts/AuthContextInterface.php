@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nexus\Identity\Contracts;
 
+use Nexus\Identity\Contracts\UserInterface;
 /**
  * Authentication context interface
  * 
