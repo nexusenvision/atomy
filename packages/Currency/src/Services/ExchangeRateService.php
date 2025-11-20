@@ -26,6 +26,18 @@ use Psr\Log\NullLogger;
  */
 class ExchangeRateService
 {
+    /**
+     * Cache TTL for current exchange rates (in seconds).
+     * Current rates are cached for 1 hour as they change frequently.
+     */
+    private const CURRENT_RATE_TTL = 3600;
+
+    /**
+     * Cache TTL for historical exchange rates (in seconds).
+     * Historical rates are cached for 24 hours as they are immutable.
+     */
+    private const HISTORICAL_RATE_TTL = 86400;
+
     private readonly LoggerInterface $logger;
 
     public function __construct(
@@ -71,7 +83,7 @@ class ExchangeRateService
             $rate = $this->provider->getRate($pair, $asOf);
 
             // Cache the rate (shorter TTL for current rates, longer for historical)
-            $ttl = $asOf === null ? 3600 : 86400; // 1 hour for current, 24 hours for historical
+            $ttl = $asOf === null ? self::CURRENT_RATE_TTL : self::HISTORICAL_RATE_TTL;
             $this->storage->put($pair, $rate, $ttl);
 
             return $rate;
@@ -117,7 +129,7 @@ class ExchangeRateService
                 $fetchedRates = $this->provider->getRates($pairsToFetch, $asOf);
 
                 // Cache and merge
-                $ttl = $asOf === null ? 3600 : 86400;
+                $ttl = $asOf === null ? self::CURRENT_RATE_TTL : self::HISTORICAL_RATE_TTL;
                 foreach ($fetchedRates as $pairString => $rate) {
                     $pair = CurrencyPair::fromString($pairString);
                     $this->storage->put($pair, $rate, $ttl);
@@ -187,7 +199,7 @@ class ExchangeRateService
             try {
                 // Fetch fresh rate
                 $rate = $this->provider->getRate($pair);
-                $this->storage->put($pair, $rate, 3600);
+                $this->storage->put($pair, $rate, self::CURRENT_RATE_TTL);
             } catch (\Throwable $e) {
                 $this->logger->error("Failed to refresh rate for {$pair->toString()}", [
                     'error' => $e->getMessage(),
