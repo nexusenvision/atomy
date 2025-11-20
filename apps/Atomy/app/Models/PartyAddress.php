@@ -102,8 +102,10 @@ class PartyAddress extends Model implements AddressInterface
         return $this->effective_to;
     }
 
-    public function isActive(\DateTimeInterface $asOf = new \DateTimeImmutable()): bool
+    public function isActive(?\DateTimeInterface $asOf = null): bool
     {
+        $asOf = $asOf ?? new \DateTimeImmutable();
+        
         if ($this->effective_from && $asOf < $this->effective_from) {
             return false;
         }
