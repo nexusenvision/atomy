@@ -95,8 +95,10 @@ class PartyRelationship extends Model implements PartyRelationshipInterface
         return $this->effective_to;
     }
 
-    public function isActive(\DateTimeInterface $asOf = new \DateTimeImmutable()): bool
+    public function isActive(?\DateTimeInterface $asOf = null): bool
     {
+        $asOf = $asOf ?? new \DateTimeImmutable();
+        
         if ($asOf < $this->effective_from) {
             return false;
         }
