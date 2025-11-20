@@ -56,7 +56,13 @@ final readonly class ForecastResultVO
             return '0.0000';
         }
 
-        return (string) min(array_map('floatval', $this->dailyBalances));
+        $min = reset($this->dailyBalances);
+        foreach ($this->dailyBalances as $balance) {
+            if (bccomp($balance, $min, 4) < 0) {
+                $min = $balance;
+            }
+        }
+        return $min;
     }
 
     /**
@@ -68,7 +74,13 @@ final readonly class ForecastResultVO
             return '0.0000';
         }
 
-        return (string) max(array_map('floatval', $this->dailyBalances));
+        $max = reset($this->dailyBalances);
+        foreach ($this->dailyBalances as $balance) {
+            if (bccomp($balance, $max, 4) > 0) {
+                $max = $balance;
+            }
+        }
+        return $max;
     }
 
     /**

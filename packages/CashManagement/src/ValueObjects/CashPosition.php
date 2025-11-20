@@ -70,6 +70,8 @@ final readonly class CashPosition
      */
     public function getFormattedBalance(): string
     {
-        return sprintf('%s %s', $this->currency, number_format((float) $this->balance, 2));
+        // Format with proper decimal handling
+        $formatted = number_format((float) $this->balance, 2, '.', ',');
+        return sprintf('%s %s', $this->currency, $formatted);
     }
 }

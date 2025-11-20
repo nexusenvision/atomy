@@ -39,9 +39,16 @@ final readonly class CSVColumnMapping
             throw new InvalidArgumentException('Description column is required');
         }
 
-        // Must have either debit/credit OR amount column
-        if ($this->debitColumn === null && $this->creditColumn === null && $this->amountColumn === null) {
-            throw new InvalidArgumentException('Must specify either debit/credit columns or amount column');
+        // Must have either BOTH debit AND credit columns OR amount column
+        $hasDebitCredit = $this->debitColumn !== null && $this->creditColumn !== null;
+        $hasAmount = $this->amountColumn !== null;
+
+        if (!$hasDebitCredit && !$hasAmount) {
+            throw new InvalidArgumentException('Must specify either both debit and credit columns or amount column');
+        }
+
+        if ($hasDebitCredit && $hasAmount) {
+            throw new InvalidArgumentException('Cannot specify both debit/credit columns and amount column');
         }
     }
 

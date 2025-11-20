@@ -43,7 +43,7 @@ interface PendingAdjustmentInterface
     public function getPostedBy(): ?string;
 
     /**
-     * Check if user override the AI suggestion
+     * Check if user has overridden the AI suggestion
      */
     public function hasUserCorrection(): bool;
 }

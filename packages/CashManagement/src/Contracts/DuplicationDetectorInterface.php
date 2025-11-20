@@ -40,6 +40,10 @@ interface DuplicationDetectorInterface
 
     /**
      * Perform line-by-line comparison for merge detection
+     * 
+     * @param string $statementId
+     * @param array<array<string, mixed>> $newTransactionLines
+     * @return array<string, mixed> Comparison result with matched/unmatched lines
      */
     public function compareLines(
         string $statementId,

@@ -60,9 +60,9 @@ final readonly class ReconciliationTolerance
     public function isAmountWithinTolerance(string $amount1, string $amount2): bool
     {
         $variance = bcsub($amount1, $amount2, 4);
-        $variance = ltrim($variance, '-'); // Absolute value
+        $absVariance = bccomp($variance, '0', 4) < 0 ? bcmul($variance, '-1', 4) : $variance;
         
-        return bccomp($variance, $this->amountTolerance, 4) <= 0;
+        return bccomp($absVariance, $this->amountTolerance, 4) <= 0;
     }
 
     /**
