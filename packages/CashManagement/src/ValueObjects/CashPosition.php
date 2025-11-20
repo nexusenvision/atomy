@@ -70,8 +70,17 @@ final readonly class CashPosition
      */
     public function getFormattedBalance(): string
     {
-        // Format with proper decimal handling
-        $formatted = number_format((float) $this->balance, 2, '.', ',');
+        // Format with proper decimal handling using bcmath to avoid precision loss
+        $rounded = bcadd($this->balance, '0', 2); // round to 2 decimals, string
+        // Split into sign, integer, and decimal parts
+        $sign = '';
+        if (str_starts_with($rounded, '-')) {
+            $sign = '-';
+            $rounded = substr($rounded, 1);
+        }
+        [$intPart, $decPart] = explode('.', $rounded . '.00', 2);
+        $intPartWithSep = number_format((int)$intPart, 0, '', ',');
+        $formatted = $sign . $intPartWithSep . '.' . substr($decPart, 0, 2);
         return sprintf('%s %s', $this->currency, $formatted);
     }
 }
