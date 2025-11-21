@@ -95,8 +95,14 @@ interface ReportRepositoryInterface
     /**
      * Update a distribution log entry.
      *
+     * Supported fields:
+     * - status: DistributionStatus value (pending, sent, delivered, failed)
+     * - notification_id: ULID from Notifier package
+     * - error: Error message string (null for success)
+     * - delivered_at: Timestamp when delivery was confirmed
+     *
      * @param string $logId The distribution log ID
-     * @param array<string, mixed> $data Fields to update
+     * @param array<string, mixed> $data Fields to update (status, notification_id, error, delivered_at)
      * @return bool True if updated successfully
      */
     public function updateDistributionLog(string $logId, array $data): bool;
