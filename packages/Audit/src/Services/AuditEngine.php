@@ -15,6 +15,7 @@ use Nexus\Audit\ValueObjects\RetentionPolicy;
 use Nexus\Crypto\Contracts\AsymmetricSignerInterface;
 use Nexus\Crypto\Contracts\HasherInterface;
 use Nexus\Crypto\ValueObjects\HashAlgorithm;
+use Symfony\Component\Uid\Ulid;
 
 /**
  * Audit Engine Service
@@ -183,14 +184,6 @@ final readonly class AuditEngine implements AuditEngineInterface
      */
     private function generateRecordId(): string
     {
-        // Simple ULID-like implementation
-        return sprintf(
-            '%08x%04x%04x%04x%012x',
-            time(),
-            random_int(0, 0xffff),
-            random_int(0, 0xffff),
-            random_int(0, 0xffff),
-            random_int(0, 0xffffffffffff)
-        );
+        return (string) new Ulid();
     }
 }

@@ -35,38 +35,47 @@ final readonly class HashChainVerifier implements AuditVerifierInterface
      */
     public function verifyChainIntegrity(string $tenantId): bool
     {
-        $records = $this->storage->findByTenantSequence($tenantId, 1, 10000);
-
-        if (empty($records)) {
-            return true; // No records = valid (empty chain)
-        }
-
-        $previousHash = null;
+        $batchSize = 1000;
         $expectedSequence = 1;
+        $previousHash = null;
 
-        foreach ($records as $record) {
-            // Verify sequence continuity
-            if ($record->getSequenceNumber() !== $expectedSequence) {
-                throw AuditSequenceException::outOfOrder(
-                    $tenantId,
-                    $expectedSequence,
-                    $record->getSequenceNumber()
-                );
+        while (true) {
+            $records = $this->storage->findByTenantSequence($tenantId, $expectedSequence, $batchSize);
+
+            if (empty($records)) {
+                // No more records to process
+                break;
             }
 
-            // Verify hash chain linking
-            if ($previousHash !== null && $record->getPreviousHash() !== $previousHash) {
-                throw AuditTamperedException::chainBroken(
-                    $record->getId(),
-                    $record->getSequenceNumber()
-                );
+            foreach ($records as $record) {
+                // Verify sequence continuity
+                if ($record->getSequenceNumber() !== $expectedSequence) {
+                    throw AuditSequenceException::outOfOrder(
+                        $tenantId,
+                        $expectedSequence,
+                        $record->getSequenceNumber()
+                    );
+                }
+
+                // Verify hash chain linking
+                if ($previousHash !== null && $record->getPreviousHash() !== $previousHash) {
+                    throw AuditTamperedException::chainBroken(
+                        $record->getId(),
+                        $record->getSequenceNumber()
+                    );
+                }
+
+                // Verify record hash
+                $this->verifyRecord($record);
+
+                $previousHash = $record->getRecordHash();
+                $expectedSequence++;
             }
 
-            // Verify record hash
-            $this->verifyRecord($record);
-
-            $previousHash = $record->getRecordHash();
-            $expectedSequence++;
+            // If less than batchSize records returned, we're done
+            if (count($records) < $batchSize) {
+                break;
+            }
         }
 
         return true;
@@ -162,27 +171,36 @@ final readonly class HashChainVerifier implements AuditVerifierInterface
      */
     public function detectSequenceGaps(string $tenantId): array
     {
-        $records = $this->storage->findByTenantSequence($tenantId, 1, 10000);
-
-        if (empty($records)) {
-            return [];
-        }
-
-        $gaps = [];
+        $batchSize = 1000;
         $expectedSequence = 1;
+        $gaps = [];
 
-        foreach ($records as $record) {
-            $actualSequence = $record->getSequenceNumber();
+        while (true) {
+            $records = $this->storage->findByTenantSequence($tenantId, $expectedSequence, $batchSize);
 
-            // Check for gap
-            if ($actualSequence > $expectedSequence) {
-                // Add missing sequences to gaps array
-                for ($i = $expectedSequence; $i < $actualSequence; $i++) {
-                    $gaps[] = $i;
-                }
+            if (empty($records)) {
+                // No more records to process
+                break;
             }
 
-            $expectedSequence = $actualSequence + 1;
+            foreach ($records as $record) {
+                $actualSequence = $record->getSequenceNumber();
+
+                // Check for gap
+                if ($actualSequence > $expectedSequence) {
+                    // Add missing sequences to gaps array
+                    for ($i = $expectedSequence; $i < $actualSequence; $i++) {
+                        $gaps[] = $i;
+                    }
+                }
+
+                $expectedSequence = $actualSequence + 1;
+            }
+
+            // If less than batchSize records returned, we're done
+            if (count($records) < $batchSize) {
+                break;
+            }
         }
 
         return $gaps;

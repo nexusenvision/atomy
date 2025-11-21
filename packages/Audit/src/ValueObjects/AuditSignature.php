@@ -25,7 +25,7 @@ final readonly class AuditSignature
             throw new \InvalidArgumentException('Signer identifier cannot be empty');
         }
 
-        if (!in_array($algorithm, ['Ed25519', 'RSA-SHA256'], true)) {
+        if (!in_array($algorithm, ['Ed25519'], true)) {
             throw new \InvalidArgumentException("Unsupported signature algorithm: {$algorithm}");
         }
     }
