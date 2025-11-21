@@ -65,4 +65,11 @@ final readonly class DbDocumentVersionRepository implements DocumentVersionRepos
             ->where('version_number', '<', $keepFromVersion)
             ->delete();
     }
+
+    public function create(array $data): DocumentVersionInterface
+    {
+        $version = new DocumentVersion($data);
+        $version->save();
+        return $version;
+    }
 }

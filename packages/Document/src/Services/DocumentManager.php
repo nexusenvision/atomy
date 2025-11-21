@@ -18,7 +18,9 @@ use Nexus\Document\ValueObjects\ContentAnalysisResult;
 use Nexus\Document\ValueObjects\DocumentState;
 use Nexus\Storage\Contracts\StorageDriverInterface;
 use Nexus\Storage\ValueObjects\Visibility;
+use Nexus\Tenant\Contracts\TenantContextInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Uid\Ulid;
 
 /**
  * Document manager service.
@@ -36,6 +38,7 @@ final readonly class DocumentManager
         private AuditLogManager $auditLogger,
         private PathGenerator $pathGenerator,
         private HasherInterface $hasher,
+        private TenantContextInterface $tenantContext,
         private LoggerInterface $logger
     ) {
     }
@@ -63,8 +66,8 @@ final readonly class DocumentManager
         bool $autoAnalyze = false
     ): DocumentInterface {
         // Generate unique identifiers
-        $documentId = $this->generateUlid();
-        $tenantId = $this->getCurrentTenantId();
+        $documentId = (string) new Ulid();
+        $tenantId = $this->tenantContext->requireTenant();
 
         // Extract extension from filename
         $extension = pathinfo($metadata['original_filename'], PATHINFO_EXTENSION);
@@ -439,23 +442,5 @@ final readonly class DocumentManager
             ],
             level: 2
         );
-    }
-
-    /**
-     * Generate a ULID for new entities.
-     */
-    private function generateUlid(): string
-    {
-        // Implementation will be injected via UlidGeneratorInterface or use Symfony/Ulid
-        return strtoupper(sprintf('%026s', bin2hex(random_bytes(13))));
-    }
-
-    /**
-     * Get current tenant ID from context.
-     */
-    private function getCurrentTenantId(): string
-    {
-        // Will be injected via TenantContextInterface
-        return 'TEN' . strtoupper(bin2hex(random_bytes(11)));
     }
 }
