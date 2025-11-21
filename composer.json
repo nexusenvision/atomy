@@ -157,6 +157,10 @@
         },
         {
             "type": "path",
+            "url": "./packages/Reporting"
+        },
+        {
+            "type'": "path",    
             "url": "./packages/Geo"
         },
         {
