@@ -79,6 +79,17 @@ class TrustedDevice extends Model implements TrustedDeviceInterface
         return !$this->isExpired() && !$this->isRevoked();
     }
 
+    /**
+     * Scope a query to only include valid devices
+     */
+    public function scopeValid($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('revoked_at')
+                ->orWhere('revoked_at', '>', now());
+        })->where('expires_at', '>', now());
+    }
+
     // ============================================
     // TrustedDeviceInterface Implementation
     // ============================================
@@ -108,9 +119,9 @@ class TrustedDevice extends Model implements TrustedDeviceInterface
         return $this->is_trusted ?? false;
     }
 
-    public function getTrustedAt(): \DateTimeInterface
+    public function getTrustedAt(): ?\DateTimeInterface
     {
-        return $this->trusted_at ?? $this->created_at;
+        return $this->trusted_at;
     }
 
     public function getLastUsedAt(): ?\DateTimeInterface

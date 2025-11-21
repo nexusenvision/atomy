@@ -27,7 +27,10 @@ final readonly class LaravelSessionManager implements SessionManagerInterface
     public function createSession(string $userId, array $metadata = []): SessionToken
     {
         // Use Crypto package for secure token generation
-        $token = $this->keyGenerator->generateRandomBytes(64);
+        $tokenBytes = $this->keyGenerator->generateRandomBytes(32);
+        $token = bin2hex($tokenBytes); // Convert binary to hex for safe storage/transmission
+        
+        // Hash token for storage (deterministic SHA-256)
         $hashResult = $this->hasher->hash($token);
         $tokenHash = $hashResult->hash;
         
@@ -71,8 +74,7 @@ final readonly class LaravelSessionManager implements SessionManagerInterface
             throw new InvalidSessionException('Invalid or expired session');
         }
 
-        // Update last activity
-        $session->update(['last_activity_at' => now()]);
+        // last_activity_at is updated by TrackSessionActivity middleware
 
         return User::findOrFail($session->user_id);
     }
@@ -192,6 +194,8 @@ final readonly class LaravelSessionManager implements SessionManagerInterface
         }
 
         // Revoke oldest sessions beyond the limit
+        // slice($max) returns sessions starting from index $max onwards
+        // e.g., with max=3 and 5 sessions, slice(3) returns indexes 3-4 (2 sessions to revoke)
         $sessionsToRevoke = $sessions->slice($max);
         
         foreach ($sessionsToRevoke as $session) {
