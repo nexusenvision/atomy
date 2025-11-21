@@ -95,4 +95,12 @@ interface DocumentRepositoryInterface
      * @return array<DocumentInterface>
      */
     public function getDeleted(): array;
+
+    /**
+     * Create a new document record.
+     *
+     * @param array $attributes Key-value data for the new document
+     * @return DocumentInterface
+     */
+    public function create(array $attributes): DocumentInterface;
 }

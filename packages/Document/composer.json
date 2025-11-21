@@ -15,7 +15,8 @@
         "nexus/crypto": "*@dev",
         "nexus/audit-logger": "*@dev",
         "nexus/tenant": "*@dev",
-        "psr/log": "^3.0"
+        "psr/log": "^3.0",
+        "symfony/uid": "^7.0"
     },
     "autoload": {
         "psr-4": {
