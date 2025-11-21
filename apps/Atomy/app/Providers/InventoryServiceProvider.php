@@ -102,6 +102,7 @@ final class InventoryServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Register event listener for GL integration
-        $this->app->make('events')->subscribe(InventoryGLListener::class);
+        // TODO: Uncomment when Nexus\Accounting\Services\GeneralLedgerManager is implemented
+        // $this->app->make('events')->subscribe(InventoryGLListener::class);
     }
 }

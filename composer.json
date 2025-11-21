@@ -9,7 +9,10 @@
         "nexus/geo": "*@dev",
         "nexus/routing": "*@dev",
         "nexus/inventory": "*@dev",
-        "nexus/warehouse": "*@dev"
+        "nexus/warehouse": "*@dev",
+        "symfony/http-client": "^7.3",
+        "nyholm/psr7": "^1.8",
+        "psr/http-client": "^1.0"
     },
     "repositories": [
         {
@@ -170,5 +173,10 @@
         }
     ],
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
 }
