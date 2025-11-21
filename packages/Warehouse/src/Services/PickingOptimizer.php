@@ -6,6 +6,8 @@ namespace Nexus\Warehouse\Services;
 
 use Nexus\Warehouse\Contracts\PickingOptimizerInterface;
 use Nexus\Warehouse\Contracts\PickRouteResult;
+use Nexus\Warehouse\Contracts\BinLocationRepositoryInterface;
+use Nexus\Warehouse\Contracts\BinLocationInterface;
 use Nexus\Warehouse\Exceptions\BinLocationNotFoundException;
 use Nexus\Routing\Contracts\RouteOptimizerInterface;
 use Nexus\Routing\ValueObjects\RouteStop;
@@ -46,7 +48,7 @@ final readonly class PickingOptimizer implements PickingOptimizerInterface
                 throw BinLocationNotFoundException::withId($item['bin_id']);
             }
             
-            $coordinates = $bin['coordinates'] ?? null;
+            $coordinates = $bin->getCoordinates();
             
             if ($coordinates === null) {
                 // Bin has no GPS coordinates - fallback to sequential order
@@ -65,7 +67,7 @@ final readonly class PickingOptimizer implements PickingOptimizerInterface
             );
             
             $binMap[$item['bin_id']] = [
-                'bin_code' => $bin['code'],
+                'bin_code' => $bin->getCode(),
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
             ];
@@ -168,12 +170,4 @@ final readonly class PickRouteResultValue implements PickRouteResult
     {
         return $this->executionTime;
     }
-}
-
-/**
- * Bin location repository contract
- */
-interface BinLocationRepositoryInterface
-{
-    public function findById(string $binId): ?array;
 }
