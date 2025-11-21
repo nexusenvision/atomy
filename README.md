@@ -27,8 +27,8 @@ Located in `packages/`, these are self-contained units of functionality. They ar
 | | `Nexus\Notifier` | Notification dispatching and management. |
 | | `Nexus\Scheduler` | Task scheduling and background job management. |
 | | `Nexus\EventStream` | Event sourcing and stream processing capabilities. |
-| | `Nexus\Audit` | Audit logging and activity tracking. |
-| | `Nexus\AuditLogger` | Comprehensive audit trails with timeline/feed views. |
+| | `Nexus\Audit` | Cryptographically-verified, immutable audit trails for compliance. |
+| | `Nexus\AuditLogger` | CRUD operation tracking with user context and retention policies. |
 | | `Nexus\Period` | Fiscal period management and transaction validation. |
 | | `Nexus\Crypto` | Cryptographic operations and data encryption. |
 | **Finance & Accounting** | `Nexus\Accounting` | Double-entry bookkeeping and general ledger. |
@@ -53,8 +53,8 @@ Located in `packages/`, these are self-contained units of functionality. They ar
 | **Workflow & Process** | `Nexus\Workflow` | Workflow engine for process automation and approvals. |
 | | `Nexus\Sequencing` | Number sequence generation (e.g., Invoice #). |
 | **Data & Integration** | `Nexus\Connector` | External system integration and API connectors. |
-| | `Nexus\Import` | Data import utilities and CSV processing. |
-| | `Nexus\Export` | Data export utilities and multi-format generation. |
+| | `Nexus\Import` | Data import utilities with transformation and validation. |
+| | `Nexus\Export` | Data export utilities with multi-format generation. |
 | | `Nexus\DataProcessor` | ETL and data transformation logic. |
 | | `Nexus\Document` | Enterprise document management with versioning. |
 | | `Nexus\Storage` | File and asset storage abstraction. |
