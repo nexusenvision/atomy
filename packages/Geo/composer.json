@@ -11,8 +11,8 @@
     ],
     "require": {
         "php": "^8.3",
-        "geocoder-php/geocoder": "^4.0",
-        "league/geotools": "^2.0",
+        "geocoder-php/google-maps-provider": "^4.7",
+        "geocoder-php/nominatim-provider": "^5.7",
         "nexus/party": "*@dev",
         "nexus/connector": "*@dev",
         "psr/log": "^3.0"

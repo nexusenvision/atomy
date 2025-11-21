@@ -205,6 +205,10 @@
         {
             "type": "path",
             "url": "../../packages/Routing"
+        },
+        {
+            "type": "path",
+            "url": "../../packages/Sales"
         }
     ],
     "scripts": {
