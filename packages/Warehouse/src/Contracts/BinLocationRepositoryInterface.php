@@ -45,7 +45,7 @@ interface BinLocationRepositoryInterface
     /**
      * Delete bin location by ID
      * 
-     * @param string $id Bin location ID to delete
+     * @param string $id Bin location unique identifier to delete
      * @return void
      */
     public function delete(string $id): void;

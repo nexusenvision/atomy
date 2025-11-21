@@ -45,7 +45,7 @@ interface WarehouseRepositoryInterface
     /**
      * Delete warehouse by ID
      * 
-     * @param string $id ULID of the warehouse to delete
+     * @param string $id Warehouse unique identifier to delete
      * @return void
      */
     public function delete(string $id): void;
