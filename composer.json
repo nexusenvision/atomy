@@ -147,6 +147,10 @@
         {
             "type": "path",
             "url": "./packages/CashManagement"
+        },
+        {
+            "type": "path",
+            "url": "./packages/Reporting"
         }
     ],
     "minimum-stability": "dev",

@@ -35,6 +35,7 @@
         "nexus/product": "*@dev",
         "nexus/procurement": "*@dev",
         "nexus/receivable": "*@dev",
+        "nexus/reporting": "*@dev",
         "nexus/routing": "*@dev",
         "nexus/scheduler": "*@dev",
         "nexus/sequencing": "*@dev",
@@ -209,6 +210,10 @@
         {
             "type": "path",
             "url": "../../packages/Sales"
+        },
+        {
+            "type": "path",
+            "url": "../../packages/Reporting"
         }
     ],
     "scripts": {
