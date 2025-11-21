@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nexus\Warehouse\Services;
 
 use Nexus\Warehouse\Contracts\WarehouseManagerInterface;
+use Nexus\Warehouse\Contracts\WarehouseRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -26,30 +27,41 @@ final readonly class WarehouseManager implements WarehouseManagerInterface
             'name' => $name,
         ]);
         
-        $warehouseId = $this->repository->create($this->tenantId, $code, $name, $metadata);
-        
-        $this->logger->info('Warehouse created', ['warehouse_id' => $warehouseId]);
-        
-        return $warehouseId;
+        // Note: Actual warehouse creation requires a factory or model instantiation
+        // This is a placeholder that needs to be implemented in the Atomy layer
+        throw new \RuntimeException('Warehouse creation not yet implemented - requires factory pattern');
     }
     
     public function getWarehouse(string $warehouseId): array
     {
-        return $this->repository->findById($warehouseId);
+        $warehouse = $this->repository->findById($warehouseId);
+        
+        if ($warehouse === null) {
+            return [];
+        }
+        
+        return $this->convertToArray($warehouse);
     }
     
     public function listWarehouses(): array
     {
-        return $this->repository->findByTenant($this->tenantId);
+        $warehouses = $this->repository->findByTenant($this->tenantId);
+        
+        return array_map(
+            fn(WarehouseInterface $warehouse) => $this->convertToArray($warehouse),
+            $warehouses
+        );
     }
-}
-
-/**
- * Warehouse repository contract
- */
-interface WarehouseRepositoryInterface
-{
-    public function create(string $tenantId, string $code, string $name, array $metadata): string;
-    public function findById(string $warehouseId): array;
-    public function findByTenant(string $tenantId): array;
+    
+    private function convertToArray(WarehouseInterface $warehouse): array
+    {
+        return [
+            'id' => $warehouse->getId(),
+            'code' => $warehouse->getCode(),
+            'name' => $warehouse->getName(),
+            'address' => $warehouse->getAddress(),
+            'is_active' => $warehouse->isActive(),
+            'metadata' => $warehouse->getMetadata(),
+        ];
+    }
 }
