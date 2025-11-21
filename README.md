@@ -21,32 +21,50 @@ Located in `packages/`, these are self-contained units of functionality. They ar
 
 | Domain | Package | Description |
 | :--- | :--- | :--- |
-| **Core** | `Nexus\Tenant` | Multi-tenancy context and isolation engine. |
+| **Core Infrastructure** | `Nexus\Tenant` | Multi-tenancy context and isolation engine. |
 | | `Nexus\Setting` | Global and tenant-specific configuration management. |
 | | `Nexus\Identity` | User identity, authentication, and authorization contracts. |
 | | `Nexus\Notifier` | Notification dispatching and management. |
 | | `Nexus\Scheduler` | Task scheduling and background job management. |
 | | `Nexus\EventStream` | Event sourcing and stream processing capabilities. |
-| | `Nexus\AuditLogger` | Comprehensive audit trails for system activities. |
-| **Finance** | `Nexus\Accounting` | Double-entry bookkeeping and general ledger. |
+| | `Nexus\Audit` | Audit logging and activity tracking. |
+| | `Nexus\AuditLogger` | Comprehensive audit trails with timeline/feed views. |
+| | `Nexus\Period` | Fiscal period management and transaction validation. |
+| | `Nexus\Crypto` | Cryptographic operations and data encryption. |
+| **Finance & Accounting** | `Nexus\Accounting` | Double-entry bookkeeping and general ledger. |
 | | `Nexus\Finance` | Financial management and reporting. |
 | | `Nexus\Currency` | Currency management and exchange rates. |
 | | `Nexus\Payable` | Accounts payable management. |
 | | `Nexus\Receivable` | Accounts receivable management. |
+| | `Nexus\Budget` | Budget allocation, commitment tracking, and variance analysis. |
+| | `Nexus\CashManagement` | Bank account management, reconciliation, and cash flow forecasting. |
 | **HR & Payroll** | `Nexus\Hrm` | Human Resource Management (Employees, Departments). |
 | | `Nexus\Payroll` | Payroll processing engine. |
 | | `Nexus\PayrollMysStatutory` | Malaysian statutory payroll calculations (EPF, SOCSO, PCB). |
-| **Operations** | `Nexus\Workflow` | Workflow engine for process automation and approvals. |
+| **Operations & Supply Chain** | `Nexus\Inventory` | Inventory and stock management with lot/serial tracking. |
+| | `Nexus\Product` | Product catalog management with template-variant architecture. |
+| | `Nexus\Procurement` | Purchase requisitions, orders, and goods receipt. |
+| | `Nexus\Sales` | Sales quotations, orders, and pricing engine. |
 | | `Nexus\Uom` | Unit of Measurement management and conversion. |
-| | `Nexus\Storage` | File and asset storage abstraction. |
+| | `Nexus\Warehouse` | Warehouse management and picking optimization. |
+| | `Nexus\Routing` | Route optimization and Vehicle Routing Problem (VRP) solver. |
+| | `Nexus\Geo` | Geocoding, geofencing, and geospatial calculations. |
+| | `Nexus\Assets` | Fixed asset management with progressive delivery tiers. |
+| **Workflow & Process** | `Nexus\Workflow` | Workflow engine for process automation and approvals. |
 | | `Nexus\Sequencing` | Number sequence generation (e.g., Invoice #). |
-| **Integration** | `Nexus\Connector` | External system integration and API connectors. |
-| | `Nexus\Import` | Data import utilities. |
-| | `Nexus\Export` | Data export utilities. |
+| **Data & Integration** | `Nexus\Connector` | External system integration and API connectors. |
+| | `Nexus\Import` | Data import utilities and CSV processing. |
+| | `Nexus\Export` | Data export utilities and multi-format generation. |
 | | `Nexus\DataProcessor` | ETL and data transformation logic. |
-| **Compliance** | `Nexus\Compliance` | Regulatory compliance management. |
-| | `Nexus\Statutory` | General statutory reporting and requirements. |
-| **Analytics** | `Nexus\Analytics` | Business intelligence and data analysis. |
+| | `Nexus\Document` | Enterprise document management with versioning. |
+| | `Nexus\Storage` | File and asset storage abstraction. |
+| | `Nexus\Intelligence` | AI-powered anomaly detection and predictive analytics. |
+| **Organization & Master Data** | `Nexus\Backoffice` | Company structure, offices, and departments. |
+| | `Nexus\Party` | Master data management for individuals and organizations. |
+| **Reporting & Analytics** | `Nexus\Analytics` | Business intelligence and data analysis. |
+| | `Nexus\Reporting` | Scheduled report generation and distribution. |
+| **Compliance & Governance** | `Nexus\Compliance` | Regulatory compliance and process enforcement. |
+| | `Nexus\Statutory` | Statutory reporting and tax requirements. |
 
 ### 🚀 Applications
 Located in `apps/`, these are the deployable units.
