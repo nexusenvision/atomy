@@ -30,6 +30,15 @@ use Nexus\FieldService\Services\ServiceReportGenerator;
 use Nexus\FieldService\Services\TechnicianDispatcher;
 use Nexus\FieldService\Services\WorkOrderManager;
 use Nexus\Tenant\Contracts\TenantContextInterface;
+use Illuminate\Support\Facades\Event;
+use Nexus\FieldService\Events\WorkOrderCompletedEvent;
+use Nexus\FieldService\Events\PartsConsumedEvent;
+use Nexus\FieldService\Events\SlaBreachedEvent;
+use Nexus\FieldService\Events\WorkOrderVerifiedEvent;
+use App\Listeners\FieldService\PostRevenueOnWorkOrderCompletion;
+use App\Listeners\FieldService\DeductInventoryOnPartsConsumed;
+use App\Listeners\FieldService\EscalateOnSlaBreach;
+use App\Listeners\FieldService\GenerateReportOnVerification;
 
 final class FieldServiceProvider extends ServiceProvider
 {
@@ -121,7 +130,10 @@ final class FieldServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Register event listeners
-        // (Event listeners will be registered separately in EventServiceProvider)
+        // Register event listeners for domain event integrations
+        Event::listen(WorkOrderCompletedEvent::class, PostRevenueOnWorkOrderCompletion::class);
+        Event::listen(PartsConsumedEvent::class, DeductInventoryOnPartsConsumed::class);
+        Event::listen(SlaBreachedEvent::class, EscalateOnSlaBreach::class);
+        Event::listen(WorkOrderVerifiedEvent::class, GenerateReportOnVerification::class);
     }
 }
