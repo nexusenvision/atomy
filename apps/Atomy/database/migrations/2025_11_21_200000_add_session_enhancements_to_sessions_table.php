@@ -45,7 +45,7 @@ return new class extends Migration
             $table->dropIndex(['user_id', 'device_fingerprint']);
             $table->dropIndex(['device_fingerprint']);
             $table->dropIndex(['last_activity_at']);
-            $table->dropIndex(['tenant_id']);
+            $table->dropIndex('tenant_id');
             
             $table->dropColumn([
                 'tenant_id',

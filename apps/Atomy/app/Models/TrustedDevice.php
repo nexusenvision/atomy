@@ -94,7 +94,7 @@ class TrustedDevice extends Model implements TrustedDeviceInterface
     /**
      * Scope a query to only include valid devices
      */
-    public function scopeValid($query)
+    public function scopeValid($query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where(function ($q) {
             $q->whereNull('revoked_at')

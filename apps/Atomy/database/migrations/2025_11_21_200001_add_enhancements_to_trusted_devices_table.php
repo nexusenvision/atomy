@@ -47,7 +47,7 @@ return new class extends Migration
         Schema::table('trusted_devices', function (Blueprint $table) {
             $table->dropIndex(['user_id', 'is_trusted']);
             $table->dropIndex(['last_used_at']);
-            $table->dropIndex(['tenant_id']);
+            $table->dropIndex('tenant_id');
             
             $table->dropColumn([
                 'tenant_id',

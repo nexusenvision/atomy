@@ -28,7 +28,7 @@ final readonly class LaravelSessionManager implements SessionManagerInterface
     {
         // Use Crypto package for secure token generation
         $tokenBytes = $this->keyGenerator->generateRandomBytes(32);
-        $token = bin2hex($tokenBytes); // Convert binary to hex for safe storage/transmission
+        $token = bin2hex($tokenBytes); // Convert binary to hex for safe storage/transmission (raw binary may contain null bytes that cause issues in string fields)
         
         // Hash token for storage (deterministic SHA-256)
         $hashResult = $this->hasher->hash($token);
@@ -194,8 +194,8 @@ final readonly class LaravelSessionManager implements SessionManagerInterface
         }
 
         // Revoke oldest sessions beyond the limit
-        // slice($max) returns sessions starting from index $max onwards
-        // e.g., with max=3 and 5 sessions, slice(3) returns indexes 3-4 (2 sessions to revoke)
+        // slice($max) returns all sessions from index $max to the end (0-indexed),
+        // effectively keeping the first $max sessions and returning the rest to be revoked.
         $sessionsToRevoke = $sessions->slice($max);
         
         foreach ($sessionsToRevoke as $session) {

@@ -216,7 +216,7 @@ final readonly class AuthenticationController
     public function revokeDevice(Request $request, string $fingerprint): JsonResponse
     {
         // Validate fingerprint format (64 hex characters for SHA-256)
-        if (!ctype_xdigit($fingerprint) || strlen($fingerprint) !== 64) {
+        if (!$this->validateFingerprint($fingerprint)) {
             return response()->json([
                 'error' => 'Invalid device fingerprint format',
             ], 400);
@@ -247,7 +247,7 @@ final readonly class AuthenticationController
     public function trustDevice(Request $request, string $fingerprint): JsonResponse
     {
         // Validate fingerprint format (64 hex characters for SHA-256)
-        if (!ctype_xdigit($fingerprint) || strlen($fingerprint) !== 64) {
+        if (!$this->validateFingerprint($fingerprint)) {
             return response()->json([
                 'error' => 'Invalid device fingerprint format',
             ], 400);
@@ -275,5 +275,16 @@ final readonly class AuthenticationController
                 'is_trusted' => true,
             ],
         ]);
+    }
+
+    /**
+     * Validate device fingerprint format
+     * 
+     * @param string $fingerprint Device fingerprint to validate
+     * @return bool True if valid (64 hex characters for SHA-256)
+     */
+    private function validateFingerprint(string $fingerprint): bool
+    {
+        return ctype_xdigit($fingerprint) && strlen($fingerprint) === 64;
     }
 }
