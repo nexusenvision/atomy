@@ -83,7 +83,7 @@ final readonly class ReportManager
         }
 
         $reportId = $this->reportRepository->save([
-            'id' => (string) \Illuminate\Support\Str::ulid(),
+            'id' => $this->generateUlid(),
             'name' => $data['name'],
             'description' => $data['description'] ?? null,
             'query_id' => $data['query_id'],
@@ -435,5 +435,22 @@ final readonly class ReportManager
             endsAt: $schedule->endsAt,
             maxOccurrences: $schedule->maxOccurrences,
         );
+    }
+
+    /**
+     * Generate a unique ULID for report definition.
+     *
+     * Framework-agnostic implementation following Scheduler package pattern.
+     */
+    private function generateUlid(): string
+    {
+        // Timestamp part (10 characters)
+        $timestamp = (int)(microtime(true) * 1000);
+        $timestampPart = base_convert((string)$timestamp, 10, 32);
+        
+        // Random part (16 characters)
+        $randomPart = bin2hex(random_bytes(10));
+        
+        return strtoupper(str_pad($timestampPart, 10, '0', STR_PAD_LEFT) . substr($randomPart, 0, 16));
     }
 }

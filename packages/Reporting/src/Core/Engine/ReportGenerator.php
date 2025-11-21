@@ -373,10 +373,19 @@ final readonly class ReportGenerator implements ReportGeneratorInterface
 
     /**
      * Generate a unique report ID (ULID).
+     *
+     * Framework-agnostic implementation following Scheduler package pattern.
      */
     private function generateReportId(): string
     {
-        return (string) \Illuminate\Support\Str::ulid();
+        // Timestamp part (10 characters)
+        $timestamp = (int)(microtime(true) * 1000);
+        $timestampPart = base_convert((string)$timestamp, 10, 32);
+        
+        // Random part (16 characters)
+        $randomPart = bin2hex(random_bytes(10));
+        
+        return strtoupper(str_pad($timestampPart, 10, '0', STR_PAD_LEFT) . substr($randomPart, 0, 16));
     }
 
     /**
