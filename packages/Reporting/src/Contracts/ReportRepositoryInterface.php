@@ -96,7 +96,7 @@ interface ReportRepositoryInterface
      * Update a distribution log entry.
      *
      * Supported fields:
-     * - status: DistributionStatus value (pending, sent, delivered, failed)
+     * - status: DistributionStatus value (pending, sent, delivered, failed, bounced, read)
      * - notification_id: ULID from Notifier package
      * - error: Error message string (null for success)
      * - delivered_at: Timestamp when delivery was confirmed
