@@ -16,11 +16,12 @@ final readonly class RetentionPolicy
 {
     public const DEFAULT_DAYS = 90;
     public const MINIMUM_DAYS = 1;
+    public const PERMANENT = 0; // Sentinel value for permanent retention
 
     public function __construct(
         public int $days = self::DEFAULT_DAYS
     ) {
-        if ($days < 0) {
+        if ($days !== self::PERMANENT && $days < self::MINIMUM_DAYS) {
             throw new InvalidRetentionPolicyException($days);
         }
     }
@@ -28,8 +29,13 @@ final readonly class RetentionPolicy
     /**
      * Calculate expiration date from a given creation date
      */
-    public function calculateExpirationDate(\DateTimeImmutable $createdAt): \DateTimeImmutable
+    public function calculateExpirationDate(\DateTimeImmutable $createdAt): ?\DateTimeImmutable
     {
+        // Permanent retention has no expiration date
+        if ($this->days === self::PERMANENT) {
+            return null;
+        }
+        
         return $createdAt->modify("+{$this->days} days");
     }
 
@@ -38,13 +44,23 @@ final readonly class RetentionPolicy
      */
     public function isExpired(\DateTimeImmutable $createdAt, ?\DateTimeImmutable $now = null): bool
     {
+        // Permanent retention never expires
+        if ($this->days === self::PERMANENT) {
+            return false;
+        }
+        
         $now = $now ?? new \DateTimeImmutable();
         $expiresAt = $this->calculateExpirationDate($createdAt);
+        assert($expiresAt !== null, 'Permanent retention should be handled above');
         return $now >= $expiresAt;
     }
 
     public function __toString(): string
     {
+        if ($this->days === self::PERMANENT) {
+            return 'permanent';
+        }
+        
         return "{$this->days} days";
     }
 
@@ -57,11 +73,11 @@ final readonly class RetentionPolicy
     }
 
     /**
-     * Create permanent retention (effectively infinite)
+     * Create permanent retention (never expires)
      */
     public static function permanent(): self
     {
-        return new self(PHP_INT_MAX);
+        return new self(self::PERMANENT);
     }
 
     /**

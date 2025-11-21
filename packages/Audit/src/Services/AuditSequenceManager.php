@@ -18,12 +18,9 @@ use Nexus\Audit\Exceptions\AuditSequenceException;
  */
 final readonly class AuditSequenceManager implements AuditSequenceManagerInterface
 {
-    private array $sequences;
-
     public function __construct(
         private AuditStorageInterface $storage
     ) {
-        $this->sequences = [];
     }
 
     /**

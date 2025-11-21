@@ -69,7 +69,6 @@ final readonly class AuditHash
             HashAlgorithm::SHA384 => 96,
             HashAlgorithm::SHA512 => 128,
             HashAlgorithm::BLAKE2B => 128,
-            default => throw new \InvalidArgumentException("Unsupported hash algorithm: {$this->algorithm->value}")
         };
 
         if (strlen($this->value) !== $expectedLength) {

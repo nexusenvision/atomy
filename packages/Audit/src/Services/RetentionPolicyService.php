@@ -73,9 +73,7 @@ final readonly class RetentionPolicyService
     public function countExpiredLogs(?\DateTimeImmutable $beforeDate = null): int
     {
         $beforeDate = $beforeDate ?? new \DateTimeImmutable();
-        $expired = $this->storage->findExpired($beforeDate, PHP_INT_MAX);
-        
-        return count($expired);
+        return $this->storage->countExpired($beforeDate);
     }
 
     /**

@@ -103,6 +103,14 @@ interface AuditStorageInterface
     ): array;
 
     /**
+     * Count expired records without loading them
+     * 
+     * @param \DateTimeImmutable|null $beforeDate Expiration cutoff
+     * @return int Number of expired records
+     */
+    public function countExpired(?\DateTimeImmutable $beforeDate = null): int;
+
+    /**
      * Physically delete expired records (only method allowing deletion)
      * 
      * @param array $ids Array of record IDs to delete
