@@ -90,4 +90,12 @@ final readonly class Distance implements \JsonSerializable
     {
         return $this->format('km');
     }
+
+    /**
+     * Create from array representation
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self($data['meters']);
+    }
 }

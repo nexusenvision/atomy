@@ -112,4 +112,19 @@ final readonly class OptimizedRoute implements \JsonSerializable
     {
         return $this->toArray();
     }
+
+    /**
+     * Create OptimizedRoute from array representation
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            routeId: $data['route_id'],
+            stops: array_map(fn($s) => RouteStop::fromArray($s), $data['stops']),
+            totalDistance: Distance::fromArray($data['total_distance']),
+            totalDurationSeconds: $data['total_duration_seconds'],
+            totalLoad: $data['total_load'] ?? 0.0,
+            metadata: $data['metadata'] ?? null
+        );
+    }
 }

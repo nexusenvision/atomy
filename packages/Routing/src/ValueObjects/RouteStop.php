@@ -81,4 +81,20 @@ final readonly class RouteStop implements \JsonSerializable
     {
         return $this->toArray();
     }
+
+    /**
+     * Create from array representation
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            id: $data['id'],
+            coordinates: Coordinates::fromArray($data['coordinates']),
+            timeWindowStart: $data['time_window_start'] ? new \DateTimeImmutable($data['time_window_start']) : null,
+            timeWindowEnd: $data['time_window_end'] ? new \DateTimeImmutable($data['time_window_end']) : null,
+            serviceDurationSeconds: $data['service_duration_seconds'] ?? 0,
+            demand: $data['demand'] ?? 0.0,
+            metadata: $data['metadata'] ?? null
+        );
+    }
 }
