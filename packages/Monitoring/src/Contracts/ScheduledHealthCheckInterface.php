@@ -16,7 +16,7 @@ interface ScheduledHealthCheckInterface extends HealthCheckInterface
     /**
      * Get cron expression for when this check should execute.
      *
-     * @return string Cron expression (e.g., '*/5 * * * *' for every 5 minutes)
+     * @return string Cron expression (e.g., every 5 minutes: "* /5 * * * *" without space)
      */
     public function getSchedule(): string;
 }

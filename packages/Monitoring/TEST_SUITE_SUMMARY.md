@@ -10,8 +10,8 @@
 ## Test Execution Summary
 
 ```
-Tests: 63, Assertions: 122
-Time: 0.075 seconds
+Tests: 77, Assertions: 160
+Time: 3.110 seconds
 Memory: 6.00 MB
 Status: ✅ ALL PASSING
 ```
@@ -40,9 +40,9 @@ Status: ✅ ALL PASSING
 - **Components:** 13 interfaces defined
 
 #### Services
-- **Total Tests:** 17
+- **Total Tests:** 31
 - **Status:** ✅ Passing
-- **Assertions:** 50
+- **Assertions:** 88
 - **Coverage:** 100%
 - **Components:**
   - TelemetryTracker (17 tests)
@@ -51,6 +51,12 @@ Status: ✅ ALL PASSING
     - Trace context propagation
     - Sampling strategy support
     - Comprehensive logging validation
+  - HealthCheckRunner (14 tests)
+    - Critical check prioritization
+    - Timeout handling with degradation
+    - Result caching with TTL
+    - Exception handling
+    - Scheduled health check support
 
 #### Core/HealthChecks
 - **Total Tests:** 0
