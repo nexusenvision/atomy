@@ -35,6 +35,9 @@ composer.lock
 /coverage/
 .phpunit.cache
 .phpunit.result.cache
+/packages/*/coverage/
+/packages/*/.phpunit.cache
+/packages/*/.phpunit.result.cache
 
 # Build artifacts
 /build/

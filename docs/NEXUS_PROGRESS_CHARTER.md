@@ -1,8 +1,8 @@
 # Nexus ERP: Progress Charter
 
-**Last Updated:** November 22, 2025  
-**Overall Completion:** 68% (30 of 44 packages production-ready)  
-**Total Codebase:** ~114,500 lines (PHP + Documentation)
+**Last Updated:** November 23, 2025  
+**Overall Completion:** 69% (31 of 45 packages production-ready)  
+**Total Codebase:** ~116,000 lines (PHP + Documentation)
 
 | Business/ERP Domain | Package Name/Namespace | Description | Major Milestones Completed | Major Milestones In Progress | % Complete | Total LOC | Planned Major Milestones | Criticality |
 |---------------------|------------------------|-------------|----------------------------|------------------------------|------------|-----------|-------------------------|-------------|
@@ -12,7 +12,7 @@
 | Fiscal Periods | `Nexus\Period` | Period management for accounting, inventory, payroll with auto-close and posting validation. | Smart period creation, Overlap validation, Status transitions, Caching | Unit testing | 100% | 1,305 | Automated closing, Multi-calendar | High - Blocking |
 | Unit Conversion | `Nexus\Uom` | Unit of measurement conversions with dimension validation and precision handling. | Base units, Conversion engine, Dimension safety | Compound units | 90% | 2,135 | Temperature conversions | Medium - Deterrent |
 | Audit Trails | `Nexus\AuditLogger` | CRUD tracking with timeline feeds, retention policies, and user attribution for compliance. | Event logging, Retention policies, Timeline queries | Advanced filtering | 90% | 1,520 | Real-time feeds, Archival | Medium - Deterrent |
-| Event Sourcing | `Nexus\EventStream` | Immutable event log for GL and inventory with temporal queries and projection rebuilding. | Core contracts, Value objects | Projections, Snapshots | 20% | 1,677 | Upcasters, Sharding | Low - Debt |
+| Event Sourcing | `Nexus\EventStream` | Immutable event log for GL and inventory with temporal queries and projection rebuilding. | Core contracts, Value objects, Exceptions, Engines, Test suite (76% coverage) | Snapshot repository, Stream reader impl | 85% | 3,200 | Upcasters, Sharding | Medium - Deterrent |
 | Configuration | `Nexus\Setting` | Hierarchical settings management with tenant overrides and type-safe access. | CRUD operations, Tenant scoping, Type casting, Caching | - | 95% | 1,894 | Setting groups | Low - Debt |
 | **Identity & Security** |
 | Authentication | `Nexus\Identity` | User authentication with MFA, session management, RBAC, and wildcard permissions. | RBAC, MFA, Session mgmt, Token scopes | OAuth2 integration | 95% | 3,685 | SSO, Biometrics | High - Blocking |
@@ -67,9 +67,9 @@
 | Criticality Level | Package Count | Total LOC | Avg Completion | Key Blockers |
 |-------------------|---------------|-----------|----------------|--------------|
 | **High - Blocking** | 6 packages | 16,193 | 87% | Inventory (50%), Finance/Identity complete |
-| **Medium - Deterrent** | 17 packages | 54,431 | 79% | Receivable (75%), Payable (70%), Assets (40%) |
-| **Low - Debt** | 22 packages | 43,876 | 58% | EventStream (20%), Workflows (30%), Backoffice (20%) |
-| **TOTAL** | **45 packages** | **114,500** | **68%** | - |
+| **Medium - Deterrent** | 18 packages | 57,631 | 80% | EventStream (85%), Receivable (75%), Payable (70%) |
+| **Low - Debt** | 21 packages | 42,176 | 57% | Workflows (30%), Backoffice (20%) |
+| **TOTAL** | **45 packages** | **116,000** | **69%** | - |
 
 ---
 
@@ -83,7 +83,7 @@
 ### Medium-Term (Next 8 weeks)
 4. **Complete Payable** (70% → 95%) - Required for full AP automation
 5. **Advance Warehouse** (40% → 75%) - Enables pick/pack/ship workflows
-6. **Implement EventStream** (20% → 70%) - Required for GL compliance
+6. **Complete EventStream** (85% → 95%) - Required for GL compliance and temporal queries
 
 ### Long-Term (Next 12 weeks)
 7. **HRM/Payroll Suite** (40-50% → 90%) - Complete employee lifecycle

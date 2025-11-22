@@ -40,6 +40,32 @@ interface SnapshotRepositoryInterface
     public function getLatest(string $aggregateId): ?SnapshotInterface;
 
     /**
+     * Get the latest snapshot for an aggregate (returns array)
+     *
+     * @param string $aggregateId The aggregate identifier
+     * @return array<string, mixed>|null
+     */
+    public function getLatestSnapshot(string $aggregateId): ?array;
+
+    /**
+     * Get the latest snapshot at or before a specific timestamp
+     *
+     * @param string $aggregateId The aggregate identifier
+     * @param DateTimeImmutable $timestamp The point in time
+     * @return array<string, mixed>|null
+     */
+    public function getLatestSnapshotBefore(string $aggregateId, DateTimeImmutable $timestamp): ?array;
+
+    /**
+     * Get a snapshot at a specific timestamp
+     *
+     * @param string $aggregateId The aggregate identifier
+     * @param DateTimeImmutable $timestamp The point in time
+     * @return array<string, mixed>|null
+     */
+    public function getSnapshotAt(string $aggregateId, DateTimeImmutable $timestamp): ?array;
+
+    /**
      * Get a snapshot at or before a specific version
      *
      * @param string $aggregateId The aggregate identifier

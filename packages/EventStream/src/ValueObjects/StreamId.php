@@ -21,6 +21,9 @@ final readonly class StreamId
     private function __construct(
         private string $value
     ) {
+        if (empty($value)) {
+            throw new \InvalidArgumentException('Stream ID cannot be empty');
+        }
     }
 
     /**

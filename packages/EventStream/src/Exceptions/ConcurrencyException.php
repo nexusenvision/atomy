@@ -29,7 +29,7 @@ class ConcurrencyException extends EventStreamException
     ) {
         if (empty($message)) {
             $message = sprintf(
-                'Concurrency conflict detected for aggregate "%s". Expected version %d but found %d. Please retry.',
+                'Concurrency conflict detected for aggregate "%s". Expected version %d but actual version %d. Please retry.',
                 $aggregateId,
                 $expectedVersion,
                 $actualVersion
@@ -37,5 +37,35 @@ class ConcurrencyException extends EventStreamException
         }
 
         parent::__construct($message, $code, $previous);
+    }
+
+    /**
+     * Get the aggregate ID that had the conflict
+     *
+     * @return string
+     */
+    public function getAggregateId(): string
+    {
+        return $this->aggregateId;
+    }
+
+    /**
+     * Get the expected version
+     *
+     * @return int
+     */
+    public function getExpectedVersion(): int
+    {
+        return $this->expectedVersion;
+    }
+
+    /**
+     * Get the actual version found
+     *
+     * @return int
+     */
+    public function getActualVersion(): int
+    {
+        return $this->actualVersion;
     }
 }

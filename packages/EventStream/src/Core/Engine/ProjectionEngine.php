@@ -24,7 +24,7 @@ use Psr\Log\LoggerInterface;
  *
  * @package Nexus\EventStream\Core\Engine
  */
-final readonly class ProjectionEngine
+readonly class ProjectionEngine
 {
     public function __construct(
         private StreamReaderInterface $streamReader,
@@ -35,60 +35,70 @@ final readonly class ProjectionEngine
     /**
      * Run a projector from its last processed position
      *
-     * @param ProjectorInterface $projector
+     * @param string $streamId The stream identifier
+     * @param ProjectorInterface $projector The projector to run
      * @return void
      */
-    public function run(ProjectorInterface $projector): void
+    public function run(string $streamId, ProjectorInterface $projector): void
     {
         $lastEventId = $projector->getLastProcessedEventId();
 
         $this->logger->info('Running projection', [
+            'stream_id' => $streamId,
             'projector' => $projector->getName(),
             'last_event_id' => $lastEventId,
         ]);
 
-        foreach ($projector->getHandledEventTypes() as $eventType) {
-            $events = $this->streamReader->readEventsByType($eventType);
+        // Read events from the stream
+        $events = $this->streamReader->readStream($streamId);
+        $totalEvents = count($events);
+        $projectedEvents = 0;
 
-            foreach ($events as $event) {
-                // Skip events we've already processed
-                if ($lastEventId !== null && $event->getEventId() <= $lastEventId) {
-                    continue;
-                }
+        foreach ($events as $event) {
+            // Skip events we've already processed
+            if ($lastEventId !== null && $event->getEventId() <= $lastEventId) {
+                continue;
+            }
 
-                try {
-                    $projector->project($event);
-                    $projector->setLastProcessedEventId($event->getEventId());
-                } catch (\Throwable $e) {
-                    $this->logger->error('Projection failed', [
-                        'projector' => $projector->getName(),
-                        'event_id' => $event->getEventId(),
-                        'error' => $e->getMessage(),
-                    ]);
+            // Only project events this projector handles
+            if (!in_array($event->getEventType(), $projector->getHandledEventTypes(), true)) {
+                continue;
+            }
 
-                    throw new ProjectionException(
-                        $projector->getName(),
-                        $event->getEventId(),
-                        previous: $e
-                    );
-                }
+            try {
+                $projector->project($event);
+                $projector->setLastProcessedEventId($event->getEventId());
+                $projectedEvents++;
+            } catch (\Throwable $e) {
+                $this->logger->error('Projection error', [
+                    'projector' => $projector->getName(),
+                    'event_id' => $event->getEventId(),
+                    'error' => $e->getMessage(),
+                ]);
+
+                // Don't throw, just log and continue with next event
+                continue;
             }
         }
 
         $this->logger->info('Projection completed', [
             'projector' => $projector->getName(),
+            'total_events' => $totalEvents,
+            'projected_events' => $projectedEvents,
         ]);
     }
 
     /**
      * Rebuild a projector from scratch by replaying all events
      *
-     * @param ProjectorInterface $projector
+     * @param string $streamId The stream identifier
+     * @param ProjectorInterface $projector The projector to rebuild
      * @return void
      */
-    public function rebuild(ProjectorInterface $projector): void
+    public function rebuild(string $streamId, ProjectorInterface $projector): void
     {
         $this->logger->info('Rebuilding projection from scratch', [
+            'stream_id' => $streamId,
             'projector' => $projector->getName(),
         ]);
 
@@ -96,6 +106,20 @@ final readonly class ProjectionEngine
         $projector->reset();
 
         // Run from the beginning
-        $this->run($projector);
+        $this->run($streamId, $projector);
+    }
+
+    /**
+     * Resume a projection from a specific event ID
+     *
+     * @param string $streamId The stream identifier
+     * @param ProjectorInterface $projector The projector to resume
+     * @param string $lastEventId The last processed event ID
+     * @return void
+     */
+    public function resume(string $streamId, ProjectorInterface $projector, string $lastEventId): void
+    {
+        $projector->setLastProcessedEventId($lastEventId);
+        $this->run($streamId, $projector);
     }
 }

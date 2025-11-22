@@ -47,6 +47,16 @@ final readonly class EventVersion
     }
 
     /**
+     * Create the first version (alias for initial)
+     *
+     * @return self
+     */
+    public static function first(): self
+    {
+        return new self(1);
+    }
+
+    /**
      * Get the next version
      *
      * @return self
@@ -78,6 +88,28 @@ final readonly class EventVersion
     }
 
     /**
+     * Check if this version is greater than another version
+     *
+     * @param EventVersion $other
+     * @return bool
+     */
+    public function isGreaterThan(EventVersion $other): bool
+    {
+        return $this->value > $other->value;
+    }
+
+    /**
+     * Check if this version is less than another version
+     *
+     * @param EventVersion $other
+     * @return bool
+     */
+    public function isLessThan(EventVersion $other): bool
+    {
+        return $this->value < $other->value;
+    }
+
+    /**
      * Check equality with another EventVersion
      *
      * @param EventVersion $other
@@ -86,5 +118,15 @@ final readonly class EventVersion
     public function equals(EventVersion $other): bool
     {
         return $this->value === $other->value;
+    }
+
+    /**
+     * Convert to string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return (string) $this->value;
     }
 }

@@ -56,6 +56,30 @@ interface StreamReaderInterface
     ): array;
 
     /**
+     * Read events for an aggregate from a specific date
+     *
+     * @param string $aggregateId The aggregate identifier
+     * @param DateTimeImmutable $fromDate Starting date
+     * @return EventInterface[]
+     */
+    public function readStreamFromDate(
+        string $aggregateId,
+        DateTimeImmutable $fromDate
+    ): array;
+
+    /**
+     * Read events for an aggregate up to a specific date
+     *
+     * @param string $aggregateId The aggregate identifier
+     * @param DateTimeImmutable $upToDate Ending date
+     * @return EventInterface[]
+     */
+    public function readStreamUpToDate(
+        string $aggregateId,
+        DateTimeImmutable $upToDate
+    ): array;
+
+    /**
      * Read all events of a specific type across all aggregates
      *
      * @param string $eventType The event type (fully qualified class name)

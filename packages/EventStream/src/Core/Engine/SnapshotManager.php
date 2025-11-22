@@ -29,7 +29,7 @@ use Psr\Log\LoggerInterface;
  *
  * @package Nexus\EventStream\Core\Engine
  */
-final readonly class SnapshotManager
+readonly class SnapshotManager
 {
     public function __construct(
         private SnapshotRepositoryInterface $snapshotRepository,

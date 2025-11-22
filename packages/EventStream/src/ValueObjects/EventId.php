@@ -23,6 +23,13 @@ final readonly class EventId
     private function __construct(
         private string $value
     ) {
+        // Validate ULID format (26 characters, alphanumeric)
+        if (!Ulid::isValid($value)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Invalid ULID format: "%s". Expected 26 alphanumeric characters.',
+                $value
+            ));
+        }
     }
 
     /**

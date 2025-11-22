@@ -22,14 +22,14 @@ use Psr\Log\LoggerInterface;
  * 
  * Non-blocking design ensures invoice posting is never delayed by AI processing.
  */
-final readonly class EnrichInvoiceWithPaymentPredictionListener implements ShouldQueue
+final class EnrichInvoiceWithPaymentPredictionListener implements ShouldQueue
 {
-    public $queue = 'intelligence';
-    public $tries = 3;
-    public $backoff = [60, 300, 900]; // 1min, 5min, 15min
+    public string $queue = 'intelligence';
+    public int $tries = 3;
+    public array $backoff = [60, 300, 900]; // 1min, 5min, 15min
 
     public function __construct(
-        private LoggerInterface $logger
+        private readonly LoggerInterface $logger
     ) {}
 
     /**
