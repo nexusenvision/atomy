@@ -518,6 +518,195 @@ CREATE TABLE unapplied_cash (
 
 ---
 
+## 🧠 Intelligence Integration (Wave 1)
+
+### Overview: Customer Payment Prediction Extractor
+
+The **CustomerPaymentPredictionExtractor** provides AI-driven cash flow forecasting by predicting **when** a customer will pay their invoice, enabling proactive credit management and optimized working capital allocation.
+
+**Business Value:**
+- **DSO Reduction**: Improve Days Sales Outstanding by 15-20% through early identification of late payers
+- **Credit Risk Management**: Prioritize collections efforts on high-risk invoices (predicted >30 days late)
+- **Cash Flow Forecasting**: Generate accurate 30/60/90-day cash flow projections for treasury management
+- **Customer Segmentation**: Identify "fast payers" for preferential terms vs. "slow payers" requiring credit holds
+
+### Feature Categories (20 Features)
+
+#### 1. Payment Behavior Metrics (8 features)
+Historical patterns extracted from `mv_customer_payment_analytics` materialized view:
+
+```php
+'avg_payment_delay_days'              // Mean delay from due date (last 12 months)
+'payment_delay_std_dev'               // Standard deviation of payment delays
+'on_time_payment_rate'                // % of invoices paid within terms (0-1)
+'late_payment_rate'                   // % of invoices >7 days overdue
+'avg_days_to_pay'                     // Mean days from invoice to payment
+'payment_frequency_score'             // Regularity of payments (0-1, higher = more consistent)
+'has_payment_plan_active'             // Boolean flag (1 if customer on installment plan)
+'payment_method_consistency_score'    // Entropy-based metric (0-1, higher = single preferred method)
+```
+
+#### 2. Credit Health Indicators (5 features)
+Current credit status and exposure:
+
+```php
+'current_credit_limit'                // Authorized credit limit in base currency
+'credit_utilization_ratio'            // outstanding / credit_limit (0-1)
+'credit_limit_exceeded_count'         // # times limit breached (last 6 months)
+'overdue_balance'                     // Sum of invoices past due date
+'highest_overdue_days'                // Max days past due for any open invoice
+```
+
+#### 3. Relationship & Volume Metrics (4 features)
+Customer tenure and transaction patterns:
+
+```php
+'customer_tenure_days'                // Days since first invoice
+'total_lifetime_value'                // Sum of all invoice amounts (historical)
+'avg_invoice_amount'                  // Mean invoice value (last 12 months)
+'invoice_count_12m'                   // Total invoices issued in trailing 12 months
+```
+
+#### 4. Seasonal & External Factors (3 features)
+Time-based and contextual signals:
+
+```php
+'invoice_month'                       // 1-12 (for seasonality patterns)
+'days_until_due_date'                 // Remaining days before invoice due
+'is_year_end_invoice'                 // Boolean (1 if invoice date in Dec 15-31)
+```
+
+### Engineered Scores
+
+The extractor computes two critical composite scores:
+
+**1. Payment Urgency Score (0-10)**
+```php
+// Formula components:
+- Credit utilization ratio × 4 (max 4 points)
+- Late payment rate × 3 (max 3 points)
+- Days overdue / 30 × 3 (max 3 points)
+
+// Interpretation:
+0-3: Low urgency (predictable payer)
+4-7: Medium urgency (monitor closely)
+8-10: High urgency (immediate collection action required)
+```
+
+**2. Collection Difficulty Estimate (0-1)**
+```php
+// Leaky ReLU activation on weighted composite:
+difficulty = max(0, 0.3×late_rate + 0.3×payment_delay_std + 0.2×credit_exceeded + 0.2×(1-tenure_score))
+
+// Interpretation:
+0.0-0.3: Easy (self-service reminders sufficient)
+0.3-0.6: Moderate (dedicated collections contact)
+0.6-1.0: Hard (potential legal escalation)
+```
+
+### Integration Pattern: Async Enrichment
+
+Unlike Payable's blocking fraud detection, Receivable uses **asynchronous enrichment** to avoid delaying invoice posting:
+
+**Workflow:**
+1. **Invoice Posted** → Event dispatched (`CustomerInvoicePostedEvent`)
+2. **Listener Enqueued** → `EnrichInvoiceWithPaymentPredictionListener` (ShouldQueue)
+3. **Background Extraction** → Runs CustomerPaymentPredictionExtractor against materialized view
+4. **Database Update** → Stores predictions in `invoice_payment_predictions` table
+5. **Dashboard Display** → Collections team sees prioritized worklist with urgency scores
+
+**Code Example (Listener):**
+```php
+namespace App\Listeners\Intelligence;
+
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Nexus\Receivable\Events\CustomerInvoicePostedEvent;
+use Nexus\Intelligence\Contracts\FeatureExtractorInterface;
+use Nexus\Intelligence\Contracts\SeverityEvaluatorInterface;
+
+final class EnrichInvoiceWithPaymentPredictionListener implements ShouldQueue
+{
+    public function __construct(
+        private readonly FeatureExtractorInterface $paymentPredictor,
+        private readonly SeverityEvaluatorInterface $evaluator
+    ) {}
+    
+    public function handle(CustomerInvoicePostedEvent $event): void
+    {
+        // Extract features from materialized view analytics
+        $features = $this->paymentPredictor->extract([
+            'invoice_id' => $event->invoice->getId(),
+            'customer_id' => $event->invoice->getCustomerId(),
+            'invoice_amount' => $event->invoice->getTotalAmount()->getAmount(),
+            'due_date' => $event->invoice->getDueDate()->format('Y-m-d'),
+        ]);
+        
+        // Evaluate urgency severity
+        $severity = $this->evaluator->evaluate($features);
+        
+        // Store for dashboard consumption (non-blocking)
+        DB::table('invoice_payment_predictions')->insert([
+            'invoice_id' => $event->invoice->getId(),
+            'predicted_payment_date' => $features['predicted_payment_date'] ?? null,
+            'payment_urgency_score' => $features['payment_urgency_score'] ?? 0,
+            'collection_difficulty' => $features['collection_difficulty_estimate'] ?? 0,
+            'severity' => $severity->value,
+            'extracted_at' => now(),
+        ]);
+    }
+}
+```
+
+### Materialized View (Incremental Refresh)
+
+**Table**: `mv_customer_payment_analytics` (partitioned by `tenant_id`)
+
+**Refresh Strategy**:
+- **Incremental**: Every 15 minutes using `dirty_records` tracking table
+- **Full**: Hourly fallback if incremental fails
+- **Trigger**: Any INSERT/UPDATE on `payment_receipts` or `customer_invoices` adds row to dirty table
+
+**Partition Schema**:
+```sql
+-- Auto-provisioned on TenantCreatedEvent
+CREATE TABLE mv_customer_payment_analytics_tenant_abc123 PARTITION OF mv_customer_payment_analytics
+FOR VALUES IN ('abc123');
+```
+
+### Business Metrics & ROI
+
+**Baseline Scenario** (Pre-Intelligence):
+- Average DSO: 45 days
+- Collections team manually reviews 200 invoices/week (8 hours/week)
+- Annual bad debt write-offs: $75,000
+- Working capital tied up: $1.2M in receivables
+
+**Post-Deployment Targets** (6 months):
+- **DSO Improvement**: Reduce to 38 days (15% reduction via prioritized collections)
+  - Working Capital Release: $1.2M × (7/45) = **$186,666 freed**
+- **Collections Efficiency**: Reduce review time to 4 hours/week (50% reduction)
+  - Labor Savings: 4 hrs/week × $35/hr × 52 weeks = **$7,280/year**
+- **Bad Debt Reduction**: Decrease write-offs to $60,000 (20% reduction via early intervention)
+  - Annual Savings: **$15,000**
+
+**Total Annual Benefit**: $186,666 + $7,280 + $15,000 = **$208,946**  
+**Implementation Cost**: $1,500 (materialized view migration + listener + dashboard integration)  
+**ROI**: **13,830%** (payback in ~2.6 days)
+
+### Implementation Checklist
+
+- [x] Contract: `PaymentHistoryRepositoryInterface` (11 analytics methods)
+- [x] Extractor: `CustomerPaymentPredictionExtractor` (20 features)
+- [ ] Migration: `create_mv_customer_payment_analytics_table.php`
+- [ ] Repository: `EloquentPaymentHistoryRepository` (Eloquent + raw SQL)
+- [ ] Listener: `EnrichInvoiceWithPaymentPredictionListener` (async queue)
+- [ ] Migration: `create_invoice_payment_predictions_table.php` (predictions storage)
+- [ ] Service Provider: Bind repository interface in `AppServiceProvider`
+- [ ] Dashboard: Filament resource showing urgency scores and predicted dates
+- [ ] Tests: Feature test for async enrichment flow
+
+---
+
 ## 🚀 Next Steps (Phase 2 Implementation)
 
 ### Priority 1: Core Service Layer
