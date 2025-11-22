@@ -553,31 +553,66 @@ Generate:
 
 ## Available Packages
 
-The following packages are planned or under development in this monorepo:
+The following packages are implemented or under development in this monorepo:
 
-1. **Nexus\Accounting** - Financial accounting, chart of accounts, journal entries, fiscal periods
-2. **Nexus\Analytics** - Business intelligence, predictive models, data analytics
-3. **Nexus\AuditLogger** - Comprehensive audit logging with CRUD tracking, retention policies
-4. **Nexus\Backoffice** - Company structure, offices, departments, staff organizational units
-5. **Nexus\Crm** - Customer relationship management, leads, opportunities, sales pipeline
-6. **Nexus\FieldService** - Work orders, technicians, service contracts, SLA management
-7. **Nexus\Hrm** - Human resource management, leave, attendance, performance reviews
-8. **Nexus\Manufacturing** - Bill of materials, work orders, production planning, MRP
-9. **Nexus\Marketing** - Campaigns, lead nurturing, A/B testing, GDPR compliance
-10. **Nexus\OrgStructure** - Organizational hierarchy and structure management
-11. **Nexus\Payroll** - Malaysian payroll processing, EPF, SOCSO, PCB tax calculations
-12. **Nexus\Procurement** - Purchase requisitions, POs, goods receipt, 3-way matching
-13. **Nexus\ProjectManagement** - Projects, tasks, timesheets, milestones, resource allocation
-14. **Nexus\Sequencing** - Auto-numbering with patterns, scopes, and counter management
-15. **Nexus\Uom** - Unit of measurement management and conversions
-16. **Nexus\Workflow** - Workflow engine, process automation, state machines
-17. **Nexus\Tenant** - Multi-tenancy context and isolation engine
-18. **Nexus\Inventory** - Inventory and stock management with lot/serial tracking
-19. **Nexus\...** - Future packages as needed
+### ✅ Production-Ready Packages (Fully Implemented)
+1. **Nexus\Tenant** - Multi-tenancy context and isolation engine with queue context propagation
+2. **Nexus\Sequencing** - Auto-numbering with patterns, scopes, and atomic counter management
+3. **Nexus\Period** - Fiscal period management with intelligent next-period creation
+4. **Nexus\Uom** - Unit of measurement management and conversions
+5. **Nexus\AuditLogger** - Comprehensive audit logging with CRUD tracking, retention policies
+6. **Nexus\Identity** - Authentication, authorization (RBAC), session/token management, MFA
+7. **Nexus\Notifier** - Multi-channel notification engine (email, SMS, push, in-app)
+8. **Nexus\Finance** - General ledger, chart of accounts, journal entries, double-entry bookkeeping
+9. **Nexus\Accounting** - Financial statement generation, period close, consolidation, variance analysis
+10. **Nexus\Party** - Party management (customers, vendors, employees, contacts)
+11. **Nexus\Product** - Product catalog, pricing, categorization
+12. **Nexus\Currency** - Multi-currency management, exchange rates, money calculations
+13. **Nexus\Sales** - Quotation-to-order lifecycle, pricing engine
+14. **Nexus\Receivable** - Customer invoicing, payment receipts, credit control, collections (3 phases complete)
+15. **Nexus\Payable** - Vendor bills, payment processing, aging analysis
+16. **Nexus\Connector** - Integration hub with circuit breaker, retry logic, OAuth support
+17. **Nexus\Storage** - File storage abstraction layer
+18. **Nexus\Document** - Document management with versioning and permissions
+19. **Nexus\Setting** - Application settings management
+20. **Nexus\Geo** - Geocoding, geofencing, routing capabilities
+21. **Nexus\Routing** - Route optimization and caching
+22. **Nexus\CashManagement** - Bank accounts, reconciliation, cash flow forecasting
+23. **Nexus\Intelligence** - AI-assisted automation and predictions
+24. **Nexus\Reporting** - Report definition, execution, and export engine
+25. **Nexus\Export** - Multi-format export engine (PDF, Excel, CSV, JSON)
+26. **Nexus\Import** - Data import with validation and transformation
+27. **Nexus\Assets** - Fixed asset management, depreciation tracking
+28. **Nexus\Budget** - Budget planning and tracking
+29. **Nexus\Scheduler** - Task scheduling and job management
+30. **Nexus\Compliance** - Process enforcement and operational compliance
+31. **Nexus\Statutory** - Reporting compliance and statutory filing
+32. **Nexus\PayrollMysStatutory** - Malaysian payroll statutory calculations (EPF, SOCSO, PCB)
+
+### 🚧 In Development
+33. **Nexus\Hrm** - Human resource management, leave, attendance, performance reviews
+34. **Nexus\Payroll** - Payroll processing framework
+35. **Nexus\Inventory** - Inventory and stock management with lot/serial tracking
+36. **Nexus\Warehouse** - Warehouse management and operations
+37. **Nexus\FieldService** - Work orders, technicians, service contracts, SLA management
+38. **Nexus\Workflow** - Workflow engine, process automation, state machines
+39. **Nexus\EventStream** - Event sourcing engine for critical domains (Finance GL, Inventory)
+40. **Nexus\DataProcessor** - Data processing capability (OCR, ETL, etc.) - Interface-only package
+41. **Nexus\Analytics** - Business intelligence, predictive models, data analytics
+42. **Nexus\Backoffice** - Company structure, offices, departments, staff organizational units
+43. **Nexus\OrgStructure** - Organizational hierarchy and structure management
+44. **Nexus\Crm** - Customer relationship management, leads, opportunities, sales pipeline
+45. **Nexus\Marketing** - Campaigns, lead nurturing, A/B testing, GDPR compliance
+46. **Nexus\Manufacturing** - Bill of materials, work orders, production planning, MRP
+47. **Nexus\Procurement** - Purchase requisitions, POs, goods receipt, 3-way matching
+48. **Nexus\ProjectManagement** - Projects, tasks, timesheets, milestones, resource allocation
+49. **Nexus\Audit** - Advanced audit capabilities (extends AuditLogger)
+50. **Nexus\Crypto** - Cryptographic operations and key management
 
 ## Quality Standards
 
 - Always use strict types: `declare(strict_types=1);`
+- **Target PHP Version: 8.3+** - All packages must require `"php": "^8.3"` in composer.json
 - All auto-incrementing primary keys are ULIDs (UUID v4) strings.
 - Use type hints for all parameters and return types
 - Write comprehensive docblocks with `@param`, `@return`, `@throws`
@@ -585,6 +620,7 @@ The following packages are planned or under development in this monorepo:
 - Use meaningful variable and method names
 - Validate inputs in services before processing
 - Throw descriptive exceptions for error cases
+- **Service Layer Must Use Interfaces:** All dependencies in service constructors must be injected as interfaces, never concrete classes
 
 ## ✨ Modern PHP 8.x Standards (Targeting 8.3+)
 
@@ -971,6 +1007,223 @@ $this->app->singleton(TenantLifecycleService::class);
 ```
 
 **Correction:** Apply **Rule C**. `TenantLifecycleService` is a concrete class from the package. It must be **removed**. Its dependencies (which are interfaces like `TenantRepositoryInterface`) are already correctly bound, so Laravel handles the rest.
+
+-----
+
+## 🔧 Service Layer Patterns & Best Practices
+
+### Service Organization in Applications
+
+When implementing services in `apps/Atomy/app/Services/`, follow these organizational patterns:
+
+#### 1. Domain-Specific Service Directories
+
+Create domain-specific directories for complex packages that require multiple application-layer services:
+
+```
+apps/Atomy/app/Services/
+├── Analytics/              # Analytics-specific services
+│   └── TrendAnalyzer.php
+├── Hrm/                    # HRM-specific services
+│   └── LeaveBalanceCalculator.php
+├── Inventory/              # Inventory-specific services
+│   └── StockLevelMonitor.php
+├── Payroll/                # Payroll-specific services
+│   └── PayslipGenerator.php
+├── Receivable/             # Receivable-specific services
+│   └── ReceivableManager.php
+├── Sales/                  # Sales-specific services
+│   └── SalesOrderProcessor.php
+└── Storage/                # Storage-specific services
+    └── LocalStorageAdapter.php
+```
+
+#### 2. Framework Adapter Services
+
+For framework-specific implementations of package contracts, use clear naming:
+
+- **Pattern:** `Laravel{Purpose}.php` or `{Purpose}Adapter.php`
+- **Location:** `app/Services/` (root level for cross-cutting concerns)
+
+**Examples:**
+```
+LaravelCacheAdapter.php      # Implements CacheRepositoryInterface
+LaravelPasswordHasher.php    # Implements PasswordHasherInterface
+PeriodAuditLoggerAdapter.php # Implements AuditLoggerInterface
+SystemClock.php              # Implements ClockInterface
+```
+
+#### 3. Channel/Strategy Implementations
+
+For strategy pattern implementations (notifications, exports, etc.), use dedicated subdirectories:
+
+```
+app/Services/Channels/       # Notification channels
+├── EmailChannel.php
+├── SmsChannel.php
+├── PushChannel.php
+└── InAppChannel.php
+```
+
+### Naming Conventions for Services
+
+| Service Type | Naming Pattern | Example | Location |
+|--------------|----------------|---------|----------|
+| **Domain Manager** | `{Domain}Manager.php` | `ReceivableManager.php` | `app/Services/{Domain}/` |
+| **Laravel Adapter** | `Laravel{Purpose}.php` | `LaravelGeocoder.php` | `app/Services/` |
+| **Package Adapter** | `{Package}{Purpose}Adapter.php` | `PeriodAuditLoggerAdapter.php` | `app/Services/` |
+| **Strategy Implementation** | `{Strategy}{Type}.php` | `SimpleTaxCalculator.php` | `app/Services/{Domain}/` |
+| **Channel Implementation** | `{Channel}Channel.php` | `EmailChannel.php` | `app/Services/Channels/` |
+| **Repository** | `Db{Entity}Repository.php` or `Eloquent{Entity}Repository.php` | `DbUserRepository.php` | `app/Repositories/` |
+
+### Service Constructor Best Practices
+
+**✅ CORRECT - All dependencies are interfaces:**
+```php
+namespace App\Services\Receivable;
+
+final readonly class ReceivableManager implements ReceivableManagerInterface
+{
+    public function __construct(
+        private CustomerInvoiceRepositoryInterface $invoiceRepository,
+        private PaymentReceiptRepositoryInterface $receiptRepository,
+        private GeneralLedgerManagerInterface $glManager,
+        private SequencingManagerInterface $sequencing,
+        private AuditLogManagerInterface $auditLogger,
+        private LoggerInterface $logger
+    ) {}
+}
+```
+
+**❌ WRONG - Mixing concrete classes and interfaces:**
+```php
+public function __construct(
+    private DbCustomerInvoiceRepository $invoiceRepository,  // Concrete class!
+    private PaymentReceiptRepositoryInterface $receiptRepository,
+    private FinanceManager $financeManager,                   // Concrete class!
+    private LoggerInterface $logger
+) {}
+```
+
+-----
+
+## 📦 Advanced Package Patterns
+
+### 1. Cross-Package Integration Adapters
+
+When Package A needs to integrate with Package B, create an adapter in the **application layer** that implements Package A's interface using Package B's services:
+
+**Example:** Sales package needs to create invoices in Receivable package
+
+```
+packages/Sales/src/Contracts/InvoiceCreatorInterface.php  # Sales defines what it needs
+apps/Atomy/app/Services/Sales/ReceivableInvoiceAdapter.php  # Atomy implements using Receivable
+```
+
+**Implementation:**
+```php
+namespace App\Services\Sales;
+
+use Nexus\Sales\Contracts\InvoiceCreatorInterface;
+use Nexus\Receivable\Contracts\ReceivableManagerInterface;
+
+final readonly class ReceivableInvoiceAdapter implements InvoiceCreatorInterface
+{
+    public function __construct(
+        private ReceivableManagerInterface $receivableManager
+    ) {}
+    
+    public function createInvoiceFromOrder(string $orderId): string
+    {
+        return $this->receivableManager->createInvoiceFromOrder($orderId);
+    }
+}
+```
+
+### 2. Strategy Pattern for Business Rules
+
+Use strategy interfaces for business rules that vary by domain or configuration:
+
+**Package defines the contract:**
+```php
+namespace Nexus\Receivable\Contracts;
+
+interface PaymentAllocationStrategyInterface
+{
+    public function allocate(PaymentReceiptInterface $receipt): array;
+}
+```
+
+**Application provides implementations:**
+```
+app/Services/Receivable/Strategies/
+├── FIFOAllocationStrategy.php         # First-in, first-out
+├── OldestInvoiceFirstStrategy.php     # Prioritize oldest
+└── ManualAllocationStrategy.php       # User-specified
+```
+
+### 3. Default vs. Configured Implementations
+
+For features that have safe defaults but can be enhanced:
+
+**Pattern:**
+1. Package provides `DefaultXxxService` for basic functionality
+2. Application can bind enhanced implementation when needed
+3. Service provider uses conditional binding
+
+**Example from Statutory/Compliance:**
+```php
+// Default binding (always safe)
+$this->app->singleton(
+    PayrollStatutoryInterface::class,
+    DefaultStatutoryCalculator::class
+);
+
+// Override if Malaysia package is enabled
+if (config('features.malaysia_payroll')) {
+    $this->app->singleton(
+        PayrollStatutoryInterface::class,
+        MYSStatutoryCalculator::class
+    );
+}
+```
+
+-----
+
+## 🔍 Code Quality Checklist
+
+Before committing code to the repository, verify:
+
+### For Packages (`packages/*/src/`)
+- [ ] No Laravel facades used (`Log::`, `Cache::`, `DB::`, etc.)
+- [ ] No global helpers used (`now()`, `config()`, `app()`, `dd()`, etc.)
+- [ ] All dependencies injected via constructor as **interfaces**
+- [ ] All properties are `readonly` (for PHP 8.3+)
+- [ ] Native enums used instead of class constants
+- [ ] `declare(strict_types=1);` at top of every file
+- [ ] All public methods have complete docblocks
+- [ ] Custom exceptions thrown for domain errors
+- [ ] No direct database access (use Repository interfaces)
+
+### For Application Layer (`apps/Atomy/`)
+- [ ] All package interfaces implemented with concrete classes
+- [ ] Repository classes properly implement repository interfaces
+- [ ] Service provider bindings follow the Decision Tree rules (A, B, C, D)
+- [ ] No redundant bindings for concrete package services
+- [ ] Migrations use ULID for primary keys
+- [ ] Models implement package entity interfaces
+- [ ] API controllers use package services (not repositories directly)
+
+### For Service Classes
+- [ ] All constructor parameters are interfaces (not concrete classes)
+- [ ] Service located in appropriate directory (domain-specific or root)
+- [ ] Follows naming convention (`{Domain}Manager`, `Laravel{Purpose}`, etc.)
+- [ ] Implements an interface from the package layer
+- [ ] Uses dependency injection (no service locator pattern)
+- [ ] Logs important operations to `LoggerInterface`
+- [ ] Calls `AuditLogManagerInterface` for audit trail
+
+-----
 
 ## Testing Approach
 
