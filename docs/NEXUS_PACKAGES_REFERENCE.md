@@ -77,6 +77,103 @@ public function deleteInvoice(string $invoiceId): void
 
 ---
 
+#### **Nexus\SSO** ⏳ **PLANNED**
+**Capabilities:**
+- Single Sign-On (SSO) orchestration
+- SAML 2.0 authentication
+- OAuth2/OIDC authentication
+- Azure AD (Entra ID) integration
+- Google Workspace integration
+- Okta integration
+- Just-In-Time (JIT) user provisioning
+- Configurable attribute mapping (IdP → local)
+- Single Logout (SLO) support
+- Multi-tenant SSO configuration
+
+**When to Use:**
+- ✅ Enterprise SSO integration
+- ✅ SAML 2.0 authentication
+- ✅ OAuth2/OIDC authentication
+- ✅ Azure AD login
+- ✅ Google Workspace login
+- ✅ Auto-provision users from IdP
+- ✅ Map IdP attributes to local user fields
+
+**Key Interfaces:**
+```php
+use Nexus\SSO\Contracts\SsoManagerInterface;
+use Nexus\SSO\Contracts\SsoProviderInterface;
+use Nexus\SSO\Contracts\SamlProviderInterface;
+use Nexus\SSO\Contracts\OAuthProviderInterface;
+use Nexus\SSO\Contracts\UserProvisioningInterface;
+use Nexus\SSO\Contracts\AttributeMapperInterface;
+```
+
+**Example:**
+```php
+// ✅ CORRECT: Initiate SSO login with Azure AD
+public function __construct(
+    private readonly SsoManagerInterface $ssoManager
+) {}
+
+public function loginWithAzure(string $tenantId): array
+{
+    $result = $this->ssoManager->initiateLogin(
+        providerName: 'azure',
+        tenantId: $tenantId,
+        parameters: ['returnUrl' => '/dashboard']
+    );
+    
+    // Redirect user to $result['authUrl']
+    return $result;
+}
+
+// Handle SSO callback
+public function handleCallback(string $code, string $state): SsoSession
+{
+    return $this->ssoManager->handleCallback(
+        providerName: 'azure',
+        callbackData: ['code' => $code],
+        state: $state
+    );
+}
+```
+
+**❌ WRONG:**
+```php
+// Creating custom SAML handler violates DRY principle
+final class CustomSamlHandler {
+    public function handleSamlResponse($response) {
+        // ... duplicates Nexus\SSO functionality
+    }
+}
+```
+
+**Integration with Identity:**
+```php
+// Nexus\SSO defines UserProvisioningInterface
+// Nexus\Identity implements it in Atomy layer
+namespace App\Services\SSO;
+
+use Nexus\SSO\Contracts\UserProvisioningInterface;
+use Nexus\Identity\Contracts\UserManagerInterface;
+
+final readonly class IdentityUserProvisioner implements UserProvisioningInterface
+{
+    public function __construct(
+        private UserManagerInterface $userManager
+    ) {}
+    
+    public function findOrCreateUser(UserProfile $profile, string $provider, string $tenantId): string
+    {
+        // Find existing user or create new one (JIT provisioning)
+        return $this->userManager->findOrCreateFromSso($profile);
+    }
+}
+```
+
+---
+
 ### 📊 **2. Observability & Monitoring**
 
 #### **Nexus\Monitoring**
@@ -1438,6 +1535,11 @@ public function getInvoices(): array {
 | Call external APIs | `Nexus\Connector` | `ConnectorManagerInterface` |
 | Validate periods | `Nexus\Period` | `PeriodValidatorInterface` |
 | Check permissions | `Nexus\Identity` | `AuthorizationManagerInterface` |
+| **Implement SSO authentication** | **`Nexus\SSO`** | **`SsoManagerInterface`** |
+| **SAML 2.0 login** | **`Nexus\SSO`** | **`SamlProviderInterface`** |
+| **OAuth2/OIDC login** | **`Nexus\SSO`** | **`OAuthProviderInterface`** |
+| **Azure AD/Google login** | **`Nexus\SSO`** | **`SsoManagerInterface`** |
+| **JIT user provisioning** | **`Nexus\SSO`** | **`UserProvisioningInterface`** |
 | Export to Excel | `Nexus\Export` | `ExportManagerInterface` |
 | Generate reports | `Nexus\Reporting` | `ReportManagerInterface` |
 | Event sourcing (GL/Inventory) | `Nexus\EventStream` | `EventStoreInterface` |
