@@ -12,7 +12,6 @@ use Nexus\Identity\Contracts\WebAuthnCredentialRepositoryInterface;
 use Nexus\Identity\Contracts\WebAuthnManagerInterface;
 use Nexus\Identity\Enums\MfaMethod;
 use Nexus\Identity\Exceptions\MfaEnrollmentException;
-use Nexus\Identity\Exceptions\UnauthorizedException;
 use Nexus\Identity\ValueObjects\BackupCode;
 use Nexus\Identity\ValueObjects\BackupCodeSet;
 use Nexus\Identity\ValueObjects\TotpSecret;
