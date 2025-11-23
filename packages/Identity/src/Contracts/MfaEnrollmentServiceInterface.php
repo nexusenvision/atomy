@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Nexus\Identity\Contracts;
 
-use DateTimeImmutable;
 use Nexus\Identity\ValueObjects\BackupCodeSet;
 use Nexus\Identity\ValueObjects\TotpSecret;
-use Nexus\Identity\ValueObjects\WebAuthnAuthenticationOptions;
 use Nexus\Identity\ValueObjects\WebAuthnCredential;
 use Nexus\Identity\ValueObjects\WebAuthnRegistrationOptions;
 
