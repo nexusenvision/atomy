@@ -33,6 +33,22 @@ final class CardinalityLimitExceededException extends MonitoringException
             ]
         );
     }
+
+    /**
+     * Create exception for global cardinality limit.
+     */
+    public static function globalLimit(int $limit, int $current): self
+    {
+        return new self('global', $current, $limit);
+    }
+
+    /**
+     * Create exception for per-metric cardinality limit.
+     */
+    public static function metricLimit(string $metricName, int $limit, int $current): self
+    {
+        return new self($metricName, $current, $limit);
+    }
     
     /**
      * Returns 429 Too Many Requests for API responses.
