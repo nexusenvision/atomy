@@ -79,14 +79,14 @@ nexus/
 │   ├── Inventory/        # Stock management
 │   └── ...
 ├── apps/
-│   ├── Atomy/            # Headless Laravel backend (primary deliverable)
+│   ├── consuming application/            # Headless Laravel backend (primary deliverable)
 │   │   ├── app/
 │   │   │   ├── Models/           # Eloquent models (implement package interfaces)
 │   │   │   ├── Repositories/     # Concrete repository implementations
 │   │   │   └── Services/         # Application-layer orchestration
 │   │   ├── database/migrations/  # ALL database migrations
 │   │   └── routes/api.php        # RESTful API endpoints
-│   └── Edward/           # Terminal UI client (demo consumer)
+│   └── client application/           # Terminal UI client (demo consumer)
 └── docs/                 # Comprehensive documentation
 ```
 
@@ -134,13 +134,13 @@ packages/Finance/
 
 #### Layer 2: Application Layer (Implementation)
 
-**Location:** `apps/Atomy/`  
+**Location:** `consuming application (e.g., Laravel app)`  
 **Framework:** Laravel 12  
 **Purpose:** Implements package contracts, provides persistence, exposes APIs
 
 **Structure:**
 ```
-apps/Atomy/
+consuming application (e.g., Laravel app)
 ├── app/
 │   ├── Models/                # Eloquent models (implement package interfaces)
 │   │   └── Finance/
@@ -202,7 +202,7 @@ When Package A needs Package B's functionality:
 
 ```
 packages/Sales/src/Contracts/InvoiceCreatorInterface.php  # Sales defines need
-apps/Atomy/app/Services/Sales/ReceivableInvoiceAdapter.php  # Atomy bridges packages
+consuming application (e.g., Laravel app)app/Services/Sales/ReceivableInvoiceAdapter.php  # consuming application bridges packages
 ```
 
 **Benefits:**
@@ -219,7 +219,7 @@ apps/Atomy/app/Services/Sales/ReceivableInvoiceAdapter.php  # Atomy bridges pack
 | Layer | Technology | Version | Purpose |
 |-------|-----------|---------|---------|
 | **Language** | PHP | 8.3+ | Core programming language |
-| **Framework** | Laravel | 12 | Application layer (Atomy only) |
+| **Framework** | Laravel | 12 | Application layer (consuming application only) |
 | **Database** | PostgreSQL | 15+ | Primary persistence (MySQL supported) |
 | **Cache/Queue** | Redis | 7+ | Caching, sessions, queues |
 | **HTTP Client** | Guzzle | 7.8+ | External API communication |
@@ -1014,13 +1014,13 @@ final readonly class MyManager
 }
 ```
 
-**Step 6: Install in Atomy**
+**Step 6: Install in consuming application**
 ```bash
-cd apps/Atomy
+cd apps/consuming application
 composer require nexus/my-package:"*@dev"
 ```
 
-**Step 7: Implement in Atomy**
+**Step 7: Implement in consuming application**
 ```php
 // app/Models/MyEntity.php
 class MyEntity extends Model implements MyEntityInterface
@@ -1108,13 +1108,13 @@ class FinanceManagerTest extends TestCase
 
 ### Application-Level Tests (Integration)
 
-**Location:** `apps/Atomy/tests/Feature/`
+**Location:** `consuming application (e.g., Laravel app)tests/Feature/`
 
 **Purpose:** Test database, repositories, API endpoints
 
 **Example:**
 ```php
-// apps/Atomy/tests/Feature/FinanceTest.php
+// consuming application (e.g., Laravel app)tests/Feature/FinanceTest.php
 class FinanceTest extends TestCase
 {
     use RefreshDatabase;
@@ -1138,7 +1138,7 @@ class FinanceTest extends TestCase
 }
 ```
 
-**Coverage Requirement:** >85% for Atomy
+**Coverage Requirement:** >85% for consuming application
 
 ### Factory Pattern (Test Data)
 
@@ -1184,7 +1184,7 @@ $account = Account::factory()->asset()->active()->create();
          ┌─────────────────┼─────────────────┐
          │                 │                 │
     ┌────▼────┐       ┌────▼────┐      ┌────▼────┐
-    │ Atomy 1 │       │ Atomy 2 │      │ Atomy 3 │
+    │ consuming application 1 │       │ consuming application 2 │      │ consuming application 3 │
     └────┬────┘       └────┬────┘      └────┬────┘
          └─────────────────┼─────────────────┘
                            │
@@ -1389,7 +1389,7 @@ Integration Layer:
 
 1. **Always check which layer you're in:**
    - `packages/` → Pure PHP, no framework code
-   - `apps/Atomy/` → Laravel implementation
+   - `consuming application (e.g., Laravel app)` → Laravel implementation
 
 2. **Never violate package isolation:**
    - Packages define interfaces
@@ -1415,7 +1415,7 @@ Integration Layer:
 
 7. **Test everything:**
    - Packages: >95% coverage (unit tests)
-   - Atomy: >85% coverage (integration tests)
+   - consuming application: >85% coverage (integration tests)
    - Factory states must have tests
 
 8. **Security first:**
@@ -1427,19 +1427,19 @@ Integration Layer:
 ### Common Questions Answered:
 
 **Q: Where do I add a new migration?**
-→ `apps/Atomy/database/migrations/` (NEVER in packages)
+→ `consuming application (e.g., Laravel app)database/migrations/` (NEVER in packages)
 
 **Q: Where do I define business logic?**
 → `packages/{Domain}/src/Services/{Manager}.php`
 
 **Q: How do I access the database from a package?**
-→ You don't. Define a repository interface; Atomy implements it.
+→ You don't. Define a repository interface; consuming application implements it.
 
 **Q: Can I use `now()` in a package?**
 → No. Inject `ClockInterface` or use `new \DateTimeImmutable()`
 
 **Q: How do I add a new API endpoint?**
-→ Add route in `apps/Atomy/routes/api.php`, controller in `app/Http/Controllers/Api/`
+→ Add route in `consuming application (e.g., Laravel app)routes/api.php`, controller in `app/Http/Controllers/Api/`
 
 **Q: Should I use EventStream for this feature?**
 → Only if it's Finance GL or Inventory AND you need temporal queries for compliance

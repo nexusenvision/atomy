@@ -108,7 +108,7 @@ This implementation separates the current `Nexus\AuditLogger` into two focused p
 
 ---
 
-## Phase 3: Atomy Integration ⏳ PENDING
+## Phase 3: consuming application Integration ⏳ PENDING
 
 ### Audit Integration
 
@@ -278,7 +278,7 @@ Nexus\Audit
 ## Next Immediate Steps
 
 1. Complete Identity package contracts and services
-2. Implement Atomy database layer for Audit
+2. Implement consuming application database layer for Audit
 3. Create migrations for both packages
 4. Write comprehensive tests
 5. Update consuming packages

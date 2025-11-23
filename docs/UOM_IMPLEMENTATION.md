@@ -1,6 +1,6 @@
 # UOM Package Implementation
 
-Complete skeleton for the Nexus Unit of Measurement (UoM) package and Atomy implementation.
+Complete skeleton for the Nexus Unit of Measurement (UoM) package and consuming application implementation.
 
 ## 📦 Package Structure (packages/Uom/)
 
@@ -65,10 +65,10 @@ packages/Uom/
             # Properties: code, name, description, isSystemDefined
 ```
 
-## 🚀 Atomy Implementation Structure (apps/Atomy/)
+## 🚀 Application Implementation Structure (consuming application (e.g., Laravel app))
 
 ```
-apps/Atomy/
+consuming application (e.g., Laravel app)
 ├── database/
 │   └── migrations/
 │       └── 2025_11_17_200000_create_uom_tables.php  # All UoM tables (ARC-UOM-0029)
@@ -123,7 +123,7 @@ apps/Atomy/
 - **FR-UOM-A02**: ✅ All persistence operations MUST be defined by UomRepositoryInterface
   - `packages/Uom/src/Contracts/UomRepositoryInterface.php` defines all CRUD operations
   - Methods for units, dimensions, conversions, and unit systems
-  - Implemented by `apps/Atomy/app/Repositories/DbUomRepository.php`
+  - Implemented by `consuming application (e.g., Laravel app)app/Repositories/DbUomRepository.php`
 
 - **FR-UOM-A03**: ✅ Provide descriptive domain-specific exceptions
   - 10 specific exceptions in `packages/Uom/src/Exceptions/`
@@ -150,7 +150,7 @@ apps/Atomy/
   - Creates 4 tables with proper relationships and constraints
 
 - **ARC-UOM-0030**: ✅ All Eloquent models in application layer
-  - 4 models in `apps/Atomy/app/Models/`: Unit, Dimension, UnitConversion, UnitSystem
+  - 4 models in `consuming application (e.g., Laravel app)app/Models/`: Unit, Dimension, UnitConversion, UnitSystem
   - Each implements corresponding package interface
   - Models have relationships, fillable properties, and casts
 
@@ -310,7 +310,7 @@ apps/Atomy/
   - `UomConversionEngine` has `$conversionCache` array property
   - Caches ratio for repeated `fromUnit:toUnit` pairs
   - `clearCache()` method when rules change
-  - Config: `apps/Atomy/config/uom.php` → `cache_conversions`, `cache_duration`
+  - Config: `consuming application (e.g., Laravel app)config/uom.php` → `cache_conversions`, `cache_duration`
 
 - **PER-UOM-105**: ✅ Support 1,000+ units without degradation
   - Database indexes on `code`, `dimension_code`, `system_code`
@@ -322,13 +322,13 @@ apps/Atomy/
 
 - **SEC-UOM-101**: ✅ Unit definitions MUST enforce tenant isolation
   - Optional tenant scoping in `Unit` model (can add `BelongsToTenant` trait)
-  - Config flag: `apps/Atomy/config/uom.php` → `tenant_isolation`
+  - Config flag: `consuming application (e.g., Laravel app)config/uom.php` → `tenant_isolation`
   - Can leverage existing `Nexus\Tenant` package for multi-tenancy
 
 - **SEC-UOM-102**: ✅ Custom unit creation MUST be audited
   - Models use `HasUlids` and timestamps (created_at, updated_at)
   - Can integrate with `Nexus\AuditLogger` package via `Auditable` trait
-  - Config flag: `apps/Atomy/config/uom.php` → `audit_logging`
+  - Config flag: `consuming application (e.g., Laravel app)config/uom.php` → `audit_logging`
 
 - **SEC-UOM-103**: ✅ Conversion ratio modifications MUST be versioned
   - `UnitConversion` model has `version` column (integer, default 1)
@@ -364,21 +364,21 @@ apps/Atomy/
 
 ## 📝 Usage Examples
 
-### 1. Install Package in Atomy
+### 1. Install Package in consuming application
 
 ```bash
 # From monorepo root
 cd /home/conrad/Dev/azaharizaman/atomy
 
 # Add package to root composer.json repositories array (if not already)
-# Then install in Atomy
-cd apps/Atomy
+# Then install in consuming application
+cd apps/consuming application
 composer require nexus/uom:"*@dev"
 ```
 
 ### 2. Register Service Provider
 
-Add to `apps/Atomy/config/app.php`:
+Add to `consuming application (e.g., Laravel app)config/app.php`:
 
 ```php
 'providers' => [
@@ -390,7 +390,7 @@ Add to `apps/Atomy/config/app.php`:
 ### 3. Run Migrations
 
 ```bash
-cd apps/Atomy
+cd apps/consuming application
 php artisan migrate
 ```
 
@@ -563,7 +563,7 @@ $manager->createConversion('cps', 'mpas', 1.0); // 1 cps = 1 mPa·s
 
 ## 🔧 Configuration
 
-File: `apps/Atomy/config/uom.php`
+File: `consuming application (e.g., Laravel app)config/uom.php`
 
 ```php
 return [
@@ -692,10 +692,10 @@ Test strategy:
 - Test exception throwing and error messages
 - No database required (pure unit tests)
 
-### Atomy Tests (Feature Tests)
+### consuming application Tests (Feature Tests)
 
 ```bash
-cd apps/Atomy
+cd apps/consuming application
 php artisan test --filter=Uom
 ```
 
@@ -721,7 +721,7 @@ Test strategy:
 
 3. **Run Migrations**
    ```bash
-   cd apps/Atomy
+   cd apps/consuming application
    php artisan migrate
    ```
 
@@ -749,7 +749,7 @@ Test strategy:
 
 7. **Write Tests**
    - Package unit tests in `packages/Uom/tests/`
-   - Atomy feature tests in `apps/Atomy/tests/Feature/Uom/`
+   - consuming application feature tests in `consuming application (e.g., Laravel app)tests/Feature/Uom/`
    - Test coverage target: 80%+
 
 8. **Documentation**

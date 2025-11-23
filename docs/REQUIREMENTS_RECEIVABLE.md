@@ -13,7 +13,7 @@ Total Requirements: 128
 | `Nexus\Receivable` | Architechtural Requirement | ARC-REC-4002 | All data structures defined via interfaces (InvoiceInterface, ReceiptInterface, CreditMemoInterface) |  |  |  |  |
 | `Nexus\Receivable` | Architechtural Requirement | ARC-REC-4003 | All persistence operations via repository interfaces (InvoiceRepositoryInterface, ReceiptRepositoryInterface) |  |  |  |  |
 | `Nexus\Receivable` | Architechtural Requirement | ARC-REC-4004 | Business logic concentrated in service layer (ReceivableManager, CollectionsService) |  |  |  |  |
-| `Nexus\Receivable` | Architechtural Requirement | ARC-REC-4005 | All database migrations in application layer (apps/Atomy) |  |  |  |  |
+| `Nexus\Receivable` | Architechtural Requirement | ARC-REC-4005 | All database migrations in application layer (apps/consuming application) |  |  |  |  |
 | `Nexus\Receivable` | Architechtural Requirement | ARC-REC-4006 | All Eloquent models in application layer implementing package interfaces |  |  |  |  |
 | `Nexus\Receivable` | Architechtural Requirement | ARC-REC-4007 | Repository implementations in application layer |  |  |  |  |
 | `Nexus\Receivable` | Architechtural Requirement | ARC-REC-4008 | Package composer.json MUST NOT depend on laravel/framework |  |  |  |  |

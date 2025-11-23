@@ -36,7 +36,7 @@ Total Requirements: 88
 | `Nexus\Procurement` | Reliability Requirement | REL-PRO-0401 | Approval workflows MUST be resumable after system failure | ✅ Implemented | Status-based state machine persisted in database | 2025-11-20 |  |
 | `Nexus\Procurement` | Reliability Requirement | REL-PRO-0407 | Concurrency control for PO approval | ✅ Implemented | Eloquent optimistic locking via updated_at timestamp | 2025-11-20 |  |
 | `Nexus\Procurement` | Security and Compliance Requirement | SEC-PRO-0441 | Tenant data isolation | ✅ Implemented | All queries filtered by tenant_id with indexed columns | 2025-11-20 |  |
-| `Nexus\Procurement` | Security and Compliance Requirement | SEC-PRO-0447 | Role-based access control | ✅ Skeleton | Application layer (Atomy) enforces RBAC via middleware | 2025-11-20 |  |
+| `Nexus\Procurement` | Security and Compliance Requirement | SEC-PRO-0447 | Role-based access control | ✅ Skeleton | Application layer (consuming application) enforces RBAC via middleware | 2025-11-20 |  |
 | `Nexus\Procurement` | Security and Compliance Requirement | SEC-PRO-0453 | Vendor data encryption | ✅ Skeleton | Database-level encryption via Laravel encrypted casting | 2025-11-20 |  |
 | `Nexus\Procurement` | Security and Compliance Requirement | SEC-PRO-0459 | Audit trail completeness | ✅ Skeleton | Timestamps and soft deletes, integrates with Nexus\AuditLogger | 2025-11-20 |  |
 | `Nexus\Procurement` | Security and Compliance Requirement | SEC-PRO-0465 | Separation of duties | ✅ Implemented | 3-person rule enforced in multiple managers | 2025-11-20 |  |

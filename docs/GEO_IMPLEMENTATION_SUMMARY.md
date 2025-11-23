@@ -2,7 +2,7 @@
 
 **Implementation Date:** January 2025  
 **Branch:** `feature/geo-routing-implementation`  
-**Status:** Core packages complete, Atomy integration pending
+**Status:** Core packages complete, consuming application integration pending
 
 ---
 
@@ -375,12 +375,12 @@ services:
 
 ---
 
-## 🔌 Atomy Integration (Pending Implementation)
+## 🔌 consuming application Integration (Pending Implementation)
 
 ### Service Provider Bindings
 
 ```php
-// apps/Atomy/app/Providers/AppServiceProvider.php
+// consuming application (e.g., Laravel app)app/Providers/AppServiceProvider.php
 
 use Nexus\Geo\Contracts\GeocoderInterface;
 use Nexus\Geo\Contracts\GeoRepositoryInterface;
@@ -587,7 +587,7 @@ vendor/bin/phpunit packages/Routing/tests
 - TSP 2-Opt improvement verification
 - Constraint violation detection
 
-### Integration Tests (Atomy Level)
+### Integration Tests (consuming application Level)
 
 ```php
 // tests/Feature/GeocodingTest.php
@@ -654,7 +654,7 @@ $this->assertLessThan(100, $duration); // Must complete in <100ms
 
 ---
 
-## 🚀 Next Steps (Atomy Integration)
+## 🚀 Next Steps (consuming application Integration)
 
 ### Immediate Tasks
 
@@ -694,7 +694,7 @@ $this->assertLessThan(100, $duration); // Must complete in <100ms
 
 7. **Update Root Composer**
    ```bash
-   cd apps/Atomy
+   cd apps/consuming application
    composer require geocoder-php/geocoder:^4.0
    composer require league/geotools:^2.0
    ```
@@ -853,11 +853,11 @@ $this->assertLessThan(100, $duration); // Must complete in <100ms
 
 ## 🏁 Conclusion
 
-The core geospatial and routing packages (`Nexus\Geo` and `Nexus\Routing`) are now **complete and ready for Atomy integration**. The foundation is built on:
+The core geospatial and routing packages (`Nexus\Geo` and `Nexus\Routing`) are now **complete and ready for consuming application integration**. The foundation is built on:
 
 - **Framework-agnostic principles** (stateless services, contract-driven design)
 - **Production-ready algorithms** (Haversine, Douglas-Peucker, Nearest-Neighbor + 2-Opt)
 - **Cost optimization strategies** (cache-first, provider failover, 90-day TTL)
 - **Extensibility** (OR-Tools integration path, advanced constraints support)
 
-**Next Phase:** Atomy adapters, migrations, API routes, and UI components to make the packages fully operational in the Nexus ERP system.
+**Next Phase:** consuming application adapters, migrations, API routes, and UI components to make the packages fully operational in the Nexus ERP system.

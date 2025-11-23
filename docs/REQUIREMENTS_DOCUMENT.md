@@ -71,4 +71,4 @@ Total Requirements: 68
 | `Nexus\Document` | User Story | USE-DOC-012 | As an end-user, I want to view all my documents filtered by type and date via the EDM UI |  |  |  |  |
 | `Nexus\Document` | User Story | USE-DOC-013 | As an end-user, I want to see who accessed my documents and when via audit logs |  |  |  |  |
 | `Nexus\Document` | User Story | USE-DOC-014 | As a developer, I want to generate temporary public URLs with $urlGenerator->getTemporaryUrl($storagePath, 3600) for secure sharing |  |  |  |  |
-| `Nexus\Document` | User Story | USE-DOC-015 | As a system integrator, I want to swap storage backends without changing document management code, only Atomy bindings |  |  |  |  |
+| `Nexus\Document` | User Story | USE-DOC-015 | As a system integrator, I want to swap storage backends without changing document management code, only consuming application bindings |  |  |  |  |

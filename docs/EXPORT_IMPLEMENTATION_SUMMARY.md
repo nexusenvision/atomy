@@ -509,7 +509,7 @@ try {
 
 ---
 
-## Atomy Integration Layer
+## consuming application Integration Layer
 
 ### Required Implementations
 
@@ -851,7 +851,7 @@ class InventoryController extends Controller
 
 ### Circuit Breaker Pattern (External Formatters)
 ```php
-// In Atomy
+// In consuming application
 use Nexus\Connector\Services\CircuitBreakerManager;
 
 class PdfCloudFormatter implements ExportFormatterInterface
@@ -879,7 +879,7 @@ class PdfCloudFormatter implements ExportFormatterInterface
 
 ### Rate Limiting (Webhook/Email Destinations)
 ```php
-// In Atomy
+// In consuming application
 use Nexus\Connector\Services\RateLimiterManager;
 
 class WebhookDelivery
@@ -1019,7 +1019,7 @@ packages/Export/
 - `php: ^8.3`
 - `psr/log: ^3.0` (for optional logging)
 
-### Atomy Dependencies (for full functionality)
+### consuming application Dependencies (for full functionality)
 - `barryvdh/laravel-dompdf` (PDF generation)
 - `phpoffice/phpspreadsheet` (Excel generation)
 - `nexus/storage` (file storage)
@@ -1088,7 +1088,7 @@ new ExportMetadata(
 ## Contributing Guidelines
 
 ### Adding a New Format
-1. Create formatter in `src/Core/Formatters/` (if framework-agnostic) or `apps/Atomy/app/Services/Export/` (if framework-dependent)
+1. Create formatter in `src/Core/Formatters/` (if framework-agnostic) or `consuming application (e.g., Laravel app)app/Services/Export/` (if framework-dependent)
 2. Implement `ExportFormatterInterface`
 3. Register in `ExportManager` constructor (in `AppServiceProvider`)
 4. Update `ExportFormat` enum if needed
@@ -1096,7 +1096,7 @@ new ExportMetadata(
 
 ### Adding a New Destination
 1. Update `ExportDestination` enum
-2. Implement delivery logic in Atomy's `ExportManager` override or custom service
+2. Implement delivery logic in consuming application's `ExportManager` override or custom service
 3. Integrate with `Nexus\Storage`, `Nexus\Notifier`, or `Nexus\Connector` as needed
 4. Add rate limiting if required
 
@@ -1112,6 +1112,6 @@ new ExportMetadata(
 ✅ **Template rendering** (Mustache-like syntax)  
 ✅ **Schema validation** (nesting depth, table consistency)  
 ✅ **Resilience patterns** (circuit breaker flag, rate limit awareness)  
-✅ **Clear separation** of logic (packages) vs. implementation (Atomy)  
+✅ **Clear separation** of logic (packages) vs. implementation (consuming application)  
 
 The package is fully aligned with Nexus monorepo architecture and ready for domain package integration.

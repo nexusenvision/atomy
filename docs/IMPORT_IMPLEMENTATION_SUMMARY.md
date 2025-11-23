@@ -20,7 +20,7 @@ The **Nexus\Import** package is a framework-agnostic data import engine providin
 2. **Contract-Driven**: All external dependencies via interfaces (TransactionManagerInterface, ImportParserInterface, etc.)
 3. **Error Collection Pattern**: Transformations and validations collect errors (don't throw) to allow batch completion
 4. **Transaction Strategy Enforcement**: Processor enforces TRANSACTIONAL/BATCH/STREAM strategies via injected TransactionManager
-5. **Excel Parser Isolation**: Excel parsing in Atomy layer only (requires phpoffice/phpspreadsheet)
+5. **Excel Parser Isolation**: Excel parsing in consuming application layer only (requires phpoffice/phpspreadsheet)
 6. **Immutable Value Objects**: All VOs are readonly with validation in constructors
 
 ### Architectural Refinements (Applied During Implementation)
@@ -29,7 +29,7 @@ Three critical gaps were identified and resolved:
 
 #### A. Excel Parser Dependency Isolation ✅
 - **Issue**: Initial design had ExcelParser in `packages/Import/src/Parsers/`
-- **Solution**: Moved ExcelParser to `apps/Atomy/app/Services/Import/ExcelParser.php`
+- **Solution**: Moved ExcelParser to `consuming application (e.g., Laravel app)app/Services/Import/ExcelParser.php`
 - **Pattern**: ImportFormat::EXCEL returns `requiresExternalParser() = true`
 - **Result**: Zero external dependencies in package `composer.json`
 
@@ -575,12 +575,12 @@ $result->getErrorCountBySeverity();
 
 ---
 
-## 🚀 Integration with Atomy (Laravel)
+## 🚀 Integration with consuming application (Laravel)
 
 ### 1. Excel Parser Implementation
 
 ```php
-// apps/Atomy/app/Services/Import/ExcelParser.php
+// consuming application (e.g., Laravel app)app/Services/Import/ExcelParser.php
 
 namespace App\Services\Import;
 
@@ -636,7 +636,7 @@ final class ExcelParser implements ImportParserInterface
 ### 2. Laravel Transaction Manager
 
 ```php
-// apps/Atomy/app/Services/Import/LaravelTransactionManager.php
+// consuming application (e.g., Laravel app)app/Services/Import/LaravelTransactionManager.php
 
 namespace App\Services\Import;
 
@@ -685,7 +685,7 @@ final class LaravelTransactionManager implements TransactionManagerInterface
 ### 3. Import Service Provider
 
 ```php
-// apps/Atomy/app/Providers/ImportServiceProvider.php
+// consuming application (e.g., Laravel app)app/Providers/ImportServiceProvider.php
 
 namespace App\Providers;
 
@@ -752,7 +752,7 @@ final class ImportServiceProvider extends ServiceProvider
             $manager->registerParser(ImportFormat::JSON, new JsonParser());
             $manager->registerParser(ImportFormat::XML, new XmlParser());
             
-            // Register Excel parser (Atomy-specific)
+            // Register Excel parser (consuming application-specific)
             $manager->registerParser(ImportFormat::EXCEL, new ExcelParser());
             
             return $manager;
@@ -764,7 +764,7 @@ final class ImportServiceProvider extends ServiceProvider
 ### 4. Register Service Provider
 
 ```php
-// apps/Atomy/config/app.php
+// consuming application (e.g., Laravel app)config/app.php
 
 'providers' => [
     // ... other providers
@@ -867,7 +867,7 @@ if ($result->hasErrors()) {
 - [x] Native PHP 8.3+ enums for fixed value sets
 
 ### Architectural Refinements ✅
-- [x] Excel parser isolated to Atomy layer
+- [x] Excel parser isolated to consuming application layer
 - [x] TransactionManagerInterface created with full lifecycle methods
 - [x] FieldMapping enhanced with `transformations` array
 - [x] TransformerInterface created with 13 built-in rules
@@ -887,7 +887,7 @@ if ($result->hasErrors()) {
 - [x] CsvParser (RFC 4180 compliant, streaming support)
 - [x] JsonParser (JSON array parsing)
 - [x] XmlParser (XML document parsing)
-- [x] NO ExcelParser in package (Atomy responsibility)
+- [x] NO ExcelParser in package (consuming application responsibility)
 
 ### Services ✅
 - [x] ImportProcessor (strategy enforcement, pipeline orchestration)
@@ -905,7 +905,7 @@ if ($result->hasErrors()) {
 
 2. **Transaction Strategy Enforcement**: The Processor enforces transaction strategies via injected TransactionManager, while the Handler remains transaction-unaware and focused on domain persistence.
 
-3. **Excel Parser Isolation**: External dependencies (phpoffice/phpspreadsheet) are isolated to the Atomy layer, maintaining package framework-agnosticism.
+3. **Excel Parser Isolation**: External dependencies (phpoffice/phpspreadsheet) are isolated to the consuming application layer, maintaining package framework-agnosticism.
 
 4. **Transformation Pipeline**: Transform → Normalize → Validate → Persist ensures data quality before persistence.
 
@@ -930,12 +930,12 @@ if ($result->hasErrors()) {
 
 ---
 
-## 🔜 Next Steps (Atomy Integration)
+## 🔜 Next Steps (consuming application Integration)
 
-1. **Create ExcelParser** in `apps/Atomy/app/Services/Import/ExcelParser.php`
-2. **Create LaravelTransactionManager** in `apps/Atomy/app/Services/Import/LaravelTransactionManager.php`
-3. **Create ImportServiceProvider** in `apps/Atomy/app/Providers/ImportServiceProvider.php`
-4. **Register Service Provider** in `apps/Atomy/config/app.php`
+1. **Create ExcelParser** in `consuming application (e.g., Laravel app)app/Services/Import/ExcelParser.php`
+2. **Create LaravelTransactionManager** in `consuming application (e.g., Laravel app)app/Services/Import/LaravelTransactionManager.php`
+3. **Create ImportServiceProvider** in `consuming application (e.g., Laravel app)app/Providers/ImportServiceProvider.php`
+4. **Register Service Provider** in `consuming application (e.g., Laravel app)config/app.php`
 5. **Create Database Migrations**:
    - `imports` table (id, file_name, format, mode, strategy, status, success_count, failed_count, skipped_count, uploaded_by, uploaded_at, processed_at)
    - `import_errors` table (id, import_id, row_number, field, severity, message, original_value, transformation_rule, created_at)
@@ -954,4 +954,4 @@ if ($result->hasErrors()) {
 ---
 
 **Implementation Completed**: 2024  
-**Package Status**: ✅ Production Ready (Package Foundation Complete, Atomy Integration Pending)
+**Package Status**: ✅ Production Ready (Package Foundation Complete, consuming application Integration Pending)

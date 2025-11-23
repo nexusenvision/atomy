@@ -372,7 +372,7 @@ The Monitoring package provides a framework-agnostic, atomic monitoring solution
 
 ## Out of Scope (Phase 1)
 
-- Real-time metric streaming (WebSockets/SSE) - Atomy layer concern
+- Real-time metric streaming (WebSockets/SSE) - consuming application layer concern
 - Advanced anomaly detection - Future integration with `Nexus\Intelligence`
 - Custom dashboard UI - Separate frontend application
 - Metric visualization - Delegated to external tools (Grafana)
@@ -386,7 +386,7 @@ The Monitoring package provides a framework-agnostic, atomic monitoring solution
 3. ✅ All services implemented with 100% test coverage
 4. ✅ Built-in health checks operational
 5. ✅ Cardinality protection active
-6. ✅ Atomy integration complete (TSDB adapter, service provider)
+6. ✅ consuming application integration complete (TSDB adapter, service provider)
 7. ✅ API endpoints functional
 8. ✅ Documentation complete (README, Integration Guide)
 9. ✅ Package publishable (composer.json valid, MIT license)

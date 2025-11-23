@@ -18,7 +18,7 @@ Total Requirements: 139
 | `Nexus\Accounting` | Architechtural Requirement | ARC-ACC-2002 | All data structures defined via interfaces (FinancialStatementInterface, ReportInterface) |  |  |  |  |
 | `Nexus\Accounting` | Architechtural Requirement | ARC-ACC-2003 | All persistence operations via repository interfaces |  |  |  |  |
 | `Nexus\Accounting` | Architechtural Requirement | ARC-ACC-2004 | Business logic concentrated in service layer (AccountingManager, ReportingService) |  |  |  |  |
-| `Nexus\Accounting` | Architechtural Requirement | ARC-ACC-2005 | All database migrations in application layer (apps/Atomy) |  |  |  |  |
+| `Nexus\Accounting` | Architechtural Requirement | ARC-ACC-2005 | All database migrations in application layer (apps/consuming application) |  |  |  |  |
 | `Nexus\Accounting` | Architechtural Requirement | ARC-ACC-2006 | All Eloquent models in application layer implementing package interfaces |  |  |  |  |
 | `Nexus\Accounting` | Architechtural Requirement | ARC-ACC-2007 | Repository implementations in application layer |  |  |  |  |
 | `Nexus\Accounting` | Architechtural Requirement | ARC-ACC-2008 | Package composer.json MUST NOT depend on laravel/framework |  |  |  |  |

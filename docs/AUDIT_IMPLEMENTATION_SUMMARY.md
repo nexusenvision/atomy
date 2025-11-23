@@ -2,7 +2,7 @@
 
 **Package:** `nexus/audit`  
 **Feature Branch:** `feature/audit-identity-split`  
-**Status:** ✅ Core Package Complete (Atomy Integration Pending)  
+**Status:** ✅ Core Package Complete (consuming application Integration Pending)  
 **Created:** 2025-11-21
 
 ---
@@ -147,7 +147,7 @@ $sequence->isConsecutiveTo($other);
 - **Nexus\Identity** - Critical identity events (role changes, password resets)
 - **Nexus\Finance** - Financial transaction audit trail
 - **Nexus\Inventory** - Stock movement verification
-- **Atomy** - Application-layer storage implementation
+- **consuming application** - Application-layer storage implementation
 
 ---
 
@@ -163,7 +163,7 @@ $sequence->isConsecutiveTo($other);
 - [x] RetentionPolicyService
 - [x] Exception hierarchy
 
-### ⏳ Pending (Atomy Layer)
+### ⏳ Pending (consuming application Layer)
 
 - [ ] Database migration for hash chain fields
 - [ ] DbAuditStorage repository implementation
@@ -197,7 +197,7 @@ $sequence->isConsecutiveTo($other);
 
 ## Next Steps
 
-1. **Atomy Integration** - Implement database layer and repositories
+1. **consuming application Integration** - Implement database layer and repositories
 2. **AuditLogger Refactor** - Delegate core logging to Audit package
 3. **Identity Integration** - Use AuditEngine for critical events
 4. **Testing** - Unit tests for hash verification and sequence integrity

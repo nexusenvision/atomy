@@ -47,7 +47,7 @@
                               │ Dependency Injection
                               ▼
 ┌──────────────────────────────────────────────────────────────────────┐
-│                    Application Layer (Atomy)                         │
+│                    Application Layer (consuming application)                         │
 │                      (Laravel Integration)                           │
 ├──────────────────────────────────────────────────────────────────────┤
 │                                                                      │
@@ -88,7 +88,7 @@
 
 ```
 ┌──────────┐         ┌──────────┐         ┌──────────┐         ┌──────────┐
-│  User    │         │  Atomy   │         │ Nexus\SSO│         │   IdP    │
+│  User    │         │  consuming application   │         │ Nexus\SSO│         │   IdP    │
 │ Browser  │         │ (Laravel)│         │ Package  │         │ (Azure)  │
 └────┬─────┘         └────┬─────┘         └────┬─────┘         └────┬─────┘
      │                    │                    │                    │
@@ -181,7 +181,7 @@
 
 ```
 ┌──────────┐         ┌──────────┐         ┌──────────┐         ┌──────────┐
-│  User    │         │  Atomy   │         │ Nexus\SSO│         │   IdP    │
+│  User    │         │  consuming application   │         │ Nexus\SSO│         │   IdP    │
 │ Browser  │         │ (Laravel)│         │ Package  │         │ (Google) │
 └────┬─────┘         └────┬─────┘         └────┬─────┘         └────┬─────┘
      │                    │                    │                    │
@@ -287,7 +287,7 @@
                             │
                             ▼
 ┌───────────────────────────────────────────────────────────────────┐
-│           IdentityUserProvisioner (Atomy Layer)                   │
+│           IdentityUserProvisioner (consuming application Layer)                   │
 │           (implements UserProvisioningInterface)                  │
 ├───────────────────────────────────────────────────────────────────┤
 │                                                                   │

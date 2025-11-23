@@ -8,7 +8,7 @@ Total Requirements: 401
 | `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1301 | All data structures defined via interfaces (UserInterface, RoleInterface, PermissionInterface) |  |  |  |  |
 | `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1302 | All persistence operations via repository interfaces (UserRepositoryInterface) |  |  |  |  |
 | `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1303 | Business logic in service layer (UserManager, AuthenticationService, PermissionChecker) |  |  |  |  |
-| `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1304 | All database migrations in application layer (apps/Atomy) |  |  |  |  |
+| `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1304 | All database migrations in application layer (apps/consuming application) |  |  |  |  |
 | `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1305 | All Eloquent models in application layer |  |  |  |  |
 | `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1306 | Repository implementations in application layer |  |  |  |  |
 | `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1307 | IoC container bindings in application service provider |  |  |  |  |
@@ -208,7 +208,7 @@ Total Requirements: 401
 | `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1301 | All data structures defined via interfaces (UserInterface, RoleInterface, PermissionInterface) |  |  |  |  |
 | `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1302 | All persistence operations via repository interfaces (UserRepositoryInterface) |  |  |  |  |
 | `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1303 | Business logic in service layer (UserManager, AuthenticationService, PermissionChecker) |  |  |  |  |
-| `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1304 | All database migrations in application layer (apps/Atomy) |  |  |  |  |
+| `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1304 | All database migrations in application layer (apps/consuming application) |  |  |  |  |
 | `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1305 | All Eloquent models in application layer |  |  |  |  |
 | `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1306 | Repository implementations in application layer |  |  |  |  |
 | `Nexus\Identity` | Architechtural Requirement | ARC-IDE-1307 | IoC container bindings in application service provider |  |  |  |  |

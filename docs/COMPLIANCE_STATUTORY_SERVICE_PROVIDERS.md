@@ -5,7 +5,7 @@
 The following service providers have been created:
 
 ### ComplianceServiceProvider
-Location: `apps/Atomy/app/Providers/ComplianceServiceProvider.php`
+Location: `consuming application (e.g., Laravel app)app/Providers/ComplianceServiceProvider.php`
 
 Binds:
 - `ComplianceSchemeRepositoryInterface` → `DbComplianceSchemeRepository`
@@ -16,7 +16,7 @@ Binds:
 - `ComplianceManager`, `SodManager`, `ConfigurationAuditor`
 
 ### StatutoryServiceProvider
-Location: `apps/Atomy/app/Providers/StatutoryServiceProvider.php`
+Location: `consuming application (e.g., Laravel app)app/Providers/StatutoryServiceProvider.php`
 
 Binds:
 - `StatutoryReportRepositoryInterface` → `DbStatutoryReportRepository`

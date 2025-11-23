@@ -6,14 +6,14 @@
 
 ## 🎯 Purpose
 
-`NEXUS_PACKAGES_REFERENCE.md` is your **mandatory first stop** before implementing any new feature in `apps/Atomy/`. It prevents architectural violations by showing what first-party packages already exist and how to use them.
+`NEXUS_PACKAGES_REFERENCE.md` is your **mandatory first stop** before implementing any new feature in `consuming application (e.g., Laravel app)`. It prevents architectural violations by showing what first-party packages already exist and how to use them.
 
 ---
 
 ## 📖 When to Consult This Guide
 
 **ALWAYS before:**
-- Writing a new service in `apps/Atomy/app/Services/`
+- Writing a new service in `consuming application (e.g., Laravel app)app/Services/`
 - Creating a new integration or adapter
 - Implementing a feature that feels "generic" or "reusable"
 - Adding monitoring, logging, notifications, or storage
@@ -118,10 +118,10 @@ public function sendPaymentReminder(string $invoiceId): void
 }
 ```
 
-### Step 5: Implement in Atomy
+### Step 5: Implement in consuming application
 
 1. Inject `NotificationManagerInterface` in your service
-2. Use it (Atomy already has the binding configured)
+2. Use it (consuming application already has the binding configured)
 3. Done! No need to build custom notification system
 
 ---
@@ -166,7 +166,7 @@ class EventStreamMetricsCollector {
 
 ### Pre-Implementation Checklist
 
-Before generating ANY code in `apps/Atomy/`, ask yourself:
+Before generating ANY code in `consuming application (e.g., Laravel app)`, ask yourself:
 
 1. **Have I checked NEXUS_PACKAGES_REFERENCE.md?**
    - If NO → STOP and check it first

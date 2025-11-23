@@ -64,7 +64,7 @@ src/
 
 ---
 
-## 🏗️ Atomy Integration (`apps/Atomy/`)
+## 🏗️ consuming application Integration (`consuming application (e.g., Laravel app)`)
 
 ### Eloquent Models (3)
 
@@ -99,7 +99,7 @@ src/
 | `LaravelIntelligenceContext` | Runtime context provider | `TenantContext`, `SettingsManager` |
 | `IntelligenceServiceProvider` | IoC bindings | PSR-3 `LoggerInterface` |
 
-**Provider registered in:** `apps/Atomy/bootstrap/app.php`
+**Provider registered in:** `consuming application (e.g., Laravel app)bootstrap/app.php`
 
 ---
 
@@ -321,7 +321,7 @@ $this->repository->recordUsage(
 - Test Z-score calculations in `RuleBasedAnomalyEngine`
 - Test feature importance calculations
 
-### Atomy Tests (Feature)
+### consuming application Tests (Feature)
 - Test contract implementations
 - Test database persistence
 - Test tenant context resolution
@@ -474,7 +474,7 @@ $this->repository->recordUsage(
 | Metric | Count |
 |--------|-------|
 | **Package Files Created** | 34 |
-| **Atomy Files Created** | 12 |
+| **consuming application Files Created** | 12 |
 | **Total Lines of Code** | ~2,800 |
 | **Interfaces Defined** | 8 core + 1 provider |
 | **Value Objects** | 4 |
@@ -498,7 +498,7 @@ $this->repository->recordUsage(
 - ✅ Rule-based fallback engine functional
 - ✅ Feature extraction framework complete
 
-### Atomy Integration
+### consuming application Integration
 - ✅ Service provider registered and auto-discoverable
 - ✅ Database migrations runnable
 - ✅ Eloquent models follow conventions
@@ -546,7 +546,7 @@ $this->repository->recordUsage(
 
 ## 🚀 Wave 1: Maximum Impact Deployment
 
-**Status:** ✅ **Package infrastructure complete** | 🚧 **Atomy integration in progress**  
+**Status:** ✅ **Package infrastructure complete** | 🚧 **consuming application integration in progress**  
 **Implementation Date:** November 22, 2025  
 **Target Deployment:** Q1 2026
 
@@ -625,7 +625,7 @@ Wave 1 implements 3 highest-ROI extractors across AP/AR/Inventory domains to:
 cd packages/Intelligence && vendor/bin/phpunit
 
 # Application tests (requires database)
-cd apps/Atomy && php artisan test --filter=Intelligence
+cd apps/consuming application && php artisan test --filter=Intelligence
 ```
 
 **Documentation**: See `docs/INTELLIGENCE_TESTING_GUIDE.md` for comprehensive guide.
@@ -635,7 +635,7 @@ cd apps/Atomy && php artisan test --filter=Intelligence
 | Component | Status | Files | Lines | Tests |
 |-----------|--------|-------|-------|-------|
 | **Package Core** | ✅ Complete | 34 | ~2,800 | 21 unit |
-| **Atomy Integration** | ✅ Complete | 12 | ~1,800 | 14 feature |
+| **consuming application Integration** | ✅ Complete | 12 | ~1,800 | 14 feature |
 | **Wave 1 Extractors** | ✅ Complete | 3 | ~750 | 21 unit |
 | **Wave 1 Repositories** | ✅ Complete | 3 | ~738 | 8 feature |
 | **Wave 1 Integrations** | ✅ Complete | 2 | ~462 | 6 feature |

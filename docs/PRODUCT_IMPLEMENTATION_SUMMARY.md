@@ -4,7 +4,7 @@
 **Package:** `nexus/product`  
 **Version:** 1.0.0  
 **Implementation Date:** November 20, 2025  
-**Integration:** Atomy, Procurement
+**Integration:** consuming application, Procurement
 
 ---
 
@@ -55,7 +55,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ APPLICATION LAYER (apps/Atomy/)                                  │
+│ APPLICATION LAYER (consuming application (e.g., Laravel app))                                  │
 │ - Eloquent Models (Category, ProductTemplate, ProductVariant)   │
 │ - Repositories (DbCategoryRepository, DbProductVariantRepo)     │
 │ - Migrations (categories, product_templates, product_variants)  │
@@ -664,7 +664,7 @@ Settings managed via `Nexus\Setting`:
 
 #### Step 1: Run Migrations
 ```bash
-cd apps/Atomy
+cd apps/consuming application
 php artisan migrate
 ```
 
@@ -782,7 +782,7 @@ public function test_prevents_variant_explosion()
 }
 ```
 
-### Integration Tests (Atomy Layer)
+### Integration Tests (consuming application Layer)
 
 ```php
 // tests/Feature/ProductManagementTest.php
@@ -851,13 +851,13 @@ All critical query paths are indexed:
 
 ### Category Hierarchy
 - Adjacency list is simple but has $O(n)$ ancestor lookup
-- For deep hierarchies (> 5 levels), consider materialized path or nested sets in Atomy layer
+- For deep hierarchies (> 5 levels), consider materialized path or nested sets in consuming application layer
 
 ---
 
 ## Known Limitations
 
-1. **ProductManager Implementation Stubs**: `createTemplate()` and `createStandaloneVariant()` throw `RuntimeException`. Actual entity creation must be implemented in Atomy layer.
+1. **ProductManager Implementation Stubs**: `createTemplate()` and `createStandaloneVariant()` throw `RuntimeException`. Actual entity creation must be implemented in consuming application layer.
 
 2. **No Price Management**: Pricing belongs in `Nexus\Sales` or `Nexus\Pricing` package (future).
 
@@ -891,7 +891,7 @@ The `Nexus\Product` package provides a solid, framework-agnostic foundation for 
 ✅ Supports multi-tenancy for SaaS deployments
 
 **Next Steps:**
-1. Implement actual entity creation logic in `ProductManager` (Atomy layer)
+1. Implement actual entity creation logic in `ProductManager` (consuming application layer)
 2. Create seeders for default categories and attributes
 3. Build API endpoints for product CRUD operations
 4. Develop UI for product management

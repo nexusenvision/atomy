@@ -42,7 +42,7 @@ This session successfully completed **Phase 1** of the Finance Domain Packages i
   - Authorization checks
   - Comprehensive audit logging
 
-### 2. Application Layer (apps/Atomy)
+### 2. Application Layer (apps/consuming application)
 
 #### Models (NEW)
 - **`Period`** Eloquent model implementing `PeriodInterface`
@@ -112,20 +112,20 @@ This session successfully completed **Phase 1** of the Finance Domain Packages i
 7. `packages/Period/src/Contracts/AuditLoggerInterface.php`
 
 ### Application Layer (6 files)
-8. `apps/Atomy/app/Models/Period.php`
-9. `apps/Atomy/database/migrations/2025_11_18_135542_create_periods_table.php`
-10. `apps/Atomy/app/Repositories/EloquentPeriodRepository.php`
-11. `apps/Atomy/app/Services/LaravelCacheAdapter.php`
-12. `apps/Atomy/app/Services/PeriodAuthorizationService.php`
-13. `apps/Atomy/app/Services/PeriodAuditLoggerAdapter.php`
+8. `consuming application (e.g., Laravel app)app/Models/Period.php`
+9. `consuming application (e.g., Laravel app)database/migrations/2025_11_18_135542_create_periods_table.php`
+10. `consuming application (e.g., Laravel app)app/Repositories/EloquentPeriodRepository.php`
+11. `consuming application (e.g., Laravel app)app/Services/LaravelCacheAdapter.php`
+12. `consuming application (e.g., Laravel app)app/Services/PeriodAuthorizationService.php`
+13. `consuming application (e.g., Laravel app)app/Services/PeriodAuditLoggerAdapter.php`
 
 ### API Layer (2 files)
-14. `apps/Atomy/app/Http/Controllers/Api/PeriodController.php`
-15. `apps/Atomy/routes/api_period.php`
+14. `consuming application (e.g., Laravel app)app/Http/Controllers/Api/PeriodController.php`
+15. `consuming application (e.g., Laravel app)routes/api_period.php`
 
 ## Files Modified (3 files)
 1. `composer.json` - Added nexus/period dependency
-2. `apps/Atomy/app/Providers/AppServiceProvider.php` - Added Period bindings
+2. `consuming application (e.g., Laravel app)app/Providers/AppServiceProvider.php` - Added Period bindings
 3. `docs/IMPLEMENTATION_STATUS.md` - Updated progress tracking
 
 ## Code Statistics
@@ -185,7 +185,7 @@ The next phase should focus on completing the Finance package core:
 2. Create additional value objects (`ExchangeRate`, `JournalEntryNumber`, `AccountCode`)
 3. Implement `FinanceManager` service
 4. Implement PostingEngine and BalanceCalculator
-5. Create Atomy models, migrations, repositories for COA and Journal Entries
+5. Create consuming application models, migrations, repositories for COA and Journal Entries
 6. Add API routes for journal entry posting
 
 **Estimated Effort**: 5-7 days

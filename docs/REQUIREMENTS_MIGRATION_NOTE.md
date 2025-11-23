@@ -50,7 +50,7 @@ All requirements files are located in `docs/` with the following counts:
 |---------|------|--------------|
 | Accounting | REQUIREMENTS_ACCOUNTING.md | 139 |
 | Analytics | REQUIREMENTS_ANALYTICS.md | 78 |
-| Atomy | REQUIREMENTS_ATOMY.md | 18 |
+| consuming application | REQUIREMENTS_ATOMY.md | 18 |
 | AuditLogger | REQUIREMENTS_AUDITLOGGER.md | 229 |
 | Backoffice | REQUIREMENTS_BACKOFFICE.md | 474 |
 | Compliance | REQUIREMENTS_COMPLIANCE.md | 62 |

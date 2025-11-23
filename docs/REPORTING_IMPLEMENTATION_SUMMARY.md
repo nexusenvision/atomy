@@ -1024,7 +1024,7 @@ public function test_generate_falls_back_to_json_on_export_failure(): void
 }
 ```
 
-### Integration Tests (Atomy Level)
+### Integration Tests (consuming application Level)
 
 **Focus:** Database interactions, Eloquent models, service provider bindings.
 
@@ -1062,7 +1062,7 @@ public function test_find_due_for_generation_returns_daily_reports(): void
 }
 ```
 
-### Feature Tests (Atomy Level)
+### Feature Tests (consuming application Level)
 
 **Focus:** End-to-end flows through API endpoints.
 
@@ -1111,7 +1111,7 @@ public function test_find_due_for_generation_returns_daily_reports(): void
 
 **Technical Stack:**
 - Frontend: Vue.js 3 + Inertia.js (if using Laravel Breeze/Jetstream)
-- API: Laravel Controllers in `apps/Atomy/app/Http/Controllers/ReportingController.php`
+- API: Laravel Controllers in `consuming application (e.g., Laravel app)app/Http/Controllers/ReportingController.php`
 - Authorization: Laravel Policies inheriting from Analytics query permissions
 
 **Integration Points:**
@@ -1323,7 +1323,7 @@ case ScheduleType::CRON:
 - [x] `DbReportRepository` implemented
 - [x] `ReportingServiceProvider` created and registered
 - [x] Service provider added to `bootstrap/app.php`
-- [ ] Run `composer install` in root and `apps/Atomy/`
+- [ ] Run `composer install` in root and `consuming application (e.g., Laravel app)`
 - [ ] Run migrations: `php artisan migrate`
 - [ ] Seed test data (optional): `php artisan db:seed --class=ReportingSeeder`
 - [ ] Register `ReportJobHandler` with Scheduler (add to `ScheduleManager` registration)
@@ -1358,4 +1358,4 @@ The **Nexus\Reporting** package is now fully implemented with all core features 
 **Commit Summary:**
 - Commit 1 (ce7734e): Package foundation + contracts + value objects + exceptions
 - Commit 2 (1d814e2): Core engines + ReportManager service
-- Commit 3 (dd077ce): Atomy integration (migrations + models + repository + service provider)
+- Commit 3 (dd077ce): consuming application integration (migrations + models + repository + service provider)

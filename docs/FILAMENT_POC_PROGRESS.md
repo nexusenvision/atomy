@@ -31,7 +31,7 @@
   - [x] FinanceManager service enhancements
   - [x] 11 files merged successfully
   
-- [x] Merged Atomy factories/models/migrations from `feature-improving-atomy`
+- [x] Merged consuming application factories/models/migrations from `feature-improving-atomy`
   - [x] AccountFactory, JournalEntryFactory, JournalEntryLineFactory
   - [x] Account, JournalEntry, JournalEntryLine models
   - [x] Finance domain migrations
@@ -377,7 +377,7 @@
 #### Completed Tasks:
 - [x] **CRITICAL ARCHITECTURAL FIX:** Moved DTOs from package layer to application layer
   - [x] Original location: `packages/Finance/src/DTOs/` ❌ (violated framework-agnostic principle)
-  - [x] Correct location: `apps/Atomy/app/DataTransferObjects/Finance/` ✅
+  - [x] Correct location: `consuming application (e.g., Laravel app)app/DataTransferObjects/Finance/` ✅
   - [x] Updated namespaces: `Nexus\Finance\DTOs` → `App\DataTransferObjects\Finance`
   
 - [x] Created `CreateAccountDto`
@@ -402,7 +402,7 @@ Filament Form → CreateAccountDto (validation) → toArray() → FinanceManager
 
 #### Why This Architecture Is Correct:
 - **Framework Agnostic Core:** `Nexus\Finance` has zero knowledge of Filament or Laravel validation
-- **Dependency Inversion:** Application layer (Atomy) depends on domain core, not the reverse
+- **Dependency Inversion:** Application layer (consuming application) depends on domain core, not the reverse
 - **Reusability:** Finance package can be used in Symfony, Slim, CLI apps, or any PHP framework
 - **Clear Boundaries:** DTOs are APPLICATION LAYER contracts that convert to arrays before crossing domain boundary
 
@@ -476,7 +476,7 @@ Filament Form → CreateAccountDto (validation) → toArray() → FinanceManager
   - [x] Pattern matching via `Redis::keys()` for bulk invalidation
   
 - [x] Created `FinanceServiceProvider`
-  - [x] Binds all Finance package contracts to Atomy implementations
+  - [x] Binds all Finance package contracts to consuming application implementations
   - [x] Registered in `bootstrap/app.php`
   - [x] Bindings:
     - AccountRepositoryInterface → DbAccountRepository
@@ -628,12 +628,12 @@ Filament Form → CreateAccountDto (validation) → toArray() → FinanceManager
 - [x] Fixed `CreateAccount::handleRecordCreation()` return type (`mixed` → `Model`)
 
 **Files Modified:**
-- apps/Atomy/app/Filament/Finance/Widgets/MobileWarningBanner.php (removed `static` from `$view`)
-- apps/Atomy/app/Filament/Finance/Resources/AccountResource.php (removed `?string` type from `$navigationGroup`)
-- apps/Atomy/app/Filament/Finance/Resources/JournalEntryResource.php (removed `?string` type from `$navigationGroup`)
-- apps/Atomy/app/Filament/Finance/Resources/PeriodResource.php (removed `?string` type from `$navigationGroup`)
-- apps/Atomy/app/Filament/Finance/Resources/EventStreamResource.php (removed `?string` type from `$navigationGroup`)
-- apps/Atomy/app/Filament/Finance/Resources/AccountResource/Pages/CreateAccount.php (`Model` return type, updated implementation)
+- consuming application (e.g., Laravel app)app/Filament/Finance/Widgets/MobileWarningBanner.php (removed `static` from `$view`)
+- consuming application (e.g., Laravel app)app/Filament/Finance/Resources/AccountResource.php (removed `?string` type from `$navigationGroup`)
+- consuming application (e.g., Laravel app)app/Filament/Finance/Resources/JournalEntryResource.php (removed `?string` type from `$navigationGroup`)
+- consuming application (e.g., Laravel app)app/Filament/Finance/Resources/PeriodResource.php (removed `?string` type from `$navigationGroup`)
+- consuming application (e.g., Laravel app)app/Filament/Finance/Resources/EventStreamResource.php (removed `?string` type from `$navigationGroup`)
+- consuming application (e.g., Laravel app)app/Filament/Finance/Resources/AccountResource/Pages/CreateAccount.php (`Model` return type, updated implementation)
 
 **Verification:**
 - ✅ `php artisan --version` works (Laravel Framework 12.39.0)

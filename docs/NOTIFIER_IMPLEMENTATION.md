@@ -12,7 +12,7 @@
 1. [Overview](#overview)
 2. [Package Architecture](#package-architecture)
 3. [Package Layer (Framework-Agnostic)](#package-layer-framework-agnostic)
-4. [Application Layer (Laravel/Atomy)](#application-layer-laravelatomy)
+4. [Application Layer (Laravel/consuming application)](#application-layer-laravelatomy)
 5. [API Endpoints](#api-endpoints)
 6. [Database Schema](#database-schema)
 7. [Usage Examples](#usage-examples)
@@ -601,10 +601,10 @@ All exceptions extend `NotificationException` (base exception).
 
 ---
 
-## Application Layer (Laravel/Atomy)
+## Application Layer (Laravel/consuming application)
 
 ```
-apps/Atomy/
+consuming application (e.g., Laravel app)
 ├── app/
 │   ├── Models/
 │   │   ├── InAppNotification.php                # In-app notification storage
@@ -656,7 +656,7 @@ apps/Atomy/
     └── NotificationControllerTest.php           # API integration tests
 ```
 
-**Total Atomy Files:** 27 files (5 models, 4 repositories, 6 services, 1 job, 5 controllers, 2 migrations, 1 route, 1 config, 1 test)
+**Total consuming application Files:** 27 files (5 models, 4 repositories, 6 services, 1 job, 5 controllers, 2 migrations, 1 route, 1 config, 1 test)
 
 ---
 
@@ -1822,7 +1822,7 @@ class NotificationControllerTest extends TestCase
 
 The **Nexus\Notifier** package is a production-ready, multi-channel notification system with:
 
-✅ **Complete Architecture** - 29 package files, 27 Atomy files  
+✅ **Complete Architecture** - 29 package files, 27 consuming application files  
 ✅ **Type-Safe Design** - Native enums, readonly properties  
 ✅ **Multi-Channel Support** - Email, SMS, Push, In-App  
 ✅ **Template Rendering** - Blade-like syntax with validation  

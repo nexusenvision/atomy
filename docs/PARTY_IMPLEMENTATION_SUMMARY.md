@@ -3,7 +3,7 @@
 **Status**: ✅ **COMPLETE** (Core Package & Laravel Integration)  
 **Date**: November 20, 2025  
 **Package**: `nexus/party` v1.0.0  
-**Application**: `apps/Atomy` (Laravel 12 Integration Layer)
+**Application**: `apps/consuming application` (Laravel 12 Integration Layer)
 
 ---
 
@@ -429,7 +429,7 @@ public function getOrganizationalChain(string $partyId, int $maxDepth = 10): arr
 
 ### Service Provider Bindings
 
-**File**: `apps/Atomy/app/Providers/PartyServiceProvider.php`
+**File**: `consuming application (e.g., Laravel app)app/Providers/PartyServiceProvider.php`
 
 ```php
 final class PartyServiceProvider extends ServiceProvider
@@ -463,7 +463,7 @@ final class PartyServiceProvider extends ServiceProvider
 }
 ```
 
-**Registered in**: `apps/Atomy/bootstrap/app.php`
+**Registered in**: `consuming application (e.g., Laravel app)bootstrap/app.php`
 
 ---
 
@@ -691,9 +691,9 @@ test('prevents circular organizational relationships', function () {
 });
 ```
 
-### Integration Tests (Atomy Level)
+### Integration Tests (consuming application Level)
 ```php
-// apps/Atomy/tests/Feature/PartyIntegrationTest.php
+// consuming application (e.g., Laravel app)tests/Feature/PartyIntegrationTest.php
 test('vendor creation flow creates party first', function () {
     $response = $this->postJson('/api/vendors', [
         'party' => [

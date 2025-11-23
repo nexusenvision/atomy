@@ -30,7 +30,7 @@ The `Nexus\SSO` package provides a comprehensive Single Sign-On (SSO) solution f
 4. [Services Layer](#services-layer)
 5. [Value Objects](#value-objects)
 6. [Exceptions](#exceptions)
-7. [Application Layer (Atomy)](#application-layer-atomy)
+7. [Application Layer (consuming application)](#application-layer-atomy)
 8. [Integration Points](#integration-points)
 9. [Security Considerations](#security-considerations)
 10. [Implementation Phases](#implementation-phases)
@@ -51,8 +51,8 @@ The `Nexus\SSO` package provides a comprehensive Single Sign-On (SSO) solution f
 
 **Critical Rule:** `Nexus\SSO` **MUST NOT** directly depend on `Nexus\Identity`. Instead:
 - SSO defines `UserProvisioningInterface` (contract)
-- Identity implements the contract in Atomy (via `UserManager`)
-- Atomy wires them together via dependency injection
+- Identity implements the contract in consuming application (via `UserManager`)
+- consuming application wires them together via dependency injection
 
 ### Integration Flow
 
@@ -63,7 +63,7 @@ The `Nexus\SSO` package provides a comprehensive Single Sign-On (SSO) solution f
                                  │
                                  ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  2. Atomy Controller calls SsoManager::initiateLogin()          │
+│  2. consuming application Controller calls SsoManager::initiateLogin()          │
 │     (Nexus\SSO)                                                  │
 └────────────────────────────────┬────────────────────────────────┘
                                  │
@@ -80,12 +80,12 @@ The `Nexus\SSO` package provides a comprehensive Single Sign-On (SSO) solution f
                                  │
                                  ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  5. IdP redirects back to Atomy callback URL with token/SAML    │
+│  5. IdP redirects back to consuming application callback URL with token/SAML    │
 └────────────────────────────────┬────────────────────────────────┘
                                  │
                                  ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  6. Atomy Controller calls SsoManager::handleCallback()         │
+│  6. consuming application Controller calls SsoManager::handleCallback()         │
 │     (Nexus\SSO)                                                  │
 └────────────────────────────────┬────────────────────────────────┘
                                  │
@@ -97,7 +97,7 @@ The `Nexus\SSO` package provides a comprehensive Single Sign-On (SSO) solution f
                                  ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │  8. SsoManager calls UserProvisioningInterface::findOrCreate()  │
-│     (Implemented by Nexus\Identity in Atomy)                    │
+│     (Implemented by Nexus\Identity in consuming application)                    │
 └────────────────────────────────┬────────────────────────────────┘
                                  │
                                  ▼
@@ -481,7 +481,7 @@ interface OAuthProviderInterface extends SsoProviderInterface
 
 ### 5. `UserProvisioningInterface` (Bridge to Identity)
 
-**Responsibility:** Find or create user from SSO profile (implemented by `Nexus\Identity` in Atomy)
+**Responsibility:** Find or create user from SSO profile (implemented by `Nexus\Identity` in consuming application)
 
 ```php
 <?php
@@ -495,7 +495,7 @@ use Nexus\SSO\ValueObjects\UserProfile;
 /**
  * User provisioning interface
  * 
- * This contract is defined in Nexus\SSO but IMPLEMENTED by Nexus\Identity in Atomy.
+ * This contract is defined in Nexus\SSO but IMPLEMENTED by Nexus\Identity in consuming application.
  * It decouples SSO from Identity package.
  */
 interface UserProvisioningInterface
@@ -1298,17 +1298,17 @@ class InvalidSsoConfigException extends SsoException
 
 ---
 
-## 🚀 Application Layer (Atomy)
+## 🚀 Application Layer (consuming application)
 
 ### Eloquent Models
 
 ```
-apps/Atomy/database/migrations/
+consuming application (e.g., Laravel app)database/migrations/
 ├── 2025_11_23_000001_create_sso_providers_table.php
 ├── 2025_11_23_000002_create_sso_sessions_table.php
 └── 2025_11_23_000003_create_sso_user_mappings_table.php
 
-apps/Atomy/app/Models/
+consuming application (e.g., Laravel app)app/Models/
 ├── SsoProvider.php
 ├── SsoSession.php
 └── SsoUserMapping.php
@@ -1317,7 +1317,7 @@ apps/Atomy/app/Models/
 ### Repositories
 
 ```
-apps/Atomy/app/Repositories/
+consuming application (e.g., Laravel app)app/Repositories/
 ├── DbSsoConfigRepository.php (implements SsoConfigRepositoryInterface)
 └── DbSsoSessionRepository.php (implements SsoSessionRepositoryInterface)
 ```
@@ -1325,7 +1325,7 @@ apps/Atomy/app/Repositories/
 ### Service Implementations
 
 ```
-apps/Atomy/app/Services/SSO/
+consuming application (e.g., Laravel app)app/Services/SSO/
 ├── IdentityUserProvisioner.php (implements UserProvisioningInterface)
 └── RedisSsoStateStore.php (Redis-backed state validator)
 ```
@@ -1333,7 +1333,7 @@ apps/Atomy/app/Services/SSO/
 ### Controllers
 
 ```
-apps/Atomy/app/Http/Controllers/
+consuming application (e.g., Laravel app)app/Http/Controllers/
 └── SsoController.php
     - GET /sso/login/{provider}
     - GET /sso/callback/{provider}
@@ -1344,7 +1344,7 @@ apps/Atomy/app/Http/Controllers/
 ### Service Provider Bindings
 
 ```php
-// apps/Atomy/app/Providers/SsoServiceProvider.php
+// consuming application (e.g., Laravel app)app/Providers/SsoServiceProvider.php
 
 namespace App\Providers;
 
@@ -1406,7 +1406,7 @@ class SsoServiceProvider extends ServiceProvider
 
 ### Integration with `Nexus\Identity`
 
-**File:** `apps/Atomy/app/Services/SSO/IdentityUserProvisioner.php`
+**File:** `consuming application (e.g., Laravel app)app/Services/SSO/IdentityUserProvisioner.php`
 
 ```php
 <?php
@@ -1617,7 +1617,7 @@ packages/SSO/tests/Unit/
 ### Integration Tests (Application Layer)
 
 ```
-apps/Atomy/tests/Feature/SSO/
+consuming application (e.g., Laravel app)tests/Feature/SSO/
 ├── SamlAuthenticationTest.php
 ├── OAuth2AuthenticationTest.php
 ├── JitProvisioningTest.php
@@ -1629,7 +1629,7 @@ apps/Atomy/tests/Feature/SSO/
 
 ## ⚙️ Configuration
 
-### `apps/Atomy/config/sso.php`
+### `consuming application (e.g., Laravel app)config/sso.php`
 
 ```php
 <?php

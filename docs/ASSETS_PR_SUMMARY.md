@@ -186,7 +186,7 @@ $this->eventDispatcher->dispatch(
 
 ### GL Listener (Application Layer)
 ```php
-// apps/Atomy/app/Listeners/AssetGLListener.php
+// consuming application (e.g., Laravel app)app/Listeners/AssetGLListener.php
 public function handleDisposal(AssetDisposedEvent $event): void
 {
     if (!$event->shouldPostToGL) return;
@@ -260,7 +260,7 @@ packages/Assets/
 
 ### Application Layer (documented - 20 files to create)
 ```
-apps/Atomy/
+consuming application (e.g., Laravel app)
 ├── database/migrations/
 │   └── 2025_11_22_000000_create_assets_tables.php ✅
 ├── app/
@@ -323,7 +323,7 @@ public function test_warranty_tracking_requires_advanced_tier()
 }
 ```
 
-### Integration Tests (Atomy Layer)
+### Integration Tests (consuming application Layer)
 ```php
 public function test_disposal_triggers_gl_posting_for_tier_3()
 {
@@ -391,7 +391,7 @@ UNIQUE(asset_id, period_start, period_end) -- Prevent duplicate depreciation
 
 ### ✅ Created
 1. **ASSETS_IMPLEMENTATION_SUMMARY.md** - Comprehensive implementation guide with:
-   - Complete code examples for all Atomy layer components
+   - Complete code examples for all consuming application layer components
    - Tier upgrade guide
    - Testing checklist
    - Security and performance considerations
@@ -478,7 +478,7 @@ return [
 ✅ feat(assets): Add exceptions, value objects, and domain events
 ✅ feat(assets): Add depreciation engines and core services
 ✅ feat(assets): Add Scheduler integration for automated depreciation
-✅ feat(assets): Add Atomy application layer foundation
+✅ feat(assets): Add consuming application application layer foundation
 ✅ feat(assets): Register Assets package in monorepo
 ```
 
@@ -487,7 +487,7 @@ return [
 ## 🚦 Next Steps (For Reviewer/Merger)
 
 ### Before Merge
-1. ⏳ Create remaining Atomy layer files per implementation summary:
+1. ⏳ Create remaining consuming application layer files per implementation summary:
    - 6 Eloquent models with tier-aware casting
    - 5 repository implementations
    - 1 service provider with tier detection
@@ -496,7 +496,7 @@ return [
    - 1 config file
 2. ⏳ Add `ASSET_DEPRECIATION` case to `JobType` enum
 3. ⏳ Run migrations: `php artisan migrate`
-4. ⏳ Install package in Atomy: `composer require nexus/assets`
+4. ⏳ Install package in consuming application: `composer require nexus/assets`
 5. ⏳ Run unit tests (depreciation calculations)
 6. ⏳ Run integration tests (tier validation, GL posting)
 

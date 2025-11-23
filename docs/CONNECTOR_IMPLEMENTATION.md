@@ -75,7 +75,7 @@ The Connector package follows the **"Logic in Packages, Implementation in Applic
                            │ implements
                            │
 ┌──────────────────────────────────────────────────────────────┐
-│              apps/Atomy (Application Layer)                  │
+│              apps/consuming application (Application Layer)                  │
 │                                                              │
 │  ┌────────────────────────────────────────────────────┐    │
 │  │  Vendor Adapters (Plugins)                          │    │
@@ -885,7 +885,7 @@ The `Nexus\Connector` package provides:
 ✅ **10 domain interfaces** for common integrations  
 
 **Next Steps:**
-1. Review the example adapters in `apps/Atomy/app/Connectors/Adapters/`
+1. Review the example adapters in `consuming application (e.g., Laravel app)app/Connectors/Adapters/`
 2. Implement your specific vendor adapters
 3. Configure your services in `config/connector.php`
 4. Monitor integration health via `/api/connector/status`

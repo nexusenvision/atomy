@@ -87,7 +87,7 @@
 
 ---
 
-### 🔄 In Progress (Atomy Application Layer)
+### 🔄 In Progress (consuming application Application Layer)
 
 #### 10. Database Migrations
 - ✅ `2025_11_22_000000_create_assets_tables.php`
@@ -97,11 +97,11 @@
 
 ---
 
-### ⏳ Remaining Tasks (Atomy Application Layer)
+### ⏳ Remaining Tasks (consuming application Application Layer)
 
 #### 11. Eloquent Models (Tier-Aware Casting)
 
-**File**: `apps/Atomy/app/Models/Asset.php`
+**File**: `consuming application (e.g., Laravel app)app/Models/Asset.php`
 
 ```php
 <?php
@@ -188,7 +188,7 @@ class Asset extends Model implements AssetInterface
 
 #### 12. Repositories (5 implementations)
 
-**File**: `apps/Atomy/app/Repositories/AssetRepository.php`
+**File**: `consuming application (e.g., Laravel app)app/Repositories/AssetRepository.php`
 
 ```php
 <?php
@@ -269,7 +269,7 @@ final readonly class AssetRepository implements AssetRepositoryInterface
 
 #### 13. Service Provider (Tier-Aware Binding)
 
-**File**: `apps/Atomy/app/Providers/AssetServiceProvider.php`
+**File**: `consuming application (e.g., Laravel app)app/Providers/AssetServiceProvider.php`
 
 ```php
 <?php
@@ -344,7 +344,7 @@ class AssetServiceProvider extends ServiceProvider
 
 #### 14. Configuration File
 
-**File**: `apps/Atomy/config/assets.php`
+**File**: `consuming application (e.g., Laravel app)config/assets.php`
 
 ```php
 <?php
@@ -399,7 +399,7 @@ return [
 
 #### 15. GL Integration Listener (Tier 3)
 
-**File**: `apps/Atomy/app/Listeners/AssetGLListener.php`
+**File**: `consuming application (e.g., Laravel app)app/Listeners/AssetGLListener.php`
 
 ```php
 <?php
@@ -495,7 +495,7 @@ protected $subscribe = [
 
 #### 16. API Endpoints (Tiered Routes)
 
-**File**: `apps/Atomy/routes/api.php` (add these routes)
+**File**: `consuming application (e.g., Laravel app)routes/api.php` (add these routes)
 
 ```php
 use App\Http\Controllers\API\AssetController;
@@ -596,7 +596,7 @@ ASSETS_AUTO_GL_POST=true
 
 ## 🎯 Next Steps to Complete
 
-### Immediate (Atomy Layer)
+### Immediate (consuming application Layer)
 1. ✅ Create migration (DONE)
 2. ⏳ Create 5 Eloquent models with tier-aware casting
 3. ⏳ Create 5 repository implementations
@@ -652,7 +652,7 @@ ASSETS_AUTO_GL_POST=true
 - [ ] MaintenanceAnalyzer TCO calculation
 - [ ] AssetVerifier discrepancy detection
 
-### Integration Tests (Atomy)
+### Integration Tests (consuming application)
 - [ ] Asset creation with tier-specific fields
 - [ ] Depreciation batch processing
 - [ ] GL posting triggered by disposal event
@@ -668,7 +668,7 @@ feat(assets): Add core package skeleton and interfaces
 feat(assets): Add exceptions, value objects, and domain events
 feat(assets): Add depreciation engines and core services
 feat(assets): Add Scheduler integration for automated depreciation
-feat(assets): Add Atomy application layer (migrations, models, repositories)
+feat(assets): Add consuming application application layer (migrations, models, repositories)
 feat(assets): Add GL integration listener and API endpoints
 feat(assets): Add comprehensive documentation and tier upgrade guide
 ```

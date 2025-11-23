@@ -170,17 +170,17 @@ The following new packages are defined by the requirements in REQUIREMENTS_PART2
 
 2. **Feature Gating** is critical:
    - Default implementations MUST be provided in `Nexus\Statutory`
-   - Paid implementations are separate packages bound conditionally in `Nexus\Atomy`
+   - Paid implementations are separate packages bound conditionally in `Nexus\consuming application`
 
 3. **Refactoring Priority**:
    - Phase 1: Create `Nexus\Compliance` and `Nexus\Statutory` packages
    - Phase 2: Refactor `Nexus\Payroll`, `Nexus\Accounting`, `Nexus\Finance` to remove country-specific logic
    - Phase 3: Implement country-specific packages (`Nexus\Statutory.Payroll.MYS`, etc.)
-   - Phase 4: Update `Nexus\Atomy` with conditional bindings and feature flags
+   - Phase 4: Update `Nexus\consuming application` with conditional bindings and feature flags
 
 4. **Testing Strategy**:
    - Test default implementations work correctly (zero deductions, basic reports)
-   - Test conditional binding logic in `Nexus\Atomy`
+   - Test conditional binding logic in `Nexus\consuming application`
    - Test multi-tenant scenarios with different countries
    - Test feature activation/deactivation workflows
 

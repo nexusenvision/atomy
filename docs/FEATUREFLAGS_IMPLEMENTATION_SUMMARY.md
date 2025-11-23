@@ -154,7 +154,7 @@ This document summarizes the completed implementation of the `Nexus\FeatureFlags
 
 ---
 
-### Step 7: Implement Atomy Integration ✅ / ⏳ / ❌
+### Step 7: Implement consuming application Integration ✅ / ⏳ / ❌
 
 **Status:** NOT STARTED
 

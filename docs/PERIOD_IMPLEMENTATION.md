@@ -12,7 +12,7 @@
 1. [Overview](#overview)
 2. [Package Architecture](#package-architecture)
 3. [Package Layer (Framework-Agnostic)](#package-layer-framework-agnostic)
-4. [Application Layer (Laravel/Atomy)](#application-layer-laravelatomy)
+4. [Application Layer (Laravel/consuming application)](#application-layer-laravelatomy)
 5. [API Endpoints](#api-endpoints)
 6. [Database Schema](#database-schema)
 7. [Usage Examples](#usage-examples)
@@ -216,7 +216,7 @@ interface AuthorizationInterface
 }
 ```
 
-**Integration Point:** Connects to Laravel Gates/Policies or custom RBAC system in Atomy layer.
+**Integration Point:** Connects to Laravel Gates/Policies or custom RBAC system in consuming application layer.
 
 ---
 
@@ -524,10 +524,10 @@ All exceptions extend `PeriodException` (base exception).
 
 ---
 
-## Application Layer (Laravel/Atomy)
+## Application Layer (Laravel/consuming application)
 
 ```
-apps/Atomy/
+consuming application (e.g., Laravel app)
 ├── app/
 │   ├── Models/
 │   │   └── Period.php                           # Eloquent model implementing PeriodInterface
@@ -557,7 +557,7 @@ apps/Atomy/
     └── period.php                               # Period-specific configuration
 ```
 
-**Total Atomy Files:** 11 files (1 model, 1 repository, 3 services, 1 controller, 1 provider, 2 migrations, 1 route, 1 config)
+**Total consuming application Files:** 11 files (1 model, 1 repository, 3 services, 1 controller, 1 provider, 2 migrations, 1 route, 1 config)
 
 ---
 
@@ -690,7 +690,7 @@ final class LaravelCacheAdapter implements CacheRepositoryInterface
 }
 ```
 
-**Note:** Uses Laravel Cache facade (acceptable in Atomy layer).
+**Note:** Uses Laravel Cache facade (acceptable in consuming application layer).
 
 ---
 
@@ -1193,7 +1193,7 @@ The Period package addresses **100+ requirements** from `REQUIREMENTS.csv`:
 | ARC-PER-0007 | Strict types | ✅ `declare(strict_types=1)` in all files |
 | ARC-PER-0008 | Readonly properties | ✅ All value objects and services |
 | ARC-PER-0009 | Domain exceptions | ✅ 8 custom exceptions |
-| ARC-PER-0010 | Separation of concerns | ✅ Packages (logic) vs Atomy (implementation) |
+| ARC-PER-0010 | Separation of concerns | ✅ Packages (logic) vs consuming application (implementation) |
 
 ### Business Requirements (BUS-PER-0001 to BUS-PER-0015)
 
@@ -1393,7 +1393,7 @@ public function test_posting_validation_performance(): void
 
 The **Nexus\Period** package is a production-ready, framework-agnostic period management system with:
 
-✅ **Complete Architecture** - 20 package files, 11 Atomy files  
+✅ **Complete Architecture** - 20 package files, 11 consuming application files  
 ✅ **Type-Safe Design** - Native enums, readonly properties  
 ✅ **Performance Optimized** - <5ms posting validation via caching  
 ✅ **Audit Trail** - Complete integration with `Nexus\AuditLogger`  

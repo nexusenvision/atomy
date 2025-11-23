@@ -8,7 +8,7 @@ Total Requirements: 229
 | `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0002 | All data structures defined via interfaces (AuditLogInterface) |  |  |  |  |
 | `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0003 | All persistence operations via repository interface |  |  |  |  |
 | `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0004 | Business logic in service layer (AuditLogManager) |  |  |  |  |
-| `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0005 | All database migrations in application layer (apps/Atomy) |  |  |  |  |
+| `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0005 | All database migrations in application layer (apps/consuming application) |  |  |  |  |
 | `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0006 | All Eloquent models in application layer |  |  |  |  |
 | `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0007 | Repository implementations in application layer |  |  |  |  |
 | `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0008 | Traits and Observers in application layer (Laravel-specific) |  |  |  |  |
@@ -74,7 +74,7 @@ Total Requirements: 229
 | `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0002 | All data structures defined via interfaces (AuditLogInterface) |  |  |  |  |
 | `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0003 | All persistence operations via repository interface |  |  |  |  |
 | `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0004 | Business logic in service layer (AuditLogManager) |  |  |  |  |
-| `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0005 | All database migrations in application layer (apps/Atomy) |  |  |  |  |
+| `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0005 | All database migrations in application layer (apps/consuming application) |  |  |  |  |
 | `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0006 | All Eloquent models in application layer |  |  |  |  |
 | `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0007 | Repository implementations in application layer |  |  |  |  |
 | `Nexus\AuditLogger` | Architechtural Requirement | ARC-AUD-0008 | Traits and Observers in application layer (Laravel-specific) |  |  |  |  |

@@ -41,7 +41,7 @@ The package follows the **"Logic in Packages, Implementation in Applications"** 
 └─────────────────────────────────────────────────────────────┘
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ Nexus\Atomy (Laravel Application Layer)                     │
+│ Nexus\consuming application (Laravel Application Layer)                     │
 ├─────────────────────────────────────────────────────────────┤
 │ • Eloquent Models (Implement Interfaces)                    │
 │ • Repositories (Persistence Logic)                          │
@@ -448,7 +448,7 @@ if (!empty($overlapping)) {
 
 ---
 
-## Database Schema (Atomy Implementation)
+## Database Schema (Application Implementation)
 
 ### V1 Schema (With V2 Multi-Currency Readiness)
 
@@ -599,7 +599,7 @@ CREATE TABLE reconciliation_reversals (
 
 ---
 
-## API Endpoints (Atomy Implementation)
+## API Endpoints (Application Implementation)
 
 ### Bank Accounts
 
@@ -668,7 +668,7 @@ GET    /api/v1/cash-management/cash-position/consolidated
 - Exception handling
 - DTO transformation
 
-### Integration Tests (Atomy Layer)
+### Integration Tests (consuming application Layer)
 
 - Repository operations
 - Event listener behavior
@@ -781,13 +781,13 @@ The `Nexus\CashManagement` package successfully implements a production-ready, a
 - ✅ Multi-currency readiness
 - ✅ SOX/IFRS compliance controls
 
-**Status**: Ready for Atomy implementation (Eloquent models, repositories, migrations, controllers).
+**Status**: Ready for consuming application implementation (Eloquent models, repositories, migrations, controllers).
 
 **Next Steps**:
-1. Implement Eloquent models in `apps/Atomy/app/Models/`
-2. Create repositories in `apps/Atomy/app/Repositories/`
-3. Generate migrations in `apps/Atomy/database/migrations/`
-4. Implement event listeners in `apps/Atomy/app/Listeners/`
-5. Create service provider in `apps/Atomy/app/Providers/`
-6. Build API controllers in `apps/Atomy/app/Http/Controllers/Api/`
-7. Register routes in `apps/Atomy/routes/api.php`
+1. Implement Eloquent models in `consuming application (e.g., Laravel app)app/Models/`
+2. Create repositories in `consuming application (e.g., Laravel app)app/Repositories/`
+3. Generate migrations in `consuming application (e.g., Laravel app)database/migrations/`
+4. Implement event listeners in `consuming application (e.g., Laravel app)app/Listeners/`
+5. Create service provider in `consuming application (e.g., Laravel app)app/Providers/`
+6. Build API controllers in `consuming application (e.g., Laravel app)app/Http/Controllers/Api/`
+7. Register routes in `consuming application (e.g., Laravel app)routes/api.php`

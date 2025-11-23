@@ -154,7 +154,7 @@ echo "Cache size: " . number_format($metrics['total_size_bytes'] / 1024 / 1024, 
 
 ---
 
-## Next Steps (Atomy Integration)
+## Next Steps (consuming application Integration)
 
 1. Create `DbRouteCacheRepository` with gzip compression
 2. Implement `ORToolsAdapter` for advanced optimization

@@ -11,7 +11,7 @@ Total Requirements: 30
 | `Nexus\Storage` | Functional Requirement | FR-STO-105 | Support basic directory operations: createDirectory(path) and listFiles(path) |  |  |  |  |
 | `Nexus\Storage` | Business Requirements | BUS-STO-001 | The package MUST remain framework-agnostic with no dependencies on Laravel-specific classes or facades |  |  |  |  |
 | `Nexus\Storage` | Business Requirements | BUS-STO-002 | File operations MUST support both string content and PHP stream resources for maximum flexibility |  |  |  |  |
-| `Nexus\Storage` | Business Requirements | BUS-STO-003 | The package MUST NOT implement concrete storage drivers; it only defines contracts for Atomy to implement |  |  |  |  |
+| `Nexus\Storage` | Business Requirements | BUS-STO-003 | The package MUST NOT implement concrete storage drivers; it only defines contracts for consuming application to implement |  |  |  |  |
 | `Nexus\Storage` | Business Requirements | BUS-STO-004 | Public URL generation MUST support expiration times for secure temporary access to private files |  |  |  |  |
 | `Nexus\Storage` | Business Requirements | BUS-STO-005 | All file paths MUST use forward slashes (/) as separators to maintain cross-platform compatibility |  |  |  |  |
 | `Nexus\Storage` | Performance Requirement | PERF-STO-001 | Stream-based file uploads for files > 5MB MUST not exceed 100MB peak memory usage |  |  |  |  |
@@ -33,4 +33,4 @@ Total Requirements: 30
 | `Nexus\Storage` | User Story | USE-STO-005 | As a developer, I want to list all files in a directory with $storageDriver->listFiles('directory/') for building file browsers |  |  |  |  |
 | `Nexus\Storage` | User Story | USE-STO-006 | As a developer, I want to delete files with $storageDriver->delete('path') and receive clear exceptions if deletion fails |  |  |  |  |
 | `Nexus\Storage` | User Story | USE-STO-007 | As a developer, I want to set file visibility with $storageDriver->setVisibility('path', 'public') for controlling access |  |  |  |  |
-| `Nexus\Storage` | User Story | USE-STO-008 | As a system integrator, I want to swap storage backends (local to S3) by changing only the Atomy binding configuration |  |  |  |  |
+| `Nexus\Storage` | User Story | USE-STO-008 | As a system integrator, I want to swap storage backends (local to S3) by changing only the consuming application binding configuration |  |  |  |  |

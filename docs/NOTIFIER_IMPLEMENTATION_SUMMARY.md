@@ -27,7 +27,7 @@ The Nexus\Notifier package is a comprehensive, multi-channel notification system
 - **4 Unit Tests** - Value object behavior verification
 - **1 PHPUnit Config** - Test runner configuration
 
-### ✅ Application Layer (`apps/Atomy/`)
+### ✅ Application Layer (`consuming application (e.g., Laravel app)`)
 
 **Implementation:**
 - **5 Eloquent Models** - Database-backed entities with ULID primary keys
@@ -241,7 +241,7 @@ POST /webhooks/fcm
 
 ## Configuration
 
-Default configuration in `apps/Atomy/config/notifier.php`:
+Default configuration in `consuming application (e.g., Laravel app)config/notifier.php`:
 
 ```php
 return [
