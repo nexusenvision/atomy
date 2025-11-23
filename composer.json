@@ -195,6 +195,10 @@
         {
             "type": "path",
             "url": "./packages/FeatureFlags"
+        },
+        {
+            "type": "path",
+            "url": "./packages/SSO"
         }
     ],
     "minimum-stability": "dev",
