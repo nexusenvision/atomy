@@ -100,33 +100,64 @@ final class DefaultEventUpcaster implements EventUpcasterInterface
 
     public function registerUpcaster(UpcasterInterface $upcaster): self
     {
-        // Get all event types this upcaster supports by checking common event types
-        // In practice, this would be determined by metadata or convention
-        // For now, we'll store upcasters and filter them in getUpcastersForEventType()
-        $this->upcasters[] = $upcaster;
+        // Detect which event types this upcaster supports by probing common versions
+        // We probe versions 1-10 as a reasonable range for event schema versioning
+        $eventTypeDetected = false;
+
+        // Common event type patterns to check (in production, this could be externalized)
+        $commonEventTypes = [
+            'AccountCreated', 'AccountCredited', 'AccountDebited',
+            'PaymentReceived', 'PaymentFailed', 'InvoiceCreated',
+            'StockReserved', 'StockAdded', 'StockShipped'
+        ];
+
+        foreach ($commonEventTypes as $eventType) {
+            for ($version = 1; $version <= 10; $version++) {
+                if ($upcaster->supports($eventType, $version)) {
+                    if (!isset($this->upcasters[$eventType])) {
+                        $this->upcasters[$eventType] = [];
+                    }
+                    $this->upcasters[$eventType][] = $upcaster;
+                    $eventTypeDetected = true;
+                    break; // Move to next event type
+                }
+            }
+        }
+
+        // If no common event type matched, store in a special '__unknown__' key
+        // This allows custom event types to still work via getUpcastersForEventType()
+        if (!$eventTypeDetected) {
+            if (!isset($this->upcasters['__unknown__'])) {
+                $this->upcasters['__unknown__'] = [];
+            }
+            $this->upcasters['__unknown__'][] = $upcaster;
+        }
 
         return $this;
     }
 
     public function getUpcastersForEventType(string $eventType): array
     {
-        $filtered = [];
+        // Direct lookup for registered event types
+        $upcasters = $this->upcasters[$eventType] ?? [];
 
-        foreach ($this->upcasters as $upcaster) {
-            // Check if this upcaster supports any version of this event type
-            // We'll check versions 1-100 (reasonable range)
-            for ($version = 1; $version <= 100; $version++) {
-                if ($upcaster->supports($eventType, $version)) {
-                    $filtered[] = $upcaster;
-                    break;
+        // Also check unknown upcasters for this specific event type
+        if (isset($this->upcasters['__unknown__'])) {
+            foreach ($this->upcasters['__unknown__'] as $upcaster) {
+                // Probe versions 1-10 for unknown upcasters
+                for ($version = 1; $version <= 10; $version++) {
+                    if ($upcaster->supports($eventType, $version)) {
+                        $upcasters[] = $upcaster;
+                        break;
+                    }
                 }
             }
         }
 
         // Sort by target version
-        usort($filtered, fn($a, $b) => $a->getTargetVersion() <=> $b->getTargetVersion());
+        usort($upcasters, fn($a, $b) => $a->getTargetVersion() <=> $b->getTargetVersion());
 
-        return $filtered;
+        return $upcasters;
     }
 
     public function getLatestVersion(string $eventType): ?int
