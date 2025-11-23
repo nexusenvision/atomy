@@ -1,6 +1,6 @@
 # Nexus\SSO - Single Sign-On Package
 
-[![Tests](https://img.shields.io/badge/tests-51%20passing-success)](tests/)
+[![Tests](https://img.shields.io/badge/tests-71%20passing-success)](tests/)
 [![PHP Version](https://img.shields.io/badge/php-8.3%2B-blue)](composer.json)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -14,13 +14,19 @@ Framework-agnostic Single Sign-On (SSO) package for Nexus ERP monorepo. Supports
 - **Attribute Mapping**: Flexible mapping from IdP attributes to local user fields
 - **Multi-Tenant Ready**: Per-tenant SSO configuration
 - **CSRF Protection**: Secure state validation for callbacks
-- **Framework Agnostic**: Pure PHP 8.3+ with zero Laravel dependencies
+- **Framework Agnostic**: Pure PHP 8.3+ with minimal dependencies
 
-## 📦 Installation
+## 📦 Installation & Dependencies
 
 ```bash
 composer require nexus/sso
 ```
+
+### Runtime Dependencies
+
+- **onelogin/php-saml** `^4.3` - SAML 2.0 protocol implementation
+- **league/oauth2-client** `^2.8` - OAuth2/OIDC client library
+- **psr/log** `^3.0` - Logging interface (framework-agnostic)
 
 ## 🏗️ Architecture
 
@@ -42,12 +48,14 @@ cd packages/SSO
 composer install
 ```
 
-### 2. Define Core Interfaces (Already Done)
+### 2. Define Core Interfaces (Phase 1 - Completed)
 
 The package provides these core contracts:
 
 - `SsoManagerInterface` - Main SSO orchestration
 - `SsoProviderInterface` - Base provider contract
+- `SamlProviderInterface` - SAML 2.0 specific operations
+- `OAuthProviderInterface` - OAuth2/OIDC specific operations
 - `UserProvisioningInterface` - Bridge to Identity (you implement this)
 - `AttributeMapperInterface` - Attribute mapping service
 - `SsoConfigRepositoryInterface` - Configuration storage
@@ -55,7 +63,23 @@ The package provides these core contracts:
 - `StateStorageInterface` - Temporary state storage
 - `SsoSessionRepositoryInterface` - Session management
 
-### 3. Implement User Provisioning (Your Application)
+### 3. Available Providers (Phases 2-3 - Completed)
+
+**SAML 2.0 Provider** (`Saml2Provider`):
+- Full SAML 2.0 authentication flow
+- SP metadata XML generation
+- SAML assertion parsing and validation
+- Single Logout (SLO) support
+- Signature validation (configurable)
+
+**OAuth 2.0 Provider** (`OAuth2Provider`):
+- Generic OAuth 2.0 flow
+- Authorization code exchange
+- Userinfo endpoint integration
+- Token refresh support
+- Flexible attribute mapping
+
+### 4. Implement User Provisioning (Your Application)
 
 In your consuming application, implement the `UserProvisioningInterface`:
 

@@ -1,15 +1,15 @@
 # Nexus\SSO Implementation Summary
 
 **Package:** `Nexus\SSO`  
-**Version:** 0.1.0 (Development)  
+**Version:** 0.2.0 (Development)  
 **Implementation Date:** November 24, 2025  
-**Status:** Phase 1 Complete ✅
+**Status:** Phases 1-3 Complete ✅
 
 ---
 
 ## 📊 Implementation Overview
 
-The `Nexus\SSO` package provides a framework-agnostic Single Sign-On solution for the Nexus ERP monorepo. Phase 1 (Core Infrastructure) has been completed following strict TDD methodology.
+The `Nexus\SSO` package provides a framework-agnostic Single Sign-On solution for the Nexus ERP monorepo. Phases 1-3 (Core Infrastructure + SAML + OAuth2) have been completed following strict TDD methodology.
 
 ---
 
@@ -27,7 +27,9 @@ The `Nexus\SSO` package provides a framework-agnostic Single Sign-On solution fo
 {
   "require": {
     "php": "^8.3",
-    "psr/log": "^3.0"
+    "psr/log": "^3.0",
+    "onelogin/php-saml": "^4.3",
+    "league/oauth2-client": "^2.8"
   },
   "require-dev": {
     "phpunit/phpunit": "^11.0",
@@ -36,7 +38,7 @@ The `Nexus\SSO` package provides a framework-agnostic Single Sign-On solution fo
 }
 ```
 
-### Core Contracts (8 Interfaces)
+### Core Contracts (10 Interfaces)
 
 All interfaces are framework-agnostic and define the package's public API:
 
@@ -44,6 +46,8 @@ All interfaces are framework-agnostic and define the package's public API:
 |-----------|---------|---------|
 | `SsoManagerInterface` | Main SSO orchestration | `initiateLogin()`, `handleCallback()`, `getUserProfile()`, `initiateLogout()`, `isSsoEnabled()`, `getAvailableProviders()` |
 | `SsoProviderInterface` | Base provider contract | `getName()`, `getProtocol()`, `getAuthorizationUrl()`, `handleCallback()`, `getLogoutUrl()`, `validateConfig()` |
+| `SamlProviderInterface` | SAML-specific operations | `getSpMetadata()`, `parseSamlAssertion()`, `validateSignature()` (extends `SsoProviderInterface`) |
+| `OAuthProviderInterface` | OAuth2-specific operations | `getAccessToken()`, `getUserInfo()`, `validateIdToken()`, `refreshToken()` (extends `SsoProviderInterface`) |
 | `UserProvisioningInterface` | Bridge to Identity package | `findOrCreateUser()`, `updateUserFromProfile()`, `isJitProvisioningEnabled()`, `linkSsoIdentity()`, `unlinkSsoIdentity()` |
 | `AttributeMapperInterface` | Attribute mapping | `map()`, `validateRequiredAttributes()` |
 | `SsoConfigRepositoryInterface` | Configuration storage | `getConfig()`, `saveConfig()`, `isProviderEnabled()`, `getEnabledProviders()`, `deleteConfig()` |
@@ -55,8 +59,9 @@ All interfaces are framework-agnostic and define the package's public API:
 - ✅ All dependencies are **interfaces**, never concrete classes
 - ✅ No direct coupling to `Nexus\Identity` - bridged via `UserProvisioningInterface`
 - ✅ Consuming application implements repositories and provisioning logic
+- ✅ Protocol-specific interfaces extend base `SsoProviderInterface`
 
-### Value Objects (6 Classes)
+### Value Objects (8 Classes)
 
 All value objects are **immutable** using `readonly` properties:
 
@@ -68,14 +73,18 @@ All value objects are **immutable** using `readonly` properties:
 | `AttributeMap` | Class | Attribute mapping config | `mappings`, `requiredFields` |
 | `SsoProviderConfig` | Class | Provider configuration | `providerName`, `protocol`, `clientId`, `clientSecret`, `discoveryUrl`, `redirectUri`, `attributeMap`, `enabled`, `scopes`, `metadata` |
 | `SsoSession` | Class | Authenticated session | `sessionId`, `providerName`, `userProfile`, `accessToken`, `refreshToken`, `createdAt`, `expiresAt` |
+| `SamlAssertion` | Class | SAML assertion data | `nameId`, `sessionIndex`, `attributes`, `notBefore`, `notOnOrAfter`, `issuer`, `audience` |
+| `OAuthToken` | Class | OAuth access token | `accessToken`, `tokenType`, `expiresIn`, `refreshToken`, `idToken`, `scopes`, `issuedAt` |
 
 **Key Features:**
-- ✅ All properties are `public readonly` (direct access, no getters)
+- ✅ Most properties are `public readonly` (direct access)
+- ✅ `OAuthToken` uses individual `readonly` properties (not class-level) due to constructor default initialization
 - ✅ Constructor property promotion
 - ✅ `declare(strict_types=1)` in all files
 - ✅ Full immutability enforced at compile-time
+- ✅ Helper methods: `isValid()`, `isExpired()`, `getSecondsUntilExpiry()`
 
-### Exceptions (10 Classes)
+### Exceptions (12 Classes)
 
 Exception hierarchy for domain-specific errors:
 
@@ -89,13 +98,15 @@ SsoException (base)
 ├── SsoProviderException
 ├── SsoSessionExpiredException
 ├── TokenRefreshException
-└── UserProvisioningException
+├── UserProvisioningException
+├── InvalidSamlAssertionException (new)
+└── InvalidOAuthTokenException (new)
 ```
 
 **Design:**
 - ✅ Base `SsoException` extends `\Exception`
 - ✅ Specific exceptions provide contextual error messages
-- ✅ Some exceptions format messages in constructor (e.g., `SsoProviderNotFoundException`)
+- ✅ Factory methods for common scenarios (e.g., `InvalidSamlAssertionException::expired()`)
 
 ### Services (2 Implemented)
 
@@ -193,41 +204,107 @@ tests/Unit/
 
 ---
 
+## ✅ Phase 2: SAML 2.0 Provider (COMPLETED)
+
+**Status:** Complete ✅  
+**Implementation Date:** November 24, 2025  
+**Dependencies:** `onelogin/php-saml` v4.3.0
+
+### Components Implemented
+
+**1. SamlProviderInterface** (`src/Contracts/SamlProviderInterface.php`)
+- Extends `SsoProviderInterface`
+- Methods: `getSpMetadata()`, `parseSamlAssertion()`, `validateSignature()`
+
+**2. Saml2Provider** (`src/Providers/Saml2Provider.php`)
+- Full SAML 2.0 authentication flow
+- Authorization URL generation with SAMLRequest
+- SP metadata XML generation
+- SAML assertion parsing and validation
+- Single Logout (SLO) support
+- Configurable signature validation (disabled for testing without valid certificates)
+- Uses `OneLogin\Saml2\Auth` for SAML operations
+
+**3. SamlAssertion Value Object** (`src/ValueObjects/SamlAssertion.php`)
+- Properties: `nameId`, `sessionIndex`, `attributes`, `notBefore`, `notOnOrAfter`, `issuer`, `audience`
+- Methods: `isValid()`, `getSecondsUntilExpiry()`
+- All properties `public readonly`
+
+**4. InvalidSamlAssertionException** (`src/Exceptions/InvalidSamlAssertionException.php`)
+- Factory methods: `invalidSignature()`, `expired()`, `notYetValid()`, `invalidAudience()`, `missingAttribute()`
+
+### Test Coverage
+
+**Saml2ProviderTest** (10 tests, 19 assertions):
+- ✅ Returns correct name and protocol
+- ✅ Generates authorization URL with SAMLRequest
+- ✅ Generates SP metadata XML
+- ✅ Validates configuration
+- ✅ Throws exception for invalid configuration
+- ✅ Parses SAML assertion from callback
+- ✅ Handles callback and extracts user profile
+- ✅ Throws exception for expired SAML assertion
+- ✅ Generates logout URL with SAMLRequest
+
+**Technical Notes:**
+- Mock SAML responses used for unit testing (base64-encoded)
+- Signature validation disabled in tests (no valid X.509 certificates)
+- Production usage requires valid SP private key and certificate
+- Dynamic signing configuration based on certificate availability
+
+---
+
+## ✅ Phase 3: OAuth 2.0 Provider (COMPLETED)
+
+**Status:** Complete ✅  
+**Implementation Date:** November 24, 2025  
+**Dependencies:** `league/oauth2-client` v2.8.1
+
+### Components Implemented
+
+**1. OAuthProviderInterface** (`src/Contracts/OAuthProviderInterface.php`)
+- Extends `SsoProviderInterface`
+- Methods: `getAccessToken()`, `getUserInfo()`, `validateIdToken()`, `refreshToken()`
+
+**2. OAuth2Provider** (`src/Providers/OAuth2Provider.php`)
+- Generic OAuth 2.0 implementation
+- Authorization URL generation with scopes and state
+- Authorization code to access token exchange
+- Userinfo endpoint integration
+- Token refresh support
+- User profile extraction with attribute mapping
+- Uses `League\OAuth2\Client\Provider\GenericProvider`
+
+**3. OAuthToken Value Object** (`src/ValueObjects/OAuthToken.php`)
+- Properties: `accessToken`, `tokenType`, `expiresIn`, `refreshToken`, `idToken`, `scopes`, `issuedAt`
+- Methods: `isExpired()`, `getExpiresAt()`, `getSecondsUntilExpiry()`, `hasScope()`
+- Individual `readonly` properties (not class-level readonly due to constructor initialization)
+
+**4. InvalidOAuthTokenException** (`src/Exceptions/InvalidOAuthTokenException.php`)
+- Factory methods: `tokenExchangeFailed()`, `invalidIdToken()`, `expiredToken()`, `invalidTokenResponse()`
+
+### Test Coverage
+
+**OAuth2ProviderTest** (10 tests, 20 assertions):
+- ✅ Returns correct name and protocol
+- ✅ Generates authorization URL with proper parameters
+- ✅ Validates configuration
+- ✅ Throws exception for invalid configuration
+- ✅ Exchanges authorization code for access token
+- ✅ Gets user info with access token
+- ✅ Handles callback and extracts user profile
+- ✅ Refreshes access token
+- ✅ Returns null for logout URL (OAuth2 has no standard logout)
+
+**Technical Notes:**
+- Mock token responses used for unit testing
+- Mock userinfo responses for profile extraction
+- Production usage requires real OAuth2 endpoints (authorization, token, userinfo)
+- Supports custom attribute mapping via `SsoProviderConfig`
+
+---
+
 ## 🚧 Remaining Phases (PLANNED)
-
-### Phase 2: SAML 2.0 Provider
-
-**Status:** Not Started  
-**Estimated Effort:** 1 week  
-**Dependencies:** `onelogin/php-saml` library
-
-**Planned Components:**
-- `Saml2Provider` - SAML provider implementation
-- `SamlProviderInterface` - SAML-specific operations
-- `SamlAssertion` - Value object for SAML responses
-- SAML signature validation
-- SP metadata generation
-
-**Blockers:**
-- Requires external library integration
-- Needs SAML IdP for testing (Azure AD, Okta, etc.)
-
-### Phase 3: OAuth2/OIDC Provider
-
-**Status:** Not Started  
-**Estimated Effort:** 1 week  
-**Dependencies:** `league/oauth2-client` library
-
-**Planned Components:**
-- `OAuth2Provider` - OAuth2 generic implementation
-- `OidcProvider` - OpenID Connect implementation
-- `OAuthProviderInterface` - OAuth-specific operations
-- `OAuthToken` - Value object for OAuth tokens
-- JWT ID token validation
-
-**Blockers:**
-- Requires external library integration
-- Needs OAuth/OIDC IdP for testing
 
 ### Phase 4: Vendor-Specific Providers
 
