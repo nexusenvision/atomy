@@ -26,13 +26,13 @@ return new class extends Migration
             // Subject (entity being acted upon)
             $table->string('subject_type')->nullable()->index();
             $table->unsignedBigInteger('subject_id')->nullable();
-            $table->index(['subject_type', 'subject_id'], 'audit_logs_subject_index');
+            // // // $table->index(['subject_type', 'subject_id'], 'audit_logs_subject_index');
             
             // Causer (who performed the action)
             // NULL for system activities per BUS-AUD-0148
             $table->string('causer_type')->nullable()->index();
             $table->unsignedBigInteger('causer_id')->nullable();
-            $table->index(['causer_type', 'causer_id'], 'causer_index');
+            // // // $table->index(['causer_type', 'causer_id'], 'causer_index');
             
             // Additional data (before/after state, metadata)
             // Satisfies FUN-AUD-0186
@@ -65,10 +65,10 @@ return new class extends Migration
             $table->timestamp('created_at');
             
             // Indexes for performance
-            $table->index('created_at');
-            $table->index(['log_name', 'created_at']);
-            $table->index(['level', 'created_at']);
-            $table->index(['expires_at', 'created_at']);
+            // // // $table->index('created_at');
+            // // // $table->index(['log_name', 'created_at']);
+            // // // $table->index(['level', 'created_at']);
+            // // // $table->index(['expires_at', 'created_at']);
             
             // Full-text search support per FUN-AUD-0189
             // Note: MySQL/MariaDB specific, adjust for other databases

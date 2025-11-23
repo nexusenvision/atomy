@@ -21,8 +21,8 @@ return new class extends Migration
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
             
-            $table->index(['recipient_id', 'is_read']);
-            $table->index('created_at');
+            // // $table->index(['recipient_id', 'is_read']);
+            // // $table->index('created_at');
         });
     }
 

@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withProviders([
         // Core Service Providers
         App\Providers\TenantServiceProvider::class,
+        App\Providers\MonitoringServiceProvider::class,
         
         // Domain Service Providers
         // App\Providers\EventServiceProvider::class,

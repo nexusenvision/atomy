@@ -10,13 +10,13 @@ return new class extends Migration
     {
         Schema::create('performance_reviews', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->foreignUlid('employee_id')->constrained('employees')->cascadeOnDelete();
-            $table->foreignUlid('review_template_id')->nullable()->constrained('workflow_definitions')->nullOnDelete();
+            // // $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
+            // // $table->foreignUlid('employee_id')->constrained('employees')->cascadeOnDelete();
+            // // $table->foreignUlid('review_template_id')->nullable()->constrained('workflow_definitions')->nullOnDelete();
             $table->date('review_period_start');
             $table->date('review_period_end');
             $table->string('review_type');
-            $table->foreignUlid('reviewer_id')->constrained('employees')->cascadeOnDelete();
+            // // $table->foreignUlid('reviewer_id')->constrained('employees')->cascadeOnDelete();
             $table->decimal('overall_score', 5, 2)->nullable();
             $table->string('status')->default('draft');
             $table->timestamp('submitted_at')->nullable();
@@ -30,8 +30,8 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['tenant_id', 'employee_id', 'status']);
-            $table->index(['tenant_id', 'reviewer_id', 'status']);
+            // // $table->index(['tenant_id', 'employee_id', 'status']);
+            // // $table->index(['tenant_id', 'reviewer_id', 'status']);
         });
     }
 

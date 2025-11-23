@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('leave_types', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
+            // // $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->string('name');
             $table->string('code')->unique();
             $table->text('description')->nullable();
@@ -24,8 +24,8 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['tenant_id', 'code']);
-            $table->index(['tenant_id', 'is_active']);
+            // // $table->index(['tenant_id', 'code']);
+            // // $table->index(['tenant_id', 'is_active']);
         });
     }
 

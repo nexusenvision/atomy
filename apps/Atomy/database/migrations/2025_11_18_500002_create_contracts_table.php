@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('contracts', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->foreignUlid('employee_id')->constrained('employees')->cascadeOnDelete();
+            // // $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
+            // // $table->foreignUlid('employee_id')->constrained('employees')->cascadeOnDelete();
             $table->string('contract_type');
             $table->date('start_date');
             $table->date('end_date')->nullable();
@@ -24,14 +24,14 @@ return new class extends Migration
             $table->text('terms')->nullable();
             $table->string('status')->default('active');
             $table->timestamp('signed_at')->nullable();
-            $table->foreignUlid('approved_by')->nullable()->constrained('employees')->nullOnDelete();
+            // // $table->foreignUlid('approved_by')->nullable()->constrained('employees')->nullOnDelete();
             $table->timestamp('approved_at')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['tenant_id', 'employee_id']);
-            $table->index(['tenant_id', 'status']);
+            // // $table->index(['tenant_id', 'employee_id']);
+            // // $table->index(['tenant_id', 'status']);
         });
     }
 

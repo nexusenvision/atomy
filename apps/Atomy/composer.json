@@ -27,6 +27,7 @@
         "nexus/hrm": "*@dev",
         "nexus/identity": "*@dev",
         "nexus/import": "*@dev",
+        "nexus/monitoring": "*@dev",
         "nexus/notifier": "*@dev",
         "nexus/party": "*@dev",
         "nexus/payable": "*@dev",
@@ -48,6 +49,7 @@
         "nexus/workflow": "*@dev",
         "paypal/paypal-checkout-sdk": "^1.0",
         "predis/predis": "^3.2",
+        "promphp/prometheus_client_php": "^2.14",
         "stripe/stripe-php": "^13.0",
         "twilio/sdk": "^7.0"
     },
@@ -216,6 +218,10 @@
         {
             "type": "path",
             "url": "../../packages/Sales"
+        },
+        {
+            "type": "path",
+            "url": "../../packages/Monitoring"
         },
         {
             "type": "path",

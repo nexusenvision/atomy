@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('employee_components', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->foreignUlid('employee_id')->constrained('employees')->cascadeOnDelete();
-            $table->foreignUlid('component_id')->constrained('payroll_components')->cascadeOnDelete();
+            // // $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
+            // // $table->foreignUlid('employee_id')->constrained('employees')->cascadeOnDelete();
+            // // $table->foreignUlid('component_id')->constrained('payroll_components')->cascadeOnDelete();
             $table->decimal('amount', 15, 2)->nullable();
             $table->decimal('percentage_value', 5, 2)->nullable();
             $table->date('effective_from');
@@ -22,9 +22,9 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['tenant_id', 'employee_id', 'is_active']);
-            $table->index(['tenant_id', 'component_id']);
-            $table->index(['effective_from', 'effective_to']);
+            // // $table->index(['tenant_id', 'employee_id', 'is_active']);
+            // // $table->index(['tenant_id', 'component_id']);
+            // // $table->index(['effective_from', 'effective_to']);
         });
     }
 

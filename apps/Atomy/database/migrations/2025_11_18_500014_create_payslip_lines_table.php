@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('payslip_lines', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->foreignUlid('payslip_id')->constrained('payslips')->cascadeOnDelete();
-            $table->foreignUlid('component_id')->nullable()->constrained('payroll_components')->nullOnDelete();
+            // // $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
+            // // $table->foreignUlid('payslip_id')->constrained('payslips')->cascadeOnDelete();
+            // // $table->foreignUlid('component_id')->nullable()->constrained('payroll_components')->nullOnDelete();
             $table->string('code');
             $table->string('name');
             $table->string('type'); // earning, deduction, contribution
@@ -22,8 +22,8 @@ return new class extends Migration
             $table->json('metadata')->nullable();
             $table->timestamps();
             
-            $table->index(['tenant_id', 'payslip_id']);
-            $table->index(['payslip_id', 'type']);
+            // // $table->index(['tenant_id', 'payslip_id']);
+            // // $table->index(['payslip_id', 'type']);
         });
     }
 

@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
+            // // // $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->string('employee_code')->unique();
             $table->string('first_name');
             $table->string('last_name');
@@ -21,19 +21,23 @@ return new class extends Migration
             $table->date('confirmation_date')->nullable();
             $table->date('termination_date')->nullable();
             $table->string('status')->default('probationary');
-            $table->foreignUlid('manager_id')->nullable()->constrained('employees')->nullOnDelete();
-            $table->foreignUlid('department_id')->nullable()->constrained('departments')->nullOnDelete();
-            $table->foreignUlid('office_id')->nullable()->constrained('offices')->nullOnDelete();
+            $table->ulid('manager_id')->nullable()->index();
+            // // // $table->foreignUlid('department_id')->nullable()->constrained('departments')->nullOnDelete();
+            // // // $table->foreignUlid('office_id')->nullable()->constrained('offices')->nullOnDelete();
             $table->string('job_title')->nullable();
             $table->string('employment_type')->default('full_time');
             $table->json('metadata')->nullable();
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['tenant_id', 'status']);
-            $table->index(['tenant_id', 'employee_code']);
-            $table->index('manager_id');
-            $table->index('department_id');
+            // // // $table->index(['tenant_id', 'status']);
+            // // // $table->index(['tenant_id', 'employee_code']);
+            // // // $table->index('department_id');
+        });
+        
+        // Add self-referencing foreign key after table creation
+        Schema::table('employees', function (Blueprint $table) {
+            // // // $table->foreign('manager_id')->references('id')->on('employees')->onDelete('set null');
         });
     }
 

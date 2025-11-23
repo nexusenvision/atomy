@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('payslips', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
+            // // $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->string('payslip_number')->unique();
-            $table->foreignUlid('employee_id')->constrained('employees')->cascadeOnDelete();
+            // // $table->foreignUlid('employee_id')->constrained('employees')->cascadeOnDelete();
             $table->date('period_start');
             $table->date('period_end');
             $table->date('pay_date');
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->decimal('employer_contributions', 15, 2)->default(0);
             $table->decimal('total_cost', 15, 2)->default(0);
             $table->string('status')->default('draft');
-            $table->foreignUlid('approved_by')->nullable()->constrained('employees')->nullOnDelete();
+            // // $table->foreignUlid('approved_by')->nullable()->constrained('employees')->nullOnDelete();
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->json('earnings_breakdown')->nullable();
@@ -34,9 +34,9 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['tenant_id', 'employee_id', 'period_start', 'period_end']);
-            $table->index(['tenant_id', 'payslip_number']);
-            $table->index(['tenant_id', 'status']);
+            // // $table->index(['tenant_id', 'employee_id', 'period_start', 'period_end']);
+            // // $table->index(['tenant_id', 'payslip_number']);
+            // // $table->index(['tenant_id', 'status']);
         });
     }
 

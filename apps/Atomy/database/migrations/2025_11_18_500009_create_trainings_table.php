@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('trainings', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
+            // // $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('category')->nullable();
@@ -27,8 +27,8 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['tenant_id', 'status']);
-            $table->index(['tenant_id', 'start_date']);
+            // // $table->index(['tenant_id', 'status']);
+            // // $table->index(['tenant_id', 'start_date']);
         });
     }
 

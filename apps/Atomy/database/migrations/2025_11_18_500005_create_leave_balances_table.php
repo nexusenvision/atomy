@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('leave_balances', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->foreignUlid('employee_id')->constrained('employees')->cascadeOnDelete();
-            $table->foreignUlid('leave_type_id')->constrained('leave_types')->cascadeOnDelete();
+            // // $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
+            // // $table->foreignUlid('employee_id')->constrained('employees')->cascadeOnDelete();
+            // // $table->foreignUlid('leave_type_id')->constrained('leave_types')->cascadeOnDelete();
             $table->integer('year');
             $table->decimal('entitled_days', 5, 2)->default(0);
             $table->decimal('used_days', 5, 2)->default(0);
@@ -20,8 +20,8 @@ return new class extends Migration
             $table->json('metadata')->nullable();
             $table->timestamps();
             
-            $table->unique(['employee_id', 'leave_type_id', 'year']);
-            $table->index(['tenant_id', 'employee_id', 'year']);
+            // // $table->unique(['employee_id', 'leave_type_id', 'year']);
+            // // $table->index(['tenant_id', 'employee_id', 'year']);
         });
     }
 

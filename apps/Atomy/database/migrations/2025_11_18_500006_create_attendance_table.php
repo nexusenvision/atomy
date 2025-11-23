@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('attendance', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->foreignUlid('employee_id')->constrained('employees')->cascadeOnDelete();
+            // // $table->foreignUlid('tenant_id')->constrained('tenants')->cascadeOnDelete();
+            // // $table->foreignUlid('employee_id')->constrained('employees')->cascadeOnDelete();
             $table->date('date');
             $table->timestamp('clock_in_time')->nullable();
             $table->timestamp('clock_out_time')->nullable();
@@ -26,14 +26,14 @@ return new class extends Migration
             $table->decimal('clock_out_latitude', 10, 8)->nullable();
             $table->decimal('clock_out_longitude', 11, 8)->nullable();
             $table->text('remarks')->nullable();
-            $table->foreignUlid('approved_by')->nullable()->constrained('employees')->nullOnDelete();
+            // // $table->foreignUlid('approved_by')->nullable()->constrained('employees')->nullOnDelete();
             $table->timestamp('approved_at')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
             
-            $table->unique(['employee_id', 'date']);
-            $table->index(['tenant_id', 'employee_id', 'date']);
-            $table->index(['tenant_id', 'date']);
+            // // $table->unique(['employee_id', 'date']);
+            // // $table->index(['tenant_id', 'employee_id', 'date']);
+            // // $table->index(['tenant_id', 'date']);
         });
     }
 
