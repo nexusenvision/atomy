@@ -34,7 +34,7 @@ use Nexus\EventStream\Exceptions\InvalidStreamNameException;
 final readonly class DefaultStreamNameGenerator implements StreamNameGeneratorInterface
 {
     private const MAX_LENGTH = 255;
-    private const VALID_PATTERN = '/^[a-z0-9\-_]+$/i';
+    private const VALID_PATTERN = '/^[a-z0-9\-_]+$/';
 
     public function generate(string $context, string $aggregateType, string $aggregateId): string
     {
