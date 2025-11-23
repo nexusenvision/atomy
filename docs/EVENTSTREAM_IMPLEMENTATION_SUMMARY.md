@@ -92,14 +92,13 @@ This document tracks the implementation of the Nexus\EventStream package enhance
 21. **UpcasterFailedException** - Upcasting failure exception ⏳
 22. **InvalidCursorException** - Cursor tampering exception ⏳
 
-### New Contracts - PR3 (7)
+### New Contracts - PR3 (6)
 23. **EventAnonymizerInterface** - GDPR placeholder (Q1 2026) ⏳
-24. **InvalidStreamNameException** - Stream naming validation ⏳
-25. **ProjectionRebuildInProgressException** - Concurrent rebuild ⏳
-26. **LockDriverUnavailableException** - Lock driver failure ⏳
-27. **CursorEncoder** - HMAC-signed cursor utility ⏳
-28. **StreamQueryEngine** - Query implementation ⏳
-29. **DefaultStreamNameGenerator** - Default naming implementation ⏳
+24. **ProjectionRebuildInProgressException** - Concurrent rebuild ⏳
+25. **LockDriverUnavailableException** - Lock driver failure ⏳
+26. **CursorEncoder** - HMAC-signed cursor utility ⏳
+27. **StreamQueryEngine** - Query implementation ⏳
+28. **DefaultStreamNameGenerator** - Default naming implementation ⏳
 
 **Total Contracts**: 29 (8 existing + 21 new)
 
