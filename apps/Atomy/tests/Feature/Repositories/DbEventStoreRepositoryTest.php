@@ -144,7 +144,7 @@ final class DbEventStoreRepositoryTest extends TestCase
         $this->repository->append($aggregateId, $event2, 1); // Expected version = 1
 
         // Assert
-        $this->assertDatabaseHas('events', [
+        $this->assertDatabaseHas('event_streams', [
             'aggregate_id' => $aggregateId,
             'version' => 2,
         ]);
@@ -287,7 +287,7 @@ final class DbEventStoreRepositoryTest extends TestCase
         $this->repository->append($aggregateId, $event);
 
         // Assert
-        $stored = EventModel::where('aggregate_id', $aggregateId)->first();
+        $stored = EventStream::where('aggregate_id', $aggregateId)->first();
         $decoded = json_decode($stored->payload, true);
 
         $this->assertEquals($payload, $decoded);
@@ -311,7 +311,7 @@ final class DbEventStoreRepositoryTest extends TestCase
         $this->repository->append($aggregateId, $event);
 
         // Assert
-        $stored = EventModel::where('aggregate_id', $aggregateId)->first();
+        $stored = EventStream::where('aggregate_id', $aggregateId)->first();
         $decoded = json_decode($stored->metadata, true);
 
         $this->assertEquals($metadata, $decoded);
@@ -330,7 +330,7 @@ final class DbEventStoreRepositoryTest extends TestCase
         $this->repository->append($aggregateId, $event);
 
         // Assert
-        $stored = EventModel::where('aggregate_id', $aggregateId)->first();
+        $stored = EventStream::where('aggregate_id', $aggregateId)->first();
         $this->assertEquals(
             $occurredAt->format('Y-m-d H:i:s'),
             $stored->occurred_at->format('Y-m-d H:i:s')
