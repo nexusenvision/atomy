@@ -311,6 +311,251 @@ composer test -- --testsuite=Unit
 composer test -- --testsuite=Integration
 ```
 
+## Framework Integration Examples
+
+### Laravel Setup
+
+After installation, the `FeatureFlagServiceProvider` auto-registers. Configure in `config/feature-flags.php`:
+
+```php
+return [
+    'cache_store' => env('FEATURE_FLAGS_CACHE_STORE', 'redis'),
+    'cache_ttl' => env('FEATURE_FLAGS_CACHE_TTL', 300), // 5 minutes
+    'default_if_not_found' => env('FEATURE_FLAGS_DEFAULT_IF_NOT_FOUND', false),
+    'enable_monitoring' => env('FEATURE_FLAGS_ENABLE_MONITORING', true),
+];
+```
+
+**API Usage:**
+
+```php
+// In controllers
+public function __construct(
+    private readonly FeatureFlagManagerInterface $flags
+) {}
+
+public function show(Request $request): JsonResponse
+{
+    $context = [
+        'tenantId' => $request->user()->tenant_id,
+        'userId' => $request->user()->id,
+    ];
+    
+    if ($this->flags->isEnabled('premium.analytics', $context)) {
+        return response()->json(['data' => $this->getPremiumAnalytics()]);
+    }
+    
+    return response()->json(['data' => $this->getBasicAnalytics()]);
+}
+```
+
+**Blade Directives (Optional Custom Helper):**
+
+```php
+// In AppServiceProvider
+Blade::directive('featureFlag', function ($expression) {
+    return "<?php if(app(FeatureFlagManagerInterface::class)->isEnabled($expression)): ?>";
+});
+
+Blade::directive('endfeatureFlag', function () {
+    return "<?php endif; ?>";
+});
+```
+
+```blade
+@featureFlag('new.ui')
+    <div class="new-dashboard">New UI!</div>
+@endfeatureFlag
+@else
+    <div class="old-dashboard">Legacy UI</div>
+@endif
+```
+
+### Symfony Setup
+
+**services.yaml:**
+
+```yaml
+services:
+    # Repository (choose one)
+    Nexus\FeatureFlags\Contracts\FlagRepositoryInterface:
+        class: App\FeatureFlags\DoctrineFlagRepository
+        arguments:
+            - '@doctrine.orm.entity_manager'
+    
+    # Cache adapter
+    Nexus\FeatureFlags\Contracts\FlagCacheInterface:
+        class: App\FeatureFlags\SymfonyCacheAdapter
+        arguments:
+            - '@cache.app'
+    
+    # Core services
+    Nexus\FeatureFlags\Core\Engine\PercentageHasher: ~
+    
+    Nexus\FeatureFlags\Core\Engine\DefaultFlagEvaluator:
+        arguments:
+            - '@Nexus\FeatureFlags\Core\Engine\PercentageHasher'
+    
+    Nexus\FeatureFlags\Services\FeatureFlagManager:
+        arguments:
+            - '@Nexus\FeatureFlags\Contracts\FlagRepositoryInterface'
+            - '@Nexus\FeatureFlags\Core\Engine\DefaultFlagEvaluator'
+            - '@logger'
+    
+    # Alias for type-hinting
+    Nexus\FeatureFlags\Contracts\FeatureFlagManagerInterface:
+        alias: Nexus\FeatureFlags\Services\FeatureFlagManager
+```
+
+**Controller Usage:**
+
+```php
+use Nexus\FeatureFlags\Contracts\FeatureFlagManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+class DashboardController extends AbstractController
+{
+    public function __construct(
+        private readonly FeatureFlagManagerInterface $flags
+    ) {}
+    
+    #[Route('/dashboard')]
+    public function index(RequestStack $requestStack): Response
+    {
+        $context = [
+            'userId' => $this->getUser()?->getId(),
+            'tenantId' => $requestStack->getCurrentRequest()?->attributes->get('tenant_id'),
+        ];
+        
+        return $this->render('dashboard/index.html.twig', [
+            'use_new_ui' => $this->flags->isEnabled('dashboard.v2', $context),
+        ]);
+    }
+}
+```
+
+**Twig Extension (Optional):**
+
+```php
+namespace App\Twig;
+
+use Nexus\FeatureFlags\Contracts\FeatureFlagManagerInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
+
+class FeatureFlagExtension extends AbstractExtension
+{
+    public function __construct(
+        private readonly FeatureFlagManagerInterface $flags
+    ) {}
+    
+    public function getFunctions(): array
+    {
+        return [
+            new TwigFunction('feature_enabled', [$this, 'isEnabled']),
+        ];
+    }
+    
+    public function isEnabled(string $flagName, array $context = []): bool
+    {
+        return $this->flags->isEnabled($flagName, $context);
+    }
+}
+```
+
+```twig
+{% if feature_enabled('new.checkout') %}
+    <div class="new-checkout">Enhanced Checkout</div>
+{% else %}
+    <div class="old-checkout">Classic Checkout</div>
+{% endif %}
+```
+
+### Slim Framework Setup
+
+```php
+use Nexus\FeatureFlags\Services\FeatureFlagManager;
+use Nexus\FeatureFlags\Core\Engine\DefaultFlagEvaluator;
+use Nexus\FeatureFlags\Core\Repository\InMemoryFlagRepository;
+use Psr\Container\ContainerInterface;
+use Slim\Factory\AppFactory;
+
+$container = new \DI\Container();
+
+// Register feature flag services
+$container->set(FlagRepositoryInterface::class, function() {
+    return new InMemoryFlagRepository(); // Or your custom implementation
+});
+
+$container->set(FeatureFlagManagerInterface::class, function(ContainerInterface $c) {
+    return new FeatureFlagManager(
+        $c->get(FlagRepositoryInterface::class),
+        new DefaultFlagEvaluator(new PercentageHasher()),
+        $c->get(LoggerInterface::class)
+    );
+});
+
+AppFactory::setContainer($container);
+$app = AppFactory::create();
+
+// Use in routes
+$app->get('/dashboard', function (Request $request, Response $response) use ($container) {
+    $flags = $container->get(FeatureFlagManagerInterface::class);
+    
+    $context = [
+        'userId' => $request->getAttribute('user_id'),
+    ];
+    
+    if ($flags->isEnabled('beta.features', $context)) {
+        return $response->withJson(['version' => 'beta']);
+    }
+    
+    return $response->withJson(['version' => 'stable']);
+});
+```
+
+### Standalone PHP Setup
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+use Nexus\FeatureFlags\Services\FeatureFlagManager;
+use Nexus\FeatureFlags\Core\Engine\DefaultFlagEvaluator;
+use Nexus\FeatureFlags\Core\Engine\PercentageHasher;
+use Nexus\FeatureFlags\Core\Repository\InMemoryFlagRepository;
+use Nexus\FeatureFlags\ValueObjects\FlagDefinition;
+use Nexus\FeatureFlags\Enums\FlagStrategy;
+use Psr\Log\NullLogger;
+
+// Setup repository and add flags
+$repository = new InMemoryFlagRepository();
+
+$repository->save(FlagDefinition::create(
+    name: 'new.feature',
+    enabled: true,
+    strategy: FlagStrategy::PERCENTAGE_ROLLOUT,
+    value: 50 // 50% rollout
+));
+
+// Create manager
+$manager = new FeatureFlagManager(
+    repository: $repository,
+    evaluator: new DefaultFlagEvaluator(new PercentageHasher()),
+    logger: new NullLogger()
+);
+
+// Evaluate flags
+$context = ['userId' => 'user-12345'];
+
+if ($manager->isEnabled('new.feature', $context)) {
+    echo "You're in the 50% rollout group!\n";
+} else {
+    echo "Not yet enabled for you.\n";
+}
+```
+
 ## Requirements
 
 - PHP 8.3+
