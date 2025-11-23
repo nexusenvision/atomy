@@ -19,7 +19,7 @@ use League\OAuth2\Client\Token\AccessToken;
  * 
  * Uses League OAuth2 Client library
  */
-final class OAuth2Provider implements OAuthProviderInterface
+class OAuth2Provider implements OAuthProviderInterface
 {
     public function getName(): string
     {
@@ -220,7 +220,7 @@ final class OAuth2Provider implements OAuthProviderInterface
     /**
      * Extract UserProfile from OAuth userinfo response
      */
-    private function extractUserProfile(array $userInfo, SsoProviderConfig $config): UserProfile
+    protected function extractUserProfile(array $userInfo, SsoProviderConfig $config): UserProfile
     {
         $attributeMapping = $config->attributeMap->mappings;
 

@@ -20,7 +20,7 @@ use OneLogin\Saml2\Utils as SamlUtils;
  * 
  * Uses OneLogin PHP-SAML library for SAML operations
  */
-final class Saml2Provider implements SamlProviderInterface
+class Saml2Provider implements SamlProviderInterface
 {
     public function getName(): string
     {

@@ -1,8 +1,11 @@
 # Nexus\SSO - Single Sign-On Package
 
-[![Tests](https://img.shields.io/badge/tests-71%20passing-success)](tests/)
+[![Tests](https://img.shields.io/badge/tests-81%20passing-yellow)](tests/)
+[![Status](https://img.shields.io/badge/status-pending-orange)](PENDING_WORK.md)
 [![PHP Version](https://img.shields.io/badge/php-8.3%2B-blue)](composer.json)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+**⚠️ PACKAGE PENDING - Phase 4 Incomplete** (See [`PENDING_WORK.md`](PENDING_WORK.md))
 
 Framework-agnostic Single Sign-On (SSO) package for Nexus ERP monorepo. Supports SAML 2.0, OAuth2/OIDC, Azure AD, Google Workspace, and custom identity providers.
 
