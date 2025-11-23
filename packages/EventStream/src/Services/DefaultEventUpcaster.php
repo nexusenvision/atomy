@@ -44,9 +44,19 @@ use Nexus\EventStream\Exceptions\UpcasterFailedException;
 final class DefaultEventUpcaster implements EventUpcasterInterface
 {
     /**
-     * @var array<string, UpcasterInterface[]>
+     * Registered upcasters (stored as flat array for simplicity).
+     *
+     * @var UpcasterInterface[]
      */
     private array $upcasters = [];
+
+    /**
+     * Memoization cache for upcasters by event type.
+     * Maps event type to filtered and sorted array of upcasters.
+     *
+     * @var array<string, UpcasterInterface[]>
+     */
+    private array $upcasterCache = [];
 
     public function upcastEvent(string $eventType, int $currentVersion, array $eventData): array
     {
@@ -100,64 +110,41 @@ final class DefaultEventUpcaster implements EventUpcasterInterface
 
     public function registerUpcaster(UpcasterInterface $upcaster): self
     {
-        // Detect which event types this upcaster supports by probing common versions
-        // We probe versions 1-10 as a reasonable range for event schema versioning
-        $eventTypeDetected = false;
-
-        // Common event type patterns to check (in production, this could be externalized)
-        $commonEventTypes = [
-            'AccountCreated', 'AccountCredited', 'AccountDebited',
-            'PaymentReceived', 'PaymentFailed', 'InvoiceCreated',
-            'StockReserved', 'StockAdded', 'StockShipped'
-        ];
-
-        foreach ($commonEventTypes as $eventType) {
-            for ($version = 1; $version <= 10; $version++) {
-                if ($upcaster->supports($eventType, $version)) {
-                    if (!isset($this->upcasters[$eventType])) {
-                        $this->upcasters[$eventType] = [];
-                    }
-                    $this->upcasters[$eventType][] = $upcaster;
-                    $eventTypeDetected = true;
-                    break; // Move to next event type
-                }
-            }
-        }
-
-        // If no common event type matched, store in a special '__unknown__' key
-        // This allows custom event types to still work via getUpcastersForEventType()
-        if (!$eventTypeDetected) {
-            if (!isset($this->upcasters['__unknown__'])) {
-                $this->upcasters['__unknown__'] = [];
-            }
-            $this->upcasters['__unknown__'][] = $upcaster;
-        }
+        $this->upcasters[] = $upcaster;
+        
+        // Clear cache when new upcaster is registered to ensure fresh lookup
+        $this->upcasterCache = [];
 
         return $this;
     }
 
     public function getUpcastersForEventType(string $eventType): array
     {
-        // Direct lookup for registered event types
-        $upcasters = $this->upcasters[$eventType] ?? [];
+        // Return cached result if available
+        if (isset($this->upcasterCache[$eventType])) {
+            return $this->upcasterCache[$eventType];
+        }
 
-        // Also check unknown upcasters for this specific event type
-        if (isset($this->upcasters['__unknown__'])) {
-            foreach ($this->upcasters['__unknown__'] as $upcaster) {
-                // Probe versions 1-10 for unknown upcasters
-                for ($version = 1; $version <= 10; $version++) {
-                    if ($upcaster->supports($eventType, $version)) {
-                        $upcasters[] = $upcaster;
-                        break;
-                    }
+        $filtered = [];
+
+        foreach ($this->upcasters as $upcaster) {
+            // Check if this upcaster supports any version of this event type
+            // We probe versions 1-10 (reasonable range for event schema versioning)
+            for ($version = 1; $version <= 10; $version++) {
+                if ($upcaster->supports($eventType, $version)) {
+                    $filtered[] = $upcaster;
+                    break;
                 }
             }
         }
 
         // Sort by target version
-        usort($upcasters, fn($a, $b) => $a->getTargetVersion() <=> $b->getTargetVersion());
+        usort($filtered, fn($a, $b) => $a->getTargetVersion() <=> $b->getTargetVersion());
 
-        return $upcasters;
+        // Cache the result for subsequent calls
+        $this->upcasterCache[$eventType] = $filtered;
+
+        return $filtered;
     }
 
     public function getLatestVersion(string $eventType): ?int
