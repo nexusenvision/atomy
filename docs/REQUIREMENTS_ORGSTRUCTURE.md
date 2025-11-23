@@ -8,7 +8,7 @@ Total Requirements: 250
 | `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0586 | All data structures defined via interfaces (OrgUnitInterface, PositionInterface, AssignmentInterface) |  |  |  |  |
 | `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0587 | All persistence operations via repository interfaces |  |  |  |  |
 | `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0588 | Business logic in service layer (OrgStructureManager, PositionManager, AssignmentManager) |  |  |  |  |
-| `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0589 | All database migrations in application layer (apps/Atomy) |  |  |  |  |
+| `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0589 | All database migrations in application layer (apps/consuming application) |  |  |  |  |
 | `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0590 | All Eloquent models in application layer |  |  |  |  |
 | `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0591 | Repository implementations in application layer |  |  |  |  |
 | `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0592 | IoC container bindings in application service provider |  |  |  |  |
@@ -133,7 +133,7 @@ Total Requirements: 250
 | `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0586 | All data structures defined via interfaces (OrgUnitInterface, PositionInterface, AssignmentInterface) |  |  |  |  |
 | `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0587 | All persistence operations via repository interfaces |  |  |  |  |
 | `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0588 | Business logic in service layer (OrgStructureManager, PositionManager, AssignmentManager) |  |  |  |  |
-| `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0589 | All database migrations in application layer (apps/Atomy) |  |  |  |  |
+| `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0589 | All database migrations in application layer (apps/consuming application) |  |  |  |  |
 | `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0590 | All Eloquent models in application layer |  |  |  |  |
 | `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0591 | Repository implementations in application layer |  |  |  |  |
 | `Nexus\OrgStructure` | Architechtural Requirement | ARC-ORG-0592 | IoC container bindings in application service provider |  |  |  |  |

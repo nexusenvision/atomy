@@ -8,7 +8,7 @@ Total Requirements: 622
 | `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0704 | All data structures defined via interfaces (EmployeeInterface, ContractInterface, LeaveInterface, AttendanceInterface, PerformanceReviewInterface) |  |  |  |  |
 | `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0705 | All persistence operations via repository interfaces |  |  |  |  |
 | `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0706 | Business logic in service layer (EmployeeManager, LeaveManager, AttendanceManager, PerformanceManager, DisciplinaryManager, TrainingManager) |  |  |  |  |
-| `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0707 | All database migrations in application layer (apps/Atomy) |  |  |  |  |
+| `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0707 | All database migrations in application layer (apps/consuming application) |  |  |  |  |
 | `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0708 | All Eloquent models in application layer |  |  |  |  |
 | `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0709 | Repository implementations in application layer |  |  |  |  |
 | `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0710 | IoC container bindings in application service provider |  |  |  |  |
@@ -317,7 +317,7 @@ Total Requirements: 622
 | `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0704 | All data structures defined via interfaces (EmployeeInterface, ContractInterface, LeaveInterface, AttendanceInterface, PerformanceReviewInterface) |  |  |  |  |
 | `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0705 | All persistence operations via repository interfaces |  |  |  |  |
 | `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0706 | Business logic in service layer (EmployeeManager, LeaveManager, AttendanceManager, PerformanceManager, DisciplinaryManager, TrainingManager) |  |  |  |  |
-| `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0707 | All database migrations in application layer (apps/Atomy) |  |  |  |  |
+| `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0707 | All database migrations in application layer (apps/consuming application) |  |  |  |  |
 | `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0708 | All Eloquent models in application layer |  |  |  |  |
 | `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0709 | Repository implementations in application layer |  |  |  |  |
 | `Nexus\Hrm` | Architechtural Requirement | ARC-HRM-0710 | IoC container bindings in application service provider |  |  |  |  |
@@ -622,7 +622,7 @@ Total Requirements: 622
 | `Nexus\Hrm` | User Story | USE-HRM-0985 | As a compliance officer, I want to audit all employee data changes |  |  |  |  |
 | `Nexus\Hrm` | User Story | USE-HRM-0986 | As a compliance officer, I want to ensure data retention policies are enforced |  |  |  |  |
 | `Nexus\Hrm` | User Story | USE-HRM-0987 | As a compliance officer, I want to generate compliance reports for labor authorities |  |  |  |  |
-| `Nexus\Hrm` | Business Requirements | BUS-HRM-8129 | EPF Number field MUST be mandatory when Malaysia Payroll Statutory is enabled | apps/Atomy/database/migrations/ (epf_number field) | Deferred | To be implemented when Hrm package migration is enhanced | 2025-11-18 |
-| `Nexus\Hrm` | Business Requirements | BUS-HRM-8130 | SOCSO Number field MUST be mandatory when Malaysia Payroll Statutory is enabled | apps/Atomy/database/migrations/ (socso_number field) | Deferred | To be implemented when Hrm package migration is enhanced | 2025-11-18 |
-| `Nexus\Hrm` | Business Requirements | BUS-HRM-8131 | Income Tax Number field MUST be mandatory when Malaysia Payroll Statutory is enabled | apps/Atomy/database/migrations/ (income_tax_number field) | Deferred | To be implemented when Hrm package migration is enhanced | 2025-11-18 |
+| `Nexus\Hrm` | Business Requirements | BUS-HRM-8129 | EPF Number field MUST be mandatory when Malaysia Payroll Statutory is enabled | consuming application (e.g., Laravel app)database/migrations/ (epf_number field) | Deferred | To be implemented when Hrm package migration is enhanced | 2025-11-18 |
+| `Nexus\Hrm` | Business Requirements | BUS-HRM-8130 | SOCSO Number field MUST be mandatory when Malaysia Payroll Statutory is enabled | consuming application (e.g., Laravel app)database/migrations/ (socso_number field) | Deferred | To be implemented when Hrm package migration is enhanced | 2025-11-18 |
+| `Nexus\Hrm` | Business Requirements | BUS-HRM-8131 | Income Tax Number field MUST be mandatory when Malaysia Payroll Statutory is enabled | consuming application (e.g., Laravel app)database/migrations/ (income_tax_number field) | Deferred | To be implemented when Hrm package migration is enhanced | 2025-11-18 |
 | `Nexus\Hrm` | Business Requirements | BUS-HRM-8132 | Compliance-driven validation rules MUST be injected by Nexus\Compliance | packages/Compliance/ (validation rule injection architecture) | Complete | Architecture supports compliance-driven validation rule injection | 2025-11-18 |

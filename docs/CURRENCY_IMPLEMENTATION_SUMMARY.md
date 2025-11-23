@@ -71,7 +71,7 @@ packages/Currency/
 ### 4. **Exchange Rate Provider Architecture** ✅
 
 - **Interface Only:** Package defines `ExchangeRateProviderInterface`
-- **Concrete Implementations:** Left to `apps/Atomy` (ECB, Fixer.io, etc.)
+- **Concrete Implementations:** Left to `apps/consuming application` (ECB, Fixer.io, etc.)
 - **Nexus\Connector Integration:** README demonstrates circuit breaker pattern
 - **Historical Rates:** Optional `?DateTimeImmutable $asOf` parameter
 
@@ -151,7 +151,7 @@ packages/Currency/
 - `inverse(): self` - Get inverse pair (EUR/USD)
 - `toString(): string` - Format as "USD/EUR"
 
-## 📝 Integration Requirements for Atomy
+## 📝 Integration Requirements for consuming application
 
 ### Step 1: Database Migration
 
@@ -176,7 +176,7 @@ Top 30+ currencies with correct metadata (USD, EUR, GBP, JPY, MYR, SGD, CNY, etc
 
 ### Step 3: Implement DbCurrencyRepository
 
-Concrete repository in `apps/Atomy/app/Repositories/` implementing `CurrencyRepositoryInterface`
+Concrete repository in `consuming application (e.g., Laravel app)app/Repositories/` implementing `CurrencyRepositoryInterface`
 
 ### Step 4: Implement ExchangeRateProvider
 
@@ -247,7 +247,7 @@ $this->app->singleton(ExchangeRateService::class);
 - Test `CurrencyManager` with mock repository
 - Test exception static factories
 
-### Integration Tests (Atomy Level)
+### Integration Tests (consuming application Level)
 
 - Database repository CRUD operations
 - Redis cache storage operations
@@ -265,7 +265,7 @@ $this->app->singleton(ExchangeRateService::class);
 
 ## 🚀 Next Steps
 
-1. **Create Atomy Migration:** `create_currencies_table` migration
+1. **Create consuming application Migration:** `create_currencies_table` migration
 2. **Implement DbCurrencyRepository:** Concrete database repository
 3. **Seed Currency Data:** Top 50 ISO 4217 currencies
 4. **Implement Exchange Rate Provider:** ECB or Fixer.io integration

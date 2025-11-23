@@ -3,7 +3,7 @@
 **Implementation Date**: November 21, 2025  
 **Branch**: `feature/inventory-warehouse-implementation`  
 **Packages Created**: `nexus/inventory`, `nexus/warehouse`  
-**Integration Layer**: `apps/Atomy` (Laravel 12)
+**Integration Layer**: `apps/consuming application` (Laravel 12)
 
 ---
 
@@ -14,7 +14,7 @@ Successfully implemented two new atomic packages following Nexus architecture pr
 - **Nexus\Inventory**: Framework-agnostic inventory and stock management with FIFO/Weighted Average/Standard Cost valuation
 - **Nexus\Warehouse**: Framework-agnostic warehouse management with TSP-optimized picking routes
 
-Both packages implement **Progressive Disclosure** architecture with optional Event Sourcing and Intelligence integration. The implementation includes complete Atomy application layer with 10 migrations, 9 models, 9 repositories, 4 adapter services, and GL integration listener.
+Both packages implement **Progressive Disclosure** architecture with optional Event Sourcing and Intelligence integration. The implementation includes complete consuming application application layer with 10 migrations, 9 models, 9 repositories, 4 adapter services, and GL integration listener.
 
 ---
 
@@ -25,7 +25,7 @@ Both packages implement **Progressive Disclosure** architecture with optional Ev
 1. **Framework-Agnostic Packages**: Zero Laravel dependencies in package layer
 2. **Progressive Disclosure**: Optional `nexus/event-stream` and `nexus/intelligence` via `composer.json suggest`
 3. **Event-Driven GL Integration**: StockReceivedEvent/StockIssuedEvent → InventoryGLListener → Finance GL posting
-4. **Repository Pattern**: All persistence via interfaces (Atomy provides Eloquent implementations)
+4. **Repository Pattern**: All persistence via interfaces (consuming application provides Eloquent implementations)
 5. **Phase-Based Rollout**: Phase 1 (PickingOptimizer), Phase 2 deferred (WorkOrderInterface, barcode scanning)
 
 ### Progressive Disclosure Implementation
@@ -317,7 +317,7 @@ The following features are **planned but not implemented** pending Phase 1 valid
 
 ---
 
-## 🗄️ Atomy Application Layer
+## 🗄️ consuming application Application Layer
 
 ### Database Migrations (10 migrations)
 
@@ -396,7 +396,7 @@ All models implement package interfaces:
 Organized in subdirectories:
 
 ```
-apps/Atomy/app/Repositories/
+consuming application (e.g., Laravel app)app/Repositories/
 ├── Inventory/
 │   ├── DbCostLayerRepository.php (implements CostLayerStorageInterface)
 │   ├── DbLotRepository.php (implements LotRepositoryInterface)
@@ -430,7 +430,7 @@ public function allocateFromLot(string $lotId, float $quantity): void;
 Bridge between package interfaces and Laravel features:
 
 ```
-apps/Atomy/app/Services/Inventory/
+consuming application (e.g., Laravel app)app/Services/Inventory/
 ├── InventoryConfigurationAdapter.php (implements ConfigurationInterface)
 ├── LaravelEventPublisher.php (implements EventPublisherInterface)
 ├── StandardCostAdapter.php (implements StandardCostStorageInterface)
@@ -472,7 +472,7 @@ class InventoryConfigurationAdapter implements ConfigurationInterface
 **Event-Driven Architecture** (no direct coupling between Inventory and Finance):
 
 ```php
-// apps/Atomy/app/Listeners/InventoryGLListener.php
+// consuming application (e.g., Laravel app)app/Listeners/InventoryGLListener.php
 class InventoryGLListener
 {
     public function subscribe(Dispatcher $events): void
@@ -626,7 +626,7 @@ vendor/bin/phpunit packages/Warehouse/tests/Unit/
 - ✅ TransferManager FSM state transitions
 - ✅ ReservationManager TTL expiry logic
 
-### Integration Tests (Atomy Layer)
+### Integration Tests (consuming application Layer)
 
 Test with database and Laravel features:
 
@@ -762,10 +762,10 @@ public function handle(): int
 ```
 
 **Files Modified**:
-- `apps/Atomy/app/Console/Commands/RoutingCachePrune.php`
-- `apps/Atomy/app/Console/Commands/RoutingCacheMetrics.php`
-- `apps/Atomy/app/Console/Commands/GeoCachePrune.php`
-- `apps/Atomy/app/Console/Commands/GeoCacheMetrics.php`
+- `consuming application (e.g., Laravel app)app/Console/Commands/RoutingCachePrune.php`
+- `consuming application (e.g., Laravel app)app/Console/Commands/RoutingCacheMetrics.php`
+- `consuming application (e.g., Laravel app)app/Console/Commands/GeoCachePrune.php`
+- `consuming application (e.g., Laravel app)app/Console/Commands/GeoCacheMetrics.php`
 
 ### 3. EventStream Integration Pending
 
@@ -774,7 +774,7 @@ public function handle(): int
 **Missing Components**:
 - `Nexus\Inventory\Core\Projectors\CurrentStockProjector` (real-time projection)
 - `Nexus\Inventory\Core\Projectors\StockHistoryProjector` (temporal queries)
-- Configuration in `apps/Atomy/config/eventstream.php` for `critical_domains.inventory = true`
+- Configuration in `consuming application (e.g., Laravel app)config/eventstream.php` for `critical_domains.inventory = true`
 
 **Impact**: No temporal queries ("What was stock level on 2024-10-15?"). Only current stock levels available.
 
@@ -1074,7 +1074,7 @@ FOR VALUES IN ('abc123');
 
 6. **Enable GL Integration** (after Accounting package is ready):
    ```php
-   // apps/Atomy/app/Providers/InventoryServiceProvider.php
+   // consuming application (e.g., Laravel app)app/Providers/InventoryServiceProvider.php
    public function boot(): void
    {
        $this->app->make('events')->subscribe(InventoryGLListener::class);
@@ -1254,7 +1254,7 @@ echo "Stock on 2024-10-15: {$stockLevel['quantity']}\n";
 | Events | 8 | 0 | 8 |
 | Value Objects | 2 | 0 | 2 |
 
-### Atomy Integration Complexity
+### consuming application Integration Complexity
 
 | Metric | Count |
 |--------|-------|
@@ -1295,7 +1295,7 @@ echo "Stock on 2024-10-15: {$stockLevel['quantity']}\n";
 - [x] Integrate with `Nexus\Routing\TspOptimizer`
 - [x] Add Progressive Disclosure to `composer.json` (suggest EventStream, Intelligence)
 
-### Atomy Integration Layer
+### consuming application Integration Layer
 
 - [x] Create 10 database migrations
 - [x] Create 9 Eloquent models
@@ -1322,7 +1322,7 @@ echo "Stock on 2024-10-15: {$stockLevel['quantity']}\n";
 ### Deployment
 
 - [x] Commit package implementations
-- [x] Commit Atomy integration layer
+- [x] Commit consuming application integration layer
 - [x] Fix console command constructor injection issues
 - [x] Run `composer update` successfully
 - [x] Run migrations successfully

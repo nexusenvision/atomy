@@ -1381,7 +1381,7 @@ interface PaymentAllocationStrategyInterface
     public function allocate(PaymentReceipt $receipt): array;
 }
 
-// Atomy provides multiple implementations
+// consuming application provides multiple implementations
 namespace App\Services\Receivable\Strategies;
 
 final readonly class FIFOAllocationStrategy implements PaymentAllocationStrategyInterface

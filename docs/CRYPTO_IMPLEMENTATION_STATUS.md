@@ -74,7 +74,7 @@
 | **Constant-Time Comparison** | ✅ Complete | `hash_equals()` for all verifications |
 | **Authenticated Encryption** | ✅ Complete | AES-GCM default with tag verification |
 
-### Atomy Integration
+### consuming application Integration
 
 | Component | Status | Notes |
 |-----------|--------|-------|
@@ -83,7 +83,7 @@
 | **Key Storage** | ✅ Complete | `LaravelKeyStorage` with envelope encryption |
 | **Database Migration** | ✅ Complete | `encryption_keys` + `key_rotation_history` |
 | **Service Registration** | ✅ Complete | Registered in `bootstrap/app.php` |
-| **Composer Integration** | ✅ Complete | Added to root and Atomy composer.json |
+| **Composer Integration** | ✅ Complete | Added to root and consuming application composer.json |
 
 ### Refactored Packages
 
@@ -148,7 +148,7 @@ Please use classical algorithms or wait for PQC library maturity.
 | **Contract-Driven Design** | ✅ Pass | All persistence via `KeyStorageInterface` |
 | **Stateless & Immutable** | ✅ Pass | All value objects are `readonly` |
 | **Atomic & Self-Contained** | ✅ Pass | Independent Packagist publishing ready |
-| **Clear Separation** | ✅ Pass | Package = logic, Atomy = implementation |
+| **Clear Separation** | ✅ Pass | Package = logic, consuming application = implementation |
 
 ### Code Quality
 
@@ -357,7 +357,7 @@ If issues detected:
 ### Immediate (This Sprint)
 1. ✅ ~~Create implementation status document~~
 2. ⏳ Write unit tests for core services (target 80% coverage)
-3. ⏳ Write integration tests for Atomy layer
+3. ⏳ Write integration tests for consuming application layer
 4. ⏳ Create automated benchmark suite
 5. ⏳ Security review of implementation
 

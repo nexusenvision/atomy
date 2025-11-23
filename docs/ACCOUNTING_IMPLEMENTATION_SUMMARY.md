@@ -71,10 +71,10 @@ Accounting/
     └── AccountingManager.php           # 15 public APIs (~550 lines)
 ```
 
-### Application Layer (`apps/Atomy/`)
+### Application Layer (`consuming application (e.g., Laravel app)`)
 
 ```
-Atomy/
+consuming application/
 ├── app/
 │   ├── Models/          # 3 Eloquent models (ULID-based)
 │   │   ├── ConsolidationEntry.php       # Elimination entries
@@ -347,7 +347,7 @@ CREATE TABLE consolidation_entries (
 
 ## Dependency Injection Bindings
 
-In `apps/Atomy/app/Providers/AppServiceProvider.php`:
+In `consuming application (e.g., Laravel app)app/Providers/AppServiceProvider.php`:
 
 ```php
 // Accounting Package Bindings

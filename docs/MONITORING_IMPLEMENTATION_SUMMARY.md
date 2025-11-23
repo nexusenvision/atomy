@@ -324,7 +324,7 @@ tests/Unit/
 
 ## Application Integration (Future)
 
-### Planned Atomy Implementation
+### Planned Application Implementation
 
 **Status:** 🔲 Not Yet Implemented
 

@@ -55,7 +55,7 @@ This document tracks the implementation of the Nexus\EventStream package enhance
 ### Phase 3: Integration & Operations (PR3) - PLANNED
 - Monitoring Integration (8 metrics, 5 alert types)
 - 10 Integration Examples
-- Atomy Implementation Layer
+- Application Implementation Layer
 - Database Migrations with Distributed Tracing Indexes
 - Performance Benchmarks
 - Operational Runbooks
@@ -128,9 +128,9 @@ This document tracks the implementation of the Nexus\EventStream package enhance
 9. **CursorEncoder** - Cursor encoding/validation ⏳
 
 ### New Services - PR3 (3)
-10. **EventPublisher** - Default publisher (Atomy layer) ⏳
-11. **RedisProjectionLock** - Redis lock driver (Atomy) ⏳
-12. **DbProjectionLock** - Database lock driver (Atomy) ⏳
+10. **EventPublisher** - Default publisher (consuming application layer) ⏳
+11. **RedisProjectionLock** - Redis lock driver (consuming application) ⏳
+12. **DbProjectionLock** - Database lock driver (consuming application) ⏳
 
 **Total Services**: 16 (4 existing + 12 new)
 

@@ -16,7 +16,7 @@ This implementation completes the remaining components for **Nexus\Hrm** and **N
 
 ###  1. Form Request Validation Classes (11 total)
 
-#### HRM Form Requests (`apps/Atomy/app/Http/Requests/Hrm/`)
+#### HRM Form Requests (`consuming application (e.g., Laravel app)app/Http/Requests/Hrm/`)
 ✅ **CreateEmployeeRequest.php** - Employee creation validation with tenant-scoped uniqueness  
 ✅ **UpdateEmployeeRequest.php** - Employee update validation with partial updates support  
 ✅ **CreateLeaveRequest.php** - Leave request validation with date range checks  
@@ -26,7 +26,7 @@ This implementation completes the remaining components for **Nexus\Hrm** and **N
 ✅ **CreateDisciplinaryRequest.php** - Disciplinary case validation with severity enum  
 ✅ **CreateTrainingRequest.php** - Training program validation with date ranges  
 
-#### Payroll Form Requests (`apps/Atomy/app/Http/Requests/Payroll/`)
+#### Payroll Form Requests (`consuming application (e.g., Laravel app)app/Http/Requests/Payroll/`)
 ✅ **CreateComponentRequest.php** - Component validation with enum types and percentage range  
 ✅ **ProcessPeriodRequest.php** - Period processing with date sequence validation  
 ✅ **ApprovePayslipRequest.php** - Simple approval validation  
@@ -42,13 +42,13 @@ This implementation completes the remaining components for **Nexus\Hrm** and **N
 
 ### 2. Integration Services
 
-✅ **BackofficeOrganizationService** (`apps/Atomy/app/Services/Hrm/BackofficeOrganizationService.php`)
+✅ **BackofficeOrganizationService** (`consuming application (e.g., Laravel app)app/Services/Hrm/BackofficeOrganizationService.php`)
 - Implements `OrganizationServiceContract` from Nexus\Hrm
 - Methods: `getEmployeeManager()`, `getEmployeeDepartment()`, `getEmployeeOffice()`, `getDirectReports()`, `isManager()`
 - Bridges HRM package with Backoffice organizational structure
 - Returns structured arrays for department/office (id + name)
 
-✅ **TenantAwareStatutoryCalculator** (`apps/Atomy/app/Services/Payroll/TenantAwareStatutoryCalculator.php`)
+✅ **TenantAwareStatutoryCalculator** (`consuming application (e.g., Laravel app)app/Services/Payroll/TenantAwareStatutoryCalculator.php`)
 - Implements `StatutoryCalculatorInterface` as multi-country registry
 - Methods: `registerCalculator()`, `setDefaultCountryCode()`, `getCalculatorForCountry()`, `calculate()`, `getRegisteredCountries()`
 - Factory/registry pattern enabling multiple country-specific calculators
@@ -93,7 +93,7 @@ This implementation completes the remaining components for **Nexus\Hrm** and **N
 
 ### 4. HRM API Controllers (6 controllers)
 
-All controllers in `apps/Atomy/app/Http/Controllers/Hrm/`:
+All controllers in `consuming application (e.g., Laravel app)app/Http/Controllers/Hrm/`:
 
 ✅ **EmployeeController**
 - `index()` - List with filters (status, employment_type, department, office, manager, search)
@@ -147,7 +147,7 @@ All controllers in `apps/Atomy/app/Http/Controllers/Hrm/`:
 
 ### 5. Payroll API Controllers (3 controllers)
 
-All controllers in `apps/Atomy/app/Http/Controllers/Payroll/`:
+All controllers in `consuming application (e.g., Laravel app)app/Http/Controllers/Payroll/`:
 
 ✅ **ComponentController**
 - `index()` - List components (earnings/deductions)
@@ -257,21 +257,21 @@ All controllers in `apps/Atomy/app/Http/Controllers/Payroll/`:
 ### New Files (38 total)
 
 **Form Requests (11):**
-1. `apps/Atomy/app/Http/Requests/Hrm/CreateEmployeeRequest.php`
-2. `apps/Atomy/app/Http/Requests/Hrm/UpdateEmployeeRequest.php`
-3. `apps/Atomy/app/Http/Requests/Hrm/CreateLeaveRequest.php`
-4. `apps/Atomy/app/Http/Requests/Hrm/ClockInRequest.php`
-5. `apps/Atomy/app/Http/Requests/Hrm/ClockOutRequest.php`
-6. `apps/Atomy/app/Http/Requests/Hrm/CreatePerformanceReviewRequest.php`
-7. `apps/Atomy/app/Http/Requests/Hrm/CreateDisciplinaryRequest.php`
-8. `apps/Atomy/app/Http/Requests/Hrm/CreateTrainingRequest.php`
-9. `apps/Atomy/app/Http/Requests/Payroll/CreateComponentRequest.php`
-10. `apps/Atomy/app/Http/Requests/Payroll/ProcessPeriodRequest.php`
-11. `apps/Atomy/app/Http/Requests/Payroll/ApprovePayslipRequest.php`
+1. `consuming application (e.g., Laravel app)app/Http/Requests/Hrm/CreateEmployeeRequest.php`
+2. `consuming application (e.g., Laravel app)app/Http/Requests/Hrm/UpdateEmployeeRequest.php`
+3. `consuming application (e.g., Laravel app)app/Http/Requests/Hrm/CreateLeaveRequest.php`
+4. `consuming application (e.g., Laravel app)app/Http/Requests/Hrm/ClockInRequest.php`
+5. `consuming application (e.g., Laravel app)app/Http/Requests/Hrm/ClockOutRequest.php`
+6. `consuming application (e.g., Laravel app)app/Http/Requests/Hrm/CreatePerformanceReviewRequest.php`
+7. `consuming application (e.g., Laravel app)app/Http/Requests/Hrm/CreateDisciplinaryRequest.php`
+8. `consuming application (e.g., Laravel app)app/Http/Requests/Hrm/CreateTrainingRequest.php`
+9. `consuming application (e.g., Laravel app)app/Http/Requests/Payroll/CreateComponentRequest.php`
+10. `consuming application (e.g., Laravel app)app/Http/Requests/Payroll/ProcessPeriodRequest.php`
+11. `consuming application (e.g., Laravel app)app/Http/Requests/Payroll/ApprovePayslipRequest.php`
 
 **Integration Services (2):**
-12. `apps/Atomy/app/Services/Hrm/BackofficeOrganizationService.php`
-13. `apps/Atomy/app/Services/Payroll/TenantAwareStatutoryCalculator.php`
+12. `consuming application (e.g., Laravel app)app/Services/Hrm/BackofficeOrganizationService.php`
+13. `consuming application (e.g., Laravel app)app/Services/Payroll/TenantAwareStatutoryCalculator.php`
 
 **Malaysia Statutory Package (7):**
 14. `packages/PayrollMysStatutory/composer.json`
@@ -283,17 +283,17 @@ All controllers in `apps/Atomy/app/Http/Controllers/Payroll/`:
 20. `packages/PayrollMysStatutory/src/Data/PcbTaxTable.php`
 
 **HRM Controllers (6):**
-21. `apps/Atomy/app/Http/Controllers/Hrm/EmployeeController.php`
-22. `apps/Atomy/app/Http/Controllers/Hrm/LeaveController.php`
-23. `apps/Atomy/app/Http/Controllers/Hrm/AttendanceController.php`
-24. `apps/Atomy/app/Http/Controllers/Hrm/PerformanceReviewController.php`
-25. `apps/Atomy/app/Http/Controllers/Hrm/DisciplinaryController.php`
-26. `apps/Atomy/app/Http/Controllers/Hrm/TrainingController.php`
+21. `consuming application (e.g., Laravel app)app/Http/Controllers/Hrm/EmployeeController.php`
+22. `consuming application (e.g., Laravel app)app/Http/Controllers/Hrm/LeaveController.php`
+23. `consuming application (e.g., Laravel app)app/Http/Controllers/Hrm/AttendanceController.php`
+24. `consuming application (e.g., Laravel app)app/Http/Controllers/Hrm/PerformanceReviewController.php`
+25. `consuming application (e.g., Laravel app)app/Http/Controllers/Hrm/DisciplinaryController.php`
+26. `consuming application (e.g., Laravel app)app/Http/Controllers/Hrm/TrainingController.php`
 
 **Payroll Controllers (3):**
-27. `apps/Atomy/app/Http/Controllers/Payroll/ComponentController.php`
-28. `apps/Atomy/app/Http/Controllers/Payroll/PayrollController.php`
-29. `apps/Atomy/app/Http/Controllers/Payroll/PayslipController.php`
+27. `consuming application (e.g., Laravel app)app/Http/Controllers/Payroll/ComponentController.php`
+28. `consuming application (e.g., Laravel app)app/Http/Controllers/Payroll/PayrollController.php`
+29. `consuming application (e.g., Laravel app)app/Http/Controllers/Payroll/PayslipController.php`
 
 **Documentation (2):**
 30. `docs/HRM_PAYROLL_API_DOCUMENTATION.md`
@@ -301,7 +301,7 @@ All controllers in `apps/Atomy/app/Http/Controllers/Payroll/`:
 
 ### Modified Files (2)
 
-32. `apps/Atomy/app/Providers/PayrollServiceProvider.php` - Added MalaysiaStatutoryCalculator registration
+32. `consuming application (e.g., Laravel app)app/Providers/PayrollServiceProvider.php` - Added MalaysiaStatutoryCalculator registration
 33. `composer.json` - Added PayrollMysStatutory package repository
 
 ---
@@ -312,7 +312,7 @@ All controllers in `apps/Atomy/app/Http/Controllers/Payroll/`:
 
 1. **Logic in Packages, Implementation in Applications**
    - All business logic in atomic packages (Hrm, Payroll, PayrollMysStatutory)
-   - Laravel-specific implementations in apps/Atomy
+   - Laravel-specific implementations in apps/consuming application
 
 2. **Framework Agnosticism**
    - Packages have no Laravel dependencies
@@ -377,7 +377,7 @@ All controllers in `apps/Atomy/app/Http/Controllers/Payroll/`:
 ### Immediate Actions (Before PR Merge)
 
 1. ✅ ~~Update root composer.json to register PayrollMysStatutory package~~
-2. [ ] Install Malaysia statutory package in Atomy: `composer require nexus/payroll-mys-statutory:"*@dev"`
+2. [ ] Install Malaysia statutory package in consuming application: `composer require nexus/payroll-mys-statutory:"*@dev"`
 3. [ ] Create API routes in `routes/api.php` for all controllers
 4. [ ] Run `composer dump-autoload` to register new classes
 5. [ ] Test all API endpoints using Postman or similar

@@ -200,7 +200,7 @@ The Nexus\FeatureFlags package provides a production-grade feature flag manageme
 
 ### FUN-015: API Endpoints
 **Priority:** High  
-**Description:** RESTful API for flag management in Atomy.
+**Description:** RESTful API for flag management in consuming application.
 
 **Acceptance Criteria:**
 - ✅ GET /api/feature-flags (list all for tenant)
@@ -412,7 +412,7 @@ The Nexus\FeatureFlags package provides a production-grade feature flag manageme
 - ✅ No Laravel facades in package code
 - ✅ No Eloquent models in package core
 - ✅ PSR interfaces used (LoggerInterface, CacheInterface subset)
-- ✅ Atomy provides Laravel-specific implementations
+- ✅ consuming application provides Laravel-specific implementations
 
 ---
 

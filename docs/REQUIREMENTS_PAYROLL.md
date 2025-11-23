@@ -10,7 +10,7 @@ Total Requirements: 660
 | `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0991 | All data structures defined via interfaces (PayRunInterface, PaySlipInterface, PayrollComponentInterface) |  |  |  |  |
 | `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0992 | All persistence operations via repository interfaces |  |  |  |  |
 | `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0993 | Business logic in service layer (PayrollManager, GrossPayCalculator, NetPayCalculator) |  |  |  |  |
-| `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0994 | All database migrations in application layer (apps/Atomy) |  |  |  |  |
+| `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0994 | All database migrations in application layer (apps/consuming application) |  |  |  |  |
 | `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0995 | All Eloquent models in application layer |  |  |  |  |
 | `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0996 | Repository implementations in application layer |  |  |  |  |
 | `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0997 | IoC container bindings in application service provider |  |  |  |  |
@@ -338,7 +338,7 @@ Total Requirements: 660
 | `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0991 | All data structures defined via interfaces (PayRunInterface, PaySlipInterface, PayrollComponentInterface) |  |  |  |  |
 | `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0992 | All persistence operations via repository interfaces |  |  |  |  |
 | `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0993 | Business logic in service layer (PayrollManager, GrossPayCalculator, NetPayCalculator) |  |  |  |  |
-| `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0994 | All database migrations in application layer (apps/Atomy) |  |  |  |  |
+| `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0994 | All database migrations in application layer (apps/consuming application) |  |  |  |  |
 | `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0995 | All Eloquent models in application layer |  |  |  |  |
 | `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0996 | Repository implementations in application layer |  |  |  |  |
 | `Nexus\Payroll` | Architechtural Requirement | ARC-PAY-0997 | IoC container bindings in application service provider |  |  |  |  |

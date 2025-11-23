@@ -6,7 +6,7 @@
 
 ### 1. Database Implementations
 - **Eloquent EventStore:**
-  - Implement `DbEventStoreRepository` and `DbStreamReaderRepository` using Laravel Eloquent for Atomy.
+  - Implement `DbEventStoreRepository` and `DbStreamReaderRepository` using Laravel Eloquent for consuming application.
   - Support PostgreSQL and MySQL adapters for high-throughput event persistence.
 - **Projection State Repository:**
   - Implement `DbProjectionStateRepository` for durable checkpoint storage.
@@ -45,7 +45,7 @@
   - Artisan commands for projection rebuild, force reset, and health checks.
 
 ### 6. Milestones & Acceptance Criteria
-- [ ] All Atomy repositories implement package contracts (no direct DB access in packages)
+- [ ] All consuming application repositories implement package contracts (no direct DB access in packages)
 - [ ] RedisProjectionLock and DbProjectionStateRepository pass all concurrency and crash recovery tests
 - [ ] Prometheus metrics and Grafana dashboards deployed in staging
 - [ ] All migration and deployment guides reviewed and tested

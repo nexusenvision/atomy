@@ -1,7 +1,7 @@
 # Budget Management Implementation Summary
 
 **Package:** `Nexus\Budget`  
-**Application:** `Atomy` (Laravel 12)  
+**Application:** `consuming application` (Laravel 12)  
 **Status:** ✅ Complete  
 **Date:** November 20, 2025  
 **Branch:** `feature-budgets`
@@ -146,7 +146,7 @@ All events are PSR-14 compliant with readonly properties:
 - `period_type` - Monthly/Quarterly/Annual
 - `is_multi_year` - Boolean flag
 
-## Atomy Implementation
+## Application Implementation
 
 ### Database Migrations (5 Tables)
 
@@ -327,7 +327,7 @@ All models implement package interfaces and use:
 
 ### Service Provider
 
-**BudgetServiceProvider** (`apps/Atomy/app/Providers/BudgetServiceProvider.php`)
+**BudgetServiceProvider** (`consuming application (e.g., Laravel app)app/Providers/BudgetServiceProvider.php`)
 
 **Repository Bindings:**
 ```php
@@ -352,11 +352,11 @@ BudgetSimulatorInterface::class => BudgetSimulator::class
 - `PeriodOpenedEvent` → `PeriodEventListener::handlePeriodOpened`
 - `ApprovalCompletedEvent` → `WorkflowEventListener::handleApprovalCompleted`
 
-**Registered in:** `apps/Atomy/bootstrap/app.php`
+**Registered in:** `consuming application (e.g., Laravel app)bootstrap/app.php`
 
 ### Configuration
 
-**File:** `apps/Atomy/config/budget.php`
+**File:** `consuming application (e.g., Laravel app)config/budget.php`
 
 **Key Settings (30+ Configuration Options):**
 
@@ -629,9 +629,9 @@ class BudgetManagerTest extends TestCase
 }
 ```
 
-### Atomy Tests (Laravel Feature Tests)
+### consuming application Tests (Laravel Feature Tests)
 
-**Location:** `apps/Atomy/tests/Feature/Budget/` (to be implemented)
+**Location:** `consuming application (e.g., Laravel app)tests/Feature/Budget/` (to be implemented)
 
 **Test Types:**
 - Database integration tests (migrations, models, repositories)
@@ -707,7 +707,7 @@ class BudgetRepositoryTest extends TestCase
 ### Running Migrations
 
 ```bash
-cd apps/Atomy
+cd apps/consuming application
 php artisan migrate
 ```
 
@@ -798,7 +798,7 @@ Budget::create([
 }
 ```
 
-### Atomy Dependencies
+### consuming application Dependencies
 
 - Laravel 12.x
 - PHP 8.3+
@@ -883,7 +883,7 @@ src/
     └── WorkflowEventListener.php
 ```
 
-### Atomy Files (apps/Atomy/)
+### consuming application Files (consuming application (e.g., Laravel app))
 
 ```
 database/migrations/
@@ -952,7 +952,7 @@ The implementation follows all Nexus architectural principles:
 
 **Next Steps:**
 1. Create pull request for review
-2. Write comprehensive tests (package + Atomy)
+2. Write comprehensive tests (package + consuming application)
 3. Create API endpoints (Phase 2)
 4. Build admin UI (Phase 2)
 
@@ -960,5 +960,5 @@ The implementation follows all Nexus architectural principles:
 
 **Implementation Date:** November 20, 2025  
 **Package Version:** 1.0.0  
-**Atomy Version:** Laravel 12  
+**consuming application Version:** Laravel 12  
 **Status:** ✅ Complete and Ready for Review

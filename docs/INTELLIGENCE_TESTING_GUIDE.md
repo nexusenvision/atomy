@@ -58,13 +58,13 @@ vendor/bin/phpunit --group=inventory
 
 ## Application Feature Tests (Laravel)
 
-Location: `apps/Atomy/tests/Feature/Intelligence/`
+Location: `consuming application (e.g., Laravel app)tests/Feature/Intelligence/`
 
 ### Running Application Tests
 
 ```bash
-# From Atomy directory
-cd apps/Atomy
+# From consuming application directory
+cd apps/consuming application
 
 # Run all Intelligence tests
 php artisan test --filter=Intelligence
@@ -126,10 +126,10 @@ The test suite uses PHPUnit data providers for comprehensive scenario coverage:
 cd packages/Intelligence && vendor/bin/phpunit
 
 # Full test suite (requires database)
-cd apps/Atomy && php artisan test --filter=Intelligence
+cd apps/consuming application && php artisan test --filter=Intelligence
 
 # Pre-deployment verification
-cd apps/Atomy && php artisan test --group=intelligence --coverage --min=80
+cd apps/consuming application && php artisan test --group=intelligence --coverage --min=80
 ```
 
 ## CI/CD Integration
@@ -144,7 +144,7 @@ cd apps/Atomy && php artisan test --group=intelligence --coverage --min=80
 
 - name: Run Intelligence Feature Tests
   run: |
-    cd apps/Atomy
+    cd apps/consuming application
     php artisan migrate:fresh --seed
     php artisan test --filter=Intelligence
 ```
@@ -182,7 +182,7 @@ composer dump-autoload
 
 **Feature tests fail with database errors:**
 ```bash
-cd apps/Atomy
+cd apps/consuming application
 php artisan migrate:fresh
 php artisan db:seed
 ```

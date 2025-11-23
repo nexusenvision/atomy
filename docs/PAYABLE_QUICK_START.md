@@ -7,7 +7,7 @@
 
 ### 2. Run Database Migrations
 ```bash
-cd /home/user/dev/atomy/apps/Atomy
+cd /home/user/dev/atomy/apps/consuming application
 php artisan migrate
 ```
 
@@ -358,9 +358,9 @@ For issues or questions:
 ## File Locations
 
 - **Package**: `packages/Payable/`
-- **Models**: `apps/Atomy/app/Models/`
-- **Repositories**: `apps/Atomy/app/Repositories/`
-- **Controllers**: `apps/Atomy/app/Http/Controllers/Api/`
-- **Migrations**: `apps/Atomy/database/migrations/`
-- **Routes**: `apps/Atomy/routes/api.php`
-- **Service Provider**: `apps/Atomy/app/Providers/PayableServiceProvider.php`
+- **Models**: `consuming application (e.g., Laravel app)app/Models/`
+- **Repositories**: `consuming application (e.g., Laravel app)app/Repositories/`
+- **Controllers**: `consuming application (e.g., Laravel app)app/Http/Controllers/Api/`
+- **Migrations**: `consuming application (e.g., Laravel app)database/migrations/`
+- **Routes**: `consuming application (e.g., Laravel app)routes/api.php`
+- **Service Provider**: `consuming application (e.g., Laravel app)app/Providers/PayableServiceProvider.php`

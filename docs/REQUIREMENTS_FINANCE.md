@@ -44,7 +44,7 @@ Total Requirements: 194
 | `Nexus\Finance` | Architechtural Requirement | ARC-FIN-2002 | All data structures defined via interfaces (JournalEntryInterface, AccountInterface, LedgerLineInterface) |  |  |  |  |
 | `Nexus\Finance` | Architechtural Requirement | ARC-FIN-2003 | All persistence operations via repository interfaces (LedgerRepositoryInterface, AccountRepositoryInterface) |  |  |  |  |
 | `Nexus\Finance` | Architechtural Requirement | ARC-FIN-2004 | Business logic concentrated in service layer (FinanceManager, JournalEntryService) |  |  |  |  |
-| `Nexus\Finance` | Architechtural Requirement | ARC-FIN-2005 | All database migrations in application layer (apps/Atomy) |  |  |  |  |
+| `Nexus\Finance` | Architechtural Requirement | ARC-FIN-2005 | All database migrations in application layer (apps/consuming application) |  |  |  |  |
 | `Nexus\Finance` | Architechtural Requirement | ARC-FIN-2006 | All Eloquent models in application layer implementing package interfaces |  |  |  |  |
 | `Nexus\Finance` | Architechtural Requirement | ARC-FIN-2007 | Repository implementations in application layer |  |  |  |  |
 | `Nexus\Finance` | Architechtural Requirement | ARC-FIN-2008 | Package composer.json MUST NOT depend on laravel/framework |  |  |  |  |

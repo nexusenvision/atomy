@@ -19,7 +19,7 @@ The `Nexus\Document` package provides a **comprehensive, framework-agnostic Ente
 The Document package follows the Nexus architectural principle: **"Logic in Packages, Implementation in Applications."**
 
 - **Package Layer (`packages/Document/`)**: Framework-agnostic business logic with zero Laravel dependencies
-- **Application Layer (`apps/Atomy/`)**: Laravel Eloquent implementations with database migrations
+- **Application Layer (`consuming application (e.g., Laravel app)`)**: Laravel Eloquent implementations with database migrations
 
 ### Storage Strategy
 
@@ -89,10 +89,10 @@ packages/Document/
 
 ---
 
-## Atomy Implementation
+## Application Implementation
 
 ```
-apps/Atomy/
+consuming application (e.g., Laravel app)
 ├── app/
 │   ├── Models/
 │   │   ├── Document.php (implements DocumentInterface)
@@ -347,7 +347,7 @@ $redactedPath = $contentProcessor->redact($documentPath, ['/\b\d{3}-\d{2}-\d{4}\
 
 ## Service Provider Bindings
 
-### `apps/Atomy/app/Providers/DocumentServiceProvider.php`
+### `consuming application (e.g., Laravel app)app/Providers/DocumentServiceProvider.php`
 
 ```php
 // Repository bindings
@@ -509,14 +509,14 @@ vendor/bin/phpunit packages/Document/tests/ValueObjects/DocumentStateTest.php
 vendor/bin/phpunit packages/Document/tests/Services/DocumentManagerTest.php
 ```
 
-### Integration Tests (Atomy Layer)
+### Integration Tests (consuming application Layer)
 
 ```bash
 # Test repository implementations
-vendor/bin/phpunit apps/Atomy/tests/Repositories/DbDocumentRepositoryTest.php
+vendor/bin/phpunit consuming application (e.g., Laravel app)tests/Repositories/DbDocumentRepositoryTest.php
 
 # Test Eloquent models
-vendor/bin/phpunit apps/Atomy/tests/Models/DocumentTest.php
+vendor/bin/phpunit consuming application (e.g., Laravel app)tests/Models/DocumentTest.php
 
 # Test migrations
 php artisan migrate --path=database/migrations/2025_01_21_000001_create_documents_table.php
@@ -526,13 +526,13 @@ php artisan migrate --path=database/migrations/2025_01_21_000001_create_document
 
 ```bash
 # Test complete upload-download flow
-vendor/bin/phpunit apps/Atomy/tests/Feature/DocumentUploadTest.php
+vendor/bin/phpunit consuming application (e.g., Laravel app)tests/Feature/DocumentUploadTest.php
 
 # Test version control workflow
-vendor/bin/phpunit apps/Atomy/tests/Feature/DocumentVersioningTest.php
+vendor/bin/phpunit consuming application (e.g., Laravel app)tests/Feature/DocumentVersioningTest.php
 
 # Test relationship management
-vendor/bin/phpunit apps/Atomy/tests/Feature/DocumentRelationshipTest.php
+vendor/bin/phpunit consuming application (e.g., Laravel app)tests/Feature/DocumentRelationshipTest.php
 ```
 
 ---
@@ -542,7 +542,7 @@ vendor/bin/phpunit apps/Atomy/tests/Feature/DocumentRelationshipTest.php
 ### 1. Install Package
 
 ```bash
-cd apps/Atomy
+cd apps/consuming application
 composer require nexus/document:"*@dev"
 ```
 
@@ -854,7 +854,7 @@ Good: /01HQXYZ9ABCDEFGHIJKLMNOPQR/2025/01/01HQXYZ9XYZ1234567890ABCD/v1.pdf
 
 Currently, repository implementations use `Str::ulid()` directly. This should be centralized via a `UlidGeneratorInterface`.
 
-**Workaround:** Use Laravel's `Str::ulid()` in Atomy layer.
+**Workaround:** Use Laravel's `Str::ulid()` in consuming application layer.
 
 ### 2. Tenant Context Access
 

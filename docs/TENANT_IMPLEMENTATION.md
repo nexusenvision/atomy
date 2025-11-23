@@ -13,7 +13,7 @@
 ### Philosophy: Logic in Packages, Implementation in Applications
 
 - **📦 `packages/Tenant/`**: Pure PHP business logic, framework-agnostic
-- **🚀 `apps/Atomy/`**: Laravel-specific implementation layer
+- **🚀 `consuming application (e.g., Laravel app)`**: Laravel-specific implementation layer
 
 ### Package Structure (21 files)
 
@@ -49,10 +49,10 @@ packages/Tenant/
         └── TenantResolverService.php   # Multi-strategy tenant identification
 ```
 
-### Atomy Implementation (10 files)
+### Application Implementation (10 files)
 
 ```
-apps/Atomy/
+consuming application (e.g., Laravel app)
 ├── database/migrations/
 │   └── 2025_11_17_100000_create_tenants_table.php  # tenants + tenant_impersonations tables
 ├── app/
@@ -90,13 +90,13 @@ apps/Atomy/
 | ARC-TEN-0577 | All data structures defined via interfaces | `src/Contracts/TenantInterface.php` (33 methods) |
 | ARC-TEN-0578 | All persistence via repository interface | `src/Contracts/TenantRepositoryInterface.php` (20 methods) |
 | ARC-TEN-0579 | Business logic in service layer | `src/Services/` (5 service classes) |
-| ARC-TEN-0580 | All database migrations in application layer | `apps/Atomy/database/migrations/2025_11_17_100000_create_tenants_table.php` |
-| ARC-TEN-0581 | All Eloquent models in application layer | `apps/Atomy/app/Models/Tenant.php`, `TenantImpersonation.php` |
-| ARC-TEN-0582 | Repository implementations in application layer | `apps/Atomy/app/Repositories/DbTenantRepository.php` |
-| ARC-TEN-0583 | Global Scopes for automatic query filtering | `apps/Atomy/app/Scopes/TenantScope.php`, `app/Traits/BelongsToTenant.php` |
-| ARC-TEN-0584 | IoC container bindings in service provider | `apps/Atomy/app/Providers/TenantServiceProvider.php::register()` |
+| ARC-TEN-0580 | All database migrations in application layer | `consuming application (e.g., Laravel app)database/migrations/2025_11_17_100000_create_tenants_table.php` |
+| ARC-TEN-0581 | All Eloquent models in application layer | `consuming application (e.g., Laravel app)app/Models/Tenant.php`, `TenantImpersonation.php` |
+| ARC-TEN-0582 | Repository implementations in application layer | `consuming application (e.g., Laravel app)app/Repositories/DbTenantRepository.php` |
+| ARC-TEN-0583 | Global Scopes for automatic query filtering | `consuming application (e.g., Laravel app)app/Scopes/TenantScope.php`, `app/Traits/BelongsToTenant.php` |
+| ARC-TEN-0584 | IoC container bindings in service provider | `consuming application (e.g., Laravel app)app/Providers/TenantServiceProvider.php::register()` |
 | ARC-TEN-0585 | Package composer.json MUST NOT depend on laravel/framework | ✅ Verified: Only `psr/log:^3.0` dependency |
-| ARC-TEN-0586 | Cache operations via CacheRepositoryInterface only | `src/Contracts/CacheRepositoryInterface.php`, `apps/Atomy/app/Services/LaravelCacheRepository.php` |
+| ARC-TEN-0586 | Cache operations via CacheRepositoryInterface only | `src/Contracts/CacheRepositoryInterface.php`, `consuming application (e.g., Laravel app)app/Services/LaravelCacheRepository.php` |
 | ARC-TEN-0587 | Context propagation to queued jobs handled by application layer | ⏳ **Pending**: To be implemented when job queue is added |
 
 ### ✅ Business Requirements (22/28 Complete, 6 Pending)
@@ -776,7 +776,7 @@ Route::middleware(['api', 'auth:sanctum', 'identify_tenant'])->group(function ()
 
 ## Configuration
 
-**File**: `apps/Atomy/config/tenant.php`
+**File**: `consuming application (e.g., Laravel app)config/tenant.php`
 
 ```php
 return [
@@ -837,7 +837,7 @@ return [
 - Test `IdentificationStrategy` enum values
 - Verify `TenantResolverService` logic with sample contexts
 
-**Atomy Tests** (Feature tests, with database):
+**consuming application Tests** (Feature tests, with database):
 - Test all 20 repository methods with real database
 - Test API endpoints (14 total)
 - Test middleware automatic tenant resolution

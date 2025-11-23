@@ -99,10 +99,10 @@ packages/EventStream/
 
 ---
 
-## Atomy Application Layer Structure
+## consuming application Application Layer Structure
 
 ```
-apps/Atomy/
+consuming application (e.g., Laravel app)
 ├── database/migrations/
 │   ├── 2025_11_19_000001_create_event_streams_table.php      # Main event log
 │   ├── 2025_11_19_000002_create_event_snapshots_table.php    # Performance snapshots
@@ -683,7 +683,7 @@ public function handle(): void
 
 ## Configuration Guide
 
-### File: `apps/Atomy/config/eventstream.php`
+### File: `consuming application (e.g., Laravel app)config/eventstream.php`
 
 ```php
 <?php
@@ -780,7 +780,7 @@ return [
     | Backend Configuration
     |--------------------------------------------------------------------------
     |
-    | Event store backend (SQL, MongoDB, EventStoreDB). Atomy binds the
+    | Event store backend (SQL, MongoDB, EventStoreDB). consuming application binds the
     | appropriate repository implementation based on this setting.
     |
     */
@@ -876,10 +876,10 @@ vendor/bin/phpunit tests/Unit/
 - ✅ SnapshotManager (checksum calculation, validation logic)
 - ✅ JsonEventSerializer (serialization/deserialization)
 
-### Integration Tests (Atomy Layer)
+### Integration Tests (consuming application Layer)
 
 ```bash
-# Run from apps/Atomy/
+# Run from consuming application (e.g., Laravel app)
 php artisan test --filter EventStream
 ```
 
@@ -1446,7 +1446,7 @@ echo "Resumed from checkpoint, processed {$stats['processedCount']} new events";
 
 3. **GraphQL Subscriptions**
    - [ ] Expose event stream subscriptions via GraphQL
-   - [ ] Test real-time event monitoring in Edward (TUI)
+   - [ ] Test real-time event monitoring in client application (TUI)
 
 ### Phase 4: Documentation & Training (Priority: MEDIUM)
 
@@ -1471,7 +1471,7 @@ echo "Resumed from checkpoint, processed {$stats['processedCount']} new events";
 
 **Total Implementation Time:** ~40 hours (PR1: 16h, PR2: 24h)  
 **Lines of Code (Package):** ~5,400 lines (PR1: 1,800 + PR2: 3,600)  
-**Lines of Code (Atomy):** ~800 lines  
+**Lines of Code (consuming application):** ~800 lines  
 **Total Files Created:** 59 files (49 package + 10 application)  
 **Total Tests:** 216 tests (PR1: 122, PR2: 94), 493 assertions (PR1: 267, PR2: 226), 100% pass rate
 
@@ -1531,7 +1531,7 @@ echo "Resumed from checkpoint, processed {$stats['processedCount']} new events";
 
 ## Conclusion
 
-The `Nexus\EventStream` package is a production-ready event sourcing engine designed for critical ERP domains requiring complete audit trails and temporal state reconstruction. It follows the Nexus architectural principles of **framework-agnostic package design** with **Laravel-specific implementations** in the Atomy orchestrator.
+The `Nexus\EventStream` package is a production-ready event sourcing engine designed for critical ERP domains requiring complete audit trails and temporal state reconstruction. It follows the Nexus architectural principles of **framework-agnostic package design** with **Laravel-specific implementations** in the consuming application orchestrator.
 
 **Implementation Status:**
 - ✅ **PR1 Foundation** (Merged): Core event sourcing, snapshots, projections - 122 tests, 267 assertions

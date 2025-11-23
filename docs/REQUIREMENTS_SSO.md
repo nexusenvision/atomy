@@ -24,7 +24,7 @@ The `Nexus\SSO` package provides enterprise Single Sign-On capabilities for the 
 | `Nexus\SSO` | Architectural Requirement | ARC-SSO-2005 | Support multi-tenant SSO configuration | P0 | ⏳ Planning | Per-tenant provider configs | Nexus\Tenant |
 | `Nexus\SSO` | Architectural Requirement | ARC-SSO-2006 | Use readonly properties and constructor promotion | P0 | ⏳ Planning | PHP 8.3+ features | - |
 | `Nexus\SSO` | Architectural Requirement | ARC-SSO-2007 | Use native enums for fixed value sets | P0 | ⏳ Planning | SsoProtocol enum | - |
-| `Nexus\SSO` | Architectural Requirement | ARC-SSO-2008 | IoC container bindings in application service provider | P0 | ⏳ Planning | SsoServiceProvider in Atomy | - |
+| `Nexus\SSO` | Architectural Requirement | ARC-SSO-2008 | IoC container bindings in application service provider | P0 | ⏳ Planning | SsoServiceProvider in consuming application | - |
 | `Nexus\SSO` | Business Requirement | BUS-SSO-2009 | Support SAML 2.0 authentication | P0 | ⏳ Planning | Enterprise SSO standard | - |
 | `Nexus\SSO` | Business Requirement | BUS-SSO-2010 | Support OAuth2/OIDC authentication | P0 | ⏳ Planning | Modern SSO standard | - |
 | `Nexus\SSO` | Business Requirement | BUS-SSO-2011 | Support Azure AD (Entra ID) integration | P0 | ⏳ Planning | Microsoft SSO | - |

@@ -36,7 +36,7 @@ packages/Identity/
 ### Application Structure
 
 ```
-apps/Atomy/
+consuming application (e.g., Laravel app)
 ├── app/
 │   ├── Models/              # 9 Eloquent models
 │   │   ├── User.php

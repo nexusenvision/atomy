@@ -101,7 +101,7 @@ All exceptions include static factory methods for clear error messages.
 
 ---
 
-### Application Layer (`apps/Atomy/`)
+### Application Layer (`consuming application (e.g., Laravel app)`)
 
 **Laravel 12 Implementation**
 
@@ -655,7 +655,7 @@ MIT License - See `packages/Sales/LICENSE`
 This package follows the **Nexus Monorepo Architecture**:
 
 1. **Package layer changes** - Submit to `packages/Sales/` (framework-agnostic)
-2. **Application layer changes** - Submit to `apps/Atomy/` (Laravel implementation)
+2. **Application layer changes** - Submit to `consuming application (e.g., Laravel app)` (Laravel implementation)
 3. **All changes require:**
    - Unit tests (package layer)
    - Feature tests (application layer)

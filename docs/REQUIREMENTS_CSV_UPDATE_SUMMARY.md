@@ -25,7 +25,7 @@ Updated the `REQUIREMENTS_PART2.csv` file with comprehensive implementation deta
 - **Nexus\Statutory.Payroll.MYS:** 37 requirements (0 complete, 37 deferred)
 - **Nexus\Statutory.Accounting.SSM:** 15 requirements (0 complete, 15 deferred)
 - **Nexus\Statutory.Accounting.MYS.Prop:** 3 requirements (0 complete, 3 deferred)
-- **Nexus\Atomy (Integration):** 9 requirements (9 complete, 0 deferred)
+- **Nexus\consuming application (Integration):** 9 requirements (9 complete, 0 deferred)
 - **Nexus\Payroll (Integration):** 3 requirements (0 complete, 3 deferred)
 - **Nexus\Finance (Integration):** 4 requirements (1 complete, 3 deferred)
 - **Nexus\Hrm (Integration):** 4 requirements (1 complete, 3 deferred)
@@ -56,7 +56,7 @@ All 21 architectural requirements completed:
 - README.md and LICENSE ✅
 - ReportMetadataInterface with all required methods ✅
 
-### Nexus\Atomy Integration (ARC-ATM-8052 to 8060)
+### Nexus\consuming application Integration (ARC-ATM-8052 to 8060)
 All 9 integration requirements completed:
 - 5 database migrations (compliance_schemes, sod_rules, configuration_rules, statutory_reports, taxonomy_mappings) ✅
 - 5 Eloquent models with tenant scoping ✅
@@ -117,7 +117,7 @@ These requirements represent **future enhancements** that depend on:
 #### Functional Requirements (30 requirements)
 - **FUN-CMP-8201 to 8210:** Compliance functional requirements
 - **FUN-STT-8211 to 8220:** Statutory functional requirements
-- **FUN-ATM-8241 to 8246:** Atomy UI functional requirements
+- **FUN-ATM-8241 to 8246:** consuming application UI functional requirements
 
 #### Performance Requirements (8 requirements)
 - **PER-CMP-8301 to 8303:** Compliance performance benchmarks
@@ -137,7 +137,7 @@ These requirements represent **future enhancements** that depend on:
 
 #### User Stories (14 requirements)
 - **USE-CMP-8701 to 8705:** Compliance user stories
-- **USE-ATM-8716 to 8718:** Atomy user stories
+- **USE-ATM-8716 to 8718:** consuming application user stories
 
 #### Hrm Integration (4 requirements)
 - **ARC-HRM-8068 to 8071:** Employee statutory fields and validation
@@ -242,9 +242,9 @@ packages/Statutory/
         └── ReportGenerationException.php
 ```
 
-### Atomy Integration Files
+### consuming application Integration Files
 ```
-apps/Atomy/
+consuming application (e.g., Laravel app)
 ├── database/migrations/
 │   ├── 2025_11_18_000001_create_compliance_schemes_table.php
 │   ├── 2025_11_18_000002_create_sod_rules_table.php
@@ -312,7 +312,7 @@ apps/Atomy/
    - Add account metadata for taxonomy mapping
 
 ### For Functional Enhancements (Priority 3)
-1. Implement Atomy UI features
+1. Implement consuming application UI features
    - Feature management UI for compliance schemes
    - Statutory report generation UI with parameter selection
    - Compliance dashboard with violation counts
@@ -344,7 +344,7 @@ All core architectural and business requirements for the base Compliance and Sta
 The deferred requirements represent logical extensions that depend on:
 - Country-specific adapter packages (Malaysia payroll, SSM accounting)
 - Additional core package implementations (Hrm, Payroll)
-- UI/UX enhancements in Atomy
+- UI/UX enhancements in consuming application
 - Performance, security, and integration improvements
 
 This CSV update provides full traceability between requirements and code, making it easy to:

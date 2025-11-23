@@ -8,7 +8,7 @@ Total Requirements: 180
 | `Nexus\Workflow` | Architechtural Requirement | ARC-WOR-0406 | All data structures defined via interfaces (WorkflowInterface, TaskInterface) |  | Skeleton Created | Complete package and application skeleton created | 2025-11-17 |
 | `Nexus\Workflow` | Architechtural Requirement | ARC-WOR-0407 | All persistence operations via repository interface |  | Skeleton Created | Complete package and application skeleton created | 2025-11-17 |
 | `Nexus\Workflow` | Architechtural Requirement | ARC-WOR-0408 | Business logic in service layer (WorkflowManager, TaskManager) |  | Skeleton Created | Complete package and application skeleton created | 2025-11-17 |
-| `Nexus\Workflow` | Architechtural Requirement | ARC-WOR-0409 | All database migrations in application layer (apps/Atomy) |  | Skeleton Created | Complete package and application skeleton created | 2025-11-17 |
+| `Nexus\Workflow` | Architechtural Requirement | ARC-WOR-0409 | All database migrations in application layer (apps/consuming application) |  | Skeleton Created | Complete package and application skeleton created | 2025-11-17 |
 | `Nexus\Workflow` | Architechtural Requirement | ARC-WOR-0410 | All Eloquent models in application layer |  | Skeleton Created | Complete package and application skeleton created | 2025-11-17 |
 | `Nexus\Workflow` | Architechtural Requirement | ARC-WOR-0411 | Repository implementations in application layer |  | Skeleton Created | Complete package and application skeleton created | 2025-11-17 |
 | `Nexus\Workflow` | Architechtural Requirement | ARC-WOR-0412 | Traits and middleware in application layer (Laravel-specific) |  | Skeleton Created | Complete package and application skeleton created | 2025-11-17 |

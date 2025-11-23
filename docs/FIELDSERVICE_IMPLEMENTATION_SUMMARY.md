@@ -1,7 +1,7 @@
 # Field Service Management Implementation Summary
 
 **Package:** `Nexus\FieldService`  
-**Status:** ✅ **Phase 1 & 2 Complete** (Package Foundation + Atomy Application Layer)  
+**Status:** ✅ **Phase 1 & 2 Complete** (Package Foundation + consuming application Application Layer)  
 **Implementation Date:** November 21, 2025  
 **Total Requirements:** 100 (from REQUIREMENTS_FIELDSERVICE.md)  
 **Coverage:** ~85% (Tier 1 fully operational, Tier 2/3 foundations ready)
@@ -12,7 +12,7 @@
 
 The Field Service Management package provides a complete solution for managing mobile workforce operations, including work order lifecycle, technician dispatch, service contracts, preventive maintenance, parts inventory tracking, and customer signature capture.
 
-**Architecture Pattern:** Framework-agnostic package (`packages/FieldService/`) + Laravel application layer (`apps/Atomy/`)
+**Architecture Pattern:** Framework-agnostic package (`packages/FieldService/`) + Laravel application layer (`consuming application (e.g., Laravel app)`)
 
 ---
 
@@ -144,7 +144,7 @@ NEW → SCHEDULED → IN_PROGRESS → COMPLETED → VERIFIED
 
 ---
 
-### ✅ Phase 2: Atomy Application Layer (PR #64)
+### ✅ Phase 2: consuming application Application Layer (PR #64)
 **Status:** Open (Ready for Review)  
 **Commits:** 3  
 **Lines Added:** +2,808  
@@ -510,7 +510,7 @@ WorkOrderVerifiedEvent → GenerateReportOnVerification
 
 ### Service Provider Registration
 ```php
-// apps/Atomy/bootstrap/app.php
+// consuming application (e.g., Laravel app)bootstrap/app.php
 ->withProviders([
     // ...
     App\Providers\FieldServiceProvider::class,
@@ -740,8 +740,8 @@ Authorization: Bearer {token}
 - **Requirements:** `docs/REQUIREMENTS_FIELDSERVICE.md`
 - **Architecture:** `ARCHITECTURE.md` (Monorepo conventions)
 - **Package README:** `packages/FieldService/README.md`
-- **API Routes:** `apps/Atomy/routes/api.php` (lines 148-193)
-- **Migration:** `apps/Atomy/database/migrations/2025_11_21_210000_create_field_service_tables.php`
+- **API Routes:** `consuming application (e.g., Laravel app)routes/api.php` (lines 148-193)
+- **Migration:** `consuming application (e.g., Laravel app)database/migrations/2025_11_21_210000_create_field_service_tables.php`
 
 ---
 
@@ -752,7 +752,7 @@ Authorization: Bearer {token}
   - Status: Ready for Review
   - Files: 55 created, +4,445 lines
 
-- **PR #64:** Field Service Atomy Application Layer (Phase 2) - ✅ Open
+- **PR #64:** Field Service consuming application Application Layer (Phase 2) - ✅ Open
   - URL: https://github.com/azaharizaman/atomy/pull/64
   - Status: Ready for Review
   - Files: 21 created, +2,808 lines

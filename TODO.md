@@ -136,7 +136,7 @@ public function getNetIncome(
 ### Implementation Location
 
 - **Interface:** `packages/Finance/src/Contracts/LedgerRepositoryInterface.php`
-- **Implementation:** `apps/Atomy/app/Repositories/EloquentLedgerRepository.php`
+- **Implementation:** Consuming application implements `LedgerRepositoryInterface`
 
 ### Estimated Effort
 
@@ -195,7 +195,7 @@ interface JournalEntryServiceInterface
 
 - **Interface:** `packages/Finance/src/Contracts/JournalEntryServiceInterface.php`
 - **Service:** `packages/Finance/src/Services/JournalEntryService.php`
-- **Implementation Binding:** `apps/Atomy/app/Providers/AppServiceProvider.php`
+- **Implementation Binding:** Consuming application's service provider
 
 ### Estimated Effort
 
@@ -359,8 +359,8 @@ interface BudgetRepositoryInterface
 ### Implementation Location
 
 - **Interface:** `packages/Analytics/src/Contracts/BudgetRepositoryInterface.php`
-- **Repository:** `apps/Atomy/app/Repositories/EloquentBudgetRepository.php`
-- **Model:** `apps/Atomy/app/Models/Budget.php`
+- **Repository:** Consuming application implements `BudgetRepositoryInterface`
+- **Model:** Consuming application's persistence layer (e.g., Eloquent models)
 - **Migration:** Create `budgets` table
 
 ### Estimated Effort
@@ -416,7 +416,7 @@ public function getBool(string $key, bool $default = false): bool;
 
 - **Interface:** Already exists (verify)
 - **Service:** `packages/Setting/src/Services/SettingsManager.php`
-- **Repository:** `apps/Atomy/app/Repositories/EloquentSettingRepository.php`
+- **Repository:** Consuming application implements `SettingRepositoryInterface`
 
 ### Estimated Effort
 
@@ -456,7 +456,7 @@ public function getBool(string $key, bool $default = false): bool;
 
 ### Feature Tests (Application Level)
 
-**Location:** `apps/Atomy/tests/Feature/`
+**Location:** Consuming application's test suite (e.g., `tests/Feature/`)
 
 **Test Coverage Needed:**
 

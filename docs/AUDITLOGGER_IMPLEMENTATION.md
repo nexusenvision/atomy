@@ -1,6 +1,6 @@
 # AuditLogger Package Implementation
 
-Complete skeleton for the Nexus AuditLogger package and Atomy implementation.
+Complete skeleton for the Nexus AuditLogger package and consuming application implementation.
 
 ## 📦 Package Structure (packages/AuditLogger/)
 
@@ -30,10 +30,10 @@ packages/AuditLogger/
         └── RetentionPolicy.php            # Retention period logic
 ```
 
-## 🚀 Atomy Implementation Structure (apps/Atomy/)
+## 🚀 Application Implementation Structure (consuming application (e.g., Laravel app))
 
 ```
-apps/Atomy/
+consuming application (e.g., Laravel app)
 ├── app/
 │   ├── Console/
 │   │   └── Commands/
@@ -68,7 +68,7 @@ apps/Atomy/
 - **ARC-AUD-0002**: ✅ All data structures defined via AuditLogInterface
 - **ARC-AUD-0003**: ✅ All persistence via AuditLogRepositoryInterface
 - **ARC-AUD-0004**: ✅ Business logic in service layer (AuditLogManager)
-- **ARC-AUD-0005**: ✅ Migrations in application layer (apps/Atomy)
+- **ARC-AUD-0005**: ✅ Migrations in application layer (apps/consuming application)
 - **ARC-AUD-0006**: ✅ Eloquent models in application layer
 - **ARC-AUD-0007**: ✅ Repository implementation in application layer
 - **ARC-AUD-0008**: ✅ Traits (Auditable) in application layer
@@ -103,7 +103,7 @@ apps/Atomy/
 
 ## 📝 Usage Examples
 
-### 1. Install Package in Atomy
+### 1. Install Package in consuming application
 
 ```bash
 cd /path/to/nexus
@@ -241,15 +241,15 @@ cd packages/AuditLogger
 composer test
 ```
 
-Atomy tests (feature tests with database):
+consuming application tests (feature tests with database):
 ```bash
-cd apps/Atomy
+cd apps/consuming application
 php artisan test --filter=AuditLog
 ```
 
 ## 📚 Next Steps
 
-1. Install Laravel 12 in `apps/Atomy/`
+1. Install Laravel 12 in `consuming application (e.g., Laravel app)`
 2. Add package to root `composer.json` repositories
 3. Run `composer require nexus/audit-logger:"*@dev"`
 4. Run migrations

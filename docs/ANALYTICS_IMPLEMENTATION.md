@@ -1,6 +1,6 @@
 # Analytics Package Implementation
 
-Complete skeleton for the Nexus Analytics package and Atomy implementation.
+Complete skeleton for the Nexus Analytics package and consuming application implementation.
 
 ## 📦 Package Structure (packages/Analytics/)
 
@@ -42,10 +42,10 @@ packages/Analytics/
         └── QueryResult.php                          # Query result VO
 ```
 
-## 🚀 Atomy Implementation Structure (apps/Atomy/)
+## 🚀 Application Implementation Structure (consuming application (e.g., Laravel app))
 
 ```
-apps/Atomy/
+consuming application (e.g., Laravel app)
 ├── app/
 │   ├── Models/
 │   │   └── Analytics/
@@ -126,10 +126,10 @@ apps/Atomy/
 
 ## 📝 Usage Examples
 
-### 1. Install Package in Atomy
+### 1. Install Package in consuming application
 
 ```bash
-cd apps/Atomy
+cd apps/consuming application
 composer require nexus/analytics:"*@dev"
 ```
 

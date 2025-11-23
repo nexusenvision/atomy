@@ -11,7 +11,7 @@ Total Requirements: 128
 | `Nexus\Payable` | Architechtural Requirement | ARC-PAY-3002 | All data structures defined via interfaces (VendorBillInterface, PaymentInterface, MatchingInterface) |  |  |  |  |
 | `Nexus\Payable` | Architechtural Requirement | ARC-PAY-3003 | All persistence operations via repository interfaces (BillRepositoryInterface, PaymentRepositoryInterface) |  |  |  |  |
 | `Nexus\Payable` | Architechtural Requirement | ARC-PAY-3004 | Business logic concentrated in service layer (PayableManager, PaymentSchedulingService) |  |  |  |  |
-| `Nexus\Payable` | Architechtural Requirement | ARC-PAY-3005 | All database migrations in application layer (apps/Atomy) |  |  |  |  |
+| `Nexus\Payable` | Architechtural Requirement | ARC-PAY-3005 | All database migrations in application layer (apps/consuming application) |  |  |  |  |
 | `Nexus\Payable` | Architechtural Requirement | ARC-PAY-3006 | All Eloquent models in application layer implementing package interfaces |  |  |  |  |
 | `Nexus\Payable` | Architechtural Requirement | ARC-PAY-3007 | Repository implementations in application layer |  |  |  |  |
 | `Nexus\Payable` | Architechtural Requirement | ARC-PAY-3008 | Package composer.json MUST NOT depend on laravel/framework |  |  |  |  |

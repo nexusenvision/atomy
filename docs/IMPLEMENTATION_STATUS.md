@@ -336,7 +336,7 @@ EventStream (Optional, Large Enterprise)
 1. ✅ Implement `PeriodManager` service with caching
 2. ✅ Create value objects (PeriodDateRange, PeriodMetadata, FiscalYear)
 3. ⏳ Write unit tests for period validation logic (REMAINING)
-4. ✅ Create Atomy models, migrations, repositories
+4. ✅ Create consuming application models, migrations, repositories
 5. ✅ Add API routes for period management
 
 **Status**: Phase 1 is 85% complete. Only unit tests remain.
@@ -348,7 +348,7 @@ EventStream (Optional, Large Enterprise)
 2. Create additional value objects (ExchangeRate, JournalEntryNumber, AccountCode)
 3. Implement `FinanceManager` service
 4. Implement PostingEngine and BalanceCalculator
-5. Create Atomy models, migrations, repositories for COA and Journal Entries
+5. Create consuming application models, migrations, repositories for COA and Journal Entries
 6. Add API routes for journal entry posting
 
 **Estimated Effort**: 5-7 days
@@ -367,7 +367,7 @@ EventStream (Optional, Large Enterprise)
 1. Define all contracts for both packages
 2. Implement 3-way matching engine for Payable
 3. Implement collections engine for Receivable
-4. Create Atomy models, migrations, repositories
+4. Create consuming application models, migrations, repositories
 5. Add API routes
 6. Integrate with Finance for GL posting
 

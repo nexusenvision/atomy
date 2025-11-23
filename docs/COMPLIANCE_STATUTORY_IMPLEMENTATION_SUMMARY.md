@@ -129,7 +129,7 @@ packages/Statutory/
 
 ---
 
-## 🚀 Atomy Application Layer
+## 🚀 consuming application Application Layer
 
 ### Eloquent Models (7 files)
 - **ComplianceScheme**: Implements `ComplianceSchemeInterface`, has `activate()` and `deactivate()` methods
@@ -271,7 +271,7 @@ packages/Statutory/
 ### Dependency Injection (All layers)
 ✅ **Constructor injection throughout**:
 - Packages define needs via interfaces
-- Atomy provides concrete implementations
+- consuming application provides concrete implementations
 - Service providers bind interfaces to implementations
 
 ### Immutability (Value Objects)
@@ -283,7 +283,7 @@ packages/Statutory/
 ### Separation of Concerns
 ✅ **Clear boundaries**:
 - **Packages**: Logic (what to do)
-- **Atomy**: Implementation (how to do it)
+- **consuming application**: Implementation (how to do it)
 - **Controllers**: HTTP layer only (validation + orchestration)
 
 ---
@@ -419,7 +419,7 @@ private function extractReportData(...): array {
 - [x] Compliance Core: RuleEngine, ValidationPipeline, SodValidator, ConfigurationValidator
 - [x] Statutory Core: SchemaValidator, ReportGenerator, FormatConverter, FinanceDataExtractor
 
-✅ **Phase 3: Atomy Integration**
+✅ **Phase 3: consuming application Integration**
 - [x] 7 Eloquent models
 - [x] 4 Eloquent repositories
 - [x] 2 service providers with IoC bindings

@@ -99,12 +99,12 @@ private function getCircuitState(string $serviceName): CircuitBreakerState
 **Implementation:**
 - ✅ `HttpClientInterface` contract defines HTTP client responsibilities
 - ✅ Timeout values passed from `Endpoint` VO to HTTP client
-- ✅ Application layer (Atomy) responsible for enforcing timeouts via Guzzle/HTTP client
+- ✅ Application layer (consuming application) responsible for enforcing timeouts via Guzzle/HTTP client
 - ✅ `ConnectorManager` delegates to `HttpClientInterface` instead of internal `sendRequest()`
 
 **Architecture:**
 ```
-ConnectorManager → HttpClientInterface → GuzzleHttpClient (in Atomy)
+ConnectorManager → HttpClientInterface → GuzzleHttpClient (in consuming application)
                    (passes timeout)      (enforces via Guzzle config)
 ```
 
@@ -174,7 +174,7 @@ if ($credentials->isExpired() && $credentials->refreshToken !== null) {
 ### Payment Gateways
 
 **1. Stripe Payment Adapter**
-- File: `apps/Atomy/app/Connectors/Adapters/StripePaymentAdapter.php`
+- File: `consuming application (e.g., Laravel app)app/Connectors/Adapters/StripePaymentAdapter.php`
 - ✅ Implements `PaymentGatewayConnectorInterface`
 - ✅ Charge, refund, payment intent creation, authorization capture
 - ✅ Idempotency key support
@@ -182,7 +182,7 @@ if ($credentials->isExpired() && $credentials->refreshToken !== null) {
 - ✅ Amount conversion (dollars to cents)
 
 **2. PayPal Payment Adapter**
-- File: `apps/Atomy/app/Connectors/Adapters/PayPalPaymentAdapter.php`
+- File: `consuming application (e.g., Laravel app)app/Connectors/Adapters/PayPalPaymentAdapter.php`
 - ✅ Implements `PaymentGatewayConnectorInterface`
 - ✅ Order creation, capture, refund
 - ✅ Authorize and capture flow for deferred payments
@@ -194,7 +194,7 @@ if ($credentials->isExpired() && $credentials->refreshToken !== null) {
 ### SMS Providers
 
 **1. Twilio SMS Adapter (Enhanced)**
-- File: `apps/Atomy/app/Connectors/Adapters/TwilioSmsAdapter.php`
+- File: `consuming application (e.g., Laravel app)app/Connectors/Adapters/TwilioSmsAdapter.php`
 - ✅ Production-ready implementation (replaced placeholder)
 - ✅ Send single/bulk SMS
 - ✅ Phone number validation with carrier lookup
@@ -202,7 +202,7 @@ if ($credentials->isExpired() && $credentials->refreshToken !== null) {
 - ✅ MMS support via media URLs
 
 **2. AWS SNS Adapter**
-- File: `apps/Atomy/app/Connectors/Adapters/AwsSnsAdapter.php`
+- File: `consuming application (e.g., Laravel app)app/Connectors/Adapters/AwsSnsAdapter.php`
 - ✅ Implements `SmsServiceConnectorInterface`
 - ✅ Send single/bulk SMS
 - ✅ Sender ID support
@@ -266,11 +266,11 @@ ConnectorManager
 
 ## 📦 Application Layer Requirements
 
-The following must be implemented in `apps/Atomy`:
+The following must be implemented in `apps/consuming application`:
 
 ### 1. Circuit Breaker Storage Implementation ⭐ REQUIRED
 ```php
-// apps/Atomy/app/Repositories/RedisCircuitBreakerStorage.php
+// consuming application (e.g., Laravel app)app/Repositories/RedisCircuitBreakerStorage.php
 class RedisCircuitBreakerStorage implements CircuitBreakerStorageInterface
 {
     public function getState(string $serviceName): CircuitBreakerState
@@ -311,7 +311,7 @@ class RedisCircuitBreakerStorage implements CircuitBreakerStorageInterface
 
 ### 2. Rate Limiter Storage Implementation ⭐ REQUIRED
 ```php
-// apps/Atomy/app/Repositories/RedisRateLimiterStorage.php
+// consuming application (e.g., Laravel app)app/Repositories/RedisRateLimiterStorage.php
 class RedisRateLimiterStorage implements RateLimiterStorageInterface
 {
     public function getTokens(string $serviceName, RateLimitConfig $config): float
@@ -371,7 +371,7 @@ class RedisRateLimiterStorage implements RateLimiterStorageInterface
 
 ### 3. HTTP Client Implementation
 ```php
-// apps/Atomy/app/Services/GuzzleHttpClient.php
+// consuming application (e.g., Laravel app)app/Services/GuzzleHttpClient.php
 class GuzzleHttpClient implements HttpClientInterface
 {
     public function send(Endpoint $endpoint, array $payload, array $credentials): array
@@ -387,7 +387,7 @@ class GuzzleHttpClient implements HttpClientInterface
 
 ### 4. Idempotency Store Implementation
 ```php
-// apps/Atomy/app/Repositories/CacheIdempotencyStore.php
+// consuming application (e.g., Laravel app)app/Repositories/CacheIdempotencyStore.php
 class CacheIdempotencyStore implements IdempotencyStoreInterface
 {
     public function store(IdempotencyKey $key, array $response, string $serviceName): void
@@ -404,7 +404,7 @@ class CacheIdempotencyStore implements IdempotencyStoreInterface
 
 ### 5. Credential Provider OAuth Refresh
 ```php
-// apps/Atomy/app/Repositories/LaravelCredentialProvider.php
+// consuming application (e.g., Laravel app)app/Repositories/LaravelCredentialProvider.php
 public function refreshCredentials(string $serviceName, ?string $tenantId = null): Credentials
 {
     $setting = $this->getSetting($serviceName, $tenantId);
@@ -430,7 +430,7 @@ public function refreshCredentials(string $serviceName, ?string $tenantId = null
 
 ### 6. Service Provider Bindings ⭐ UPDATED
 ```php
-// apps/Atomy/app/Providers/ConnectorServiceProvider.php
+// consuming application (e.g., Laravel app)app/Providers/ConnectorServiceProvider.php
 
 // ⭐ NEW: Storage interface bindings for stateless services
 $this->app->singleton(
@@ -485,7 +485,7 @@ The initial implementation violated the **Principle of Atomic Package Statelessn
 - Created `CircuitBreakerStorageInterface` contract
 - Created `RateLimiterStorageInterface` contract
 - Refactored both services to inject storage instead of using internal arrays
-- State management delegated to Redis/database (implemented in Atomy)
+- State management delegated to Redis/database (implemented in consuming application)
 
 **Result:** State changes recorded by any worker are instantly visible to all other workers, enabling true global circuit breaking and rate limiting.
 
@@ -503,13 +503,13 @@ The initial implementation violated the **Principle of Atomic Package Statelessn
 
 ### Documentation Updates
 - ✅ This file updated with architectural compliance section
-- ✅ Added Redis storage implementation examples for Atomy
+- ✅ Added Redis storage implementation examples for consuming application
 
 ---
 
 ## 🚀 Next Steps
 
-1. **Install Vendor SDKs** (in `apps/Atomy/composer.json`):
+1. **Install Vendor SDKs** (in `consuming application (e.g., Laravel app)composer.json`):
    ```bash
    composer require stripe/stripe-php
    composer require paypal/paypal-checkout-sdk

@@ -79,7 +79,7 @@ cat .github/prompts/compliance-statutory-implementation.prompt.md
 # 2. Follow the 6-phase roadmap:
 #    Phase 1: Foundation (Weeks 1-2)
 #    Phase 2: Core Engine (Weeks 3-5)
-#    Phase 3: Atomy Integration (Weeks 6-7)
+#    Phase 3: consuming application Integration (Weeks 6-7)
 #    Phase 4: Feature Composition & XBRL (Weeks 8-9)
 #    Phase 5: Country-Specific Adapters (Weeks 10-12)
 #    Phase 6: Documentation & Deployment (Week 13)
@@ -99,7 +99,7 @@ cat .github/prompts/compliance-statutory-implementation.prompt.md
    # Create Nexus\Statutory package skeleton
    mkdir -p packages/Statutory/src/{Contracts,Exceptions,Services,ValueObjects,Core}
    
-   # Create Atomy migrations
+   # Create consuming application migrations
    php artisan make:migration create_compliance_tables
    php artisan make:migration create_statutory_tables
    ```
@@ -130,7 +130,7 @@ cat .github/prompts/compliance-statutory-implementation.prompt.md
 5. **packages/StatutoryAccountingMYSProp/** - Malaysia SSM BR reporting
 6. **packages/PayrollMysStatutory/** - Already exists, enhance if needed
 
-### Atomy Integration (7 database tables)
+### consuming application Integration (7 database tables)
 
 #### Compliance Tables
 - `compliance_schemes` - Registry of active compliance schemes
@@ -280,7 +280,7 @@ php -v
 composer --version
 
 # Laravel 12
-cd apps/Atomy
+cd apps/consuming application
 php artisan --version
 
 # Database (PostgreSQL or MySQL)
@@ -296,8 +296,8 @@ cd atomy
 # 2. Install dependencies
 composer install
 
-# 3. Setup Atomy
-cd apps/Atomy
+# 3. Setup consuming application
+cd apps/consuming application
 cp .env.example .env
 php artisan key:generate
 php artisan migrate
@@ -319,9 +319,9 @@ ls -la
 - **Service Package**: `packages/AuditLogger/` - Service-oriented design
 
 ### Testing Examples
-- **Unit Tests**: `apps/Atomy/tests/Unit/`
-- **Feature Tests**: `apps/Atomy/tests/Feature/`
-- **Integration Tests**: `apps/Atomy/tests/Integration/`
+- **Unit Tests**: `consuming application (e.g., Laravel app)tests/Unit/`
+- **Feature Tests**: `consuming application (e.g., Laravel app)tests/Feature/`
+- **Integration Tests**: `consuming application (e.g., Laravel app)tests/Integration/`
 
 ### Documentation Templates
 - **Package README**: See `packages/Tenant/README.md`

@@ -7,7 +7,7 @@ Total Requirements: 76
 | `Nexus\DataProcessor` | Architechtural Requirement | ARC-DPR-5001 | Package MUST be framework-agnostic with no Laravel dependencies |  |  |  |  |
 | `Nexus\DataProcessor` | Architechtural Requirement | ARC-DPR-5002 | All data structures defined via interfaces (StructuredDataInterface, DocumentInterface) |  |  |  |  |
 | `Nexus\DataProcessor` | Architechtural Requirement | ARC-DPR-5003 | Define contracts for specialized data processing tasks (OCR, parsing, transformation) |  |  |  |  |
-| `Nexus\DataProcessor` | Architechtural Requirement | ARC-DPR-5004 | All implementations MUST be in application layer (apps/Atomy) due to vendor dependencies |  |  |  |  |
+| `Nexus\DataProcessor` | Architechtural Requirement | ARC-DPR-5004 | All implementations MUST be in application layer (apps/consuming application) due to vendor dependencies |  |  |  |  |
 | `Nexus\DataProcessor` | Architechtural Requirement | ARC-DPR-5005 | Package provides ONLY interfaces, no concrete implementations |  |  |  |  |
 | `Nexus\DataProcessor` | Architechtural Requirement | ARC-DPR-5006 | Use Value Objects for ProcessingResult, DocumentMetadata, ExtractionConfidence |  |  |  |  |
 | `Nexus\DataProcessor` | Architechtural Requirement | ARC-DPR-5007 | Support multiple vendor implementations via strategy pattern |  |  |  |  |
@@ -73,7 +73,7 @@ Total Requirements: 76
 | `Nexus\DataProcessor` | Integration Requirement | INT-DPR-5605 | MUST integrate with Nexus\Notifier for processing completion notifications |  |  |  |  |
 | `Nexus\DataProcessor` | Integration Requirement | INT-DPR-5606 | Support webhook notifications for processing status updates |  |  |  |  |
 | `Nexus\DataProcessor` | Integration Requirement | INT-DPR-5607 | Provide REST API for document submission and status inquiry |  |  |  |  |
-| `Nexus\DataProcessor` | Integration Requirement | INT-DPR-5608 | Support multiple vendor adapter implementations in Atomy layer |  |  |  |  |
+| `Nexus\DataProcessor` | Integration Requirement | INT-DPR-5608 | Support multiple vendor adapter implementations in consuming application layer |  |  |  |  |
 | `Nexus\DataProcessor` | Usability Requirement | USA-DPR-5701 | Provide drag-and-drop document upload interface |  |  |  |  |
 | `Nexus\DataProcessor` | Usability Requirement | USA-DPR-5702 | Display real-time processing status with progress indicators |  |  |  |  |
 | `Nexus\DataProcessor` | Usability Requirement | USA-DPR-5703 | Show confidence scores with visual indicators (color-coded) |  |  |  |  |

@@ -261,7 +261,7 @@ The monorepo is architecturally ready to implement Nexus\Compliance and Nexus\St
 
 ## 4. Database Schema Requirements
 
-### 4.1 Nexus\Compliance Required Tables (apps/Atomy)
+### 4.1 Nexus\Compliance Required Tables (apps/consuming application)
 
 ```sql
 -- Compliance schemes registry
@@ -316,7 +316,7 @@ configuration_audit_checkpoints (
 )
 ```
 
-### 4.2 Nexus\Statutory Required Tables (apps/Atomy)
+### 4.2 Nexus\Statutory Required Tables (apps/consuming application)
 
 ```sql
 -- Statutory report metadata registry
@@ -458,7 +458,7 @@ statutory_rate_tables (
 
 - [x] PHP 8.3+ with modern features (readonly, enums, attributes)
 - [x] Composer for package management
-- [x] Laravel 12 for Atomy orchestrator
+- [x] Laravel 12 for consuming application orchestrator
 - [x] PostgreSQL/MySQL for database
 - [x] PHPUnit for testing
 
@@ -477,7 +477,7 @@ statutory_rate_tables (
    - ConfigurationAuditorInterface
 3. Implement Value Objects (ComplianceLevel, RuleViolation)
 4. Create ComplianceManager service (skeleton)
-5. Atomy: migrations for compliance_schemes, sod_rules tables
+5. consuming application: migrations for compliance_schemes, sod_rules tables
 
 **Nexus\Statutory**:
 1. Create package skeleton
@@ -489,7 +489,7 @@ statutory_rate_tables (
 4. Create StatutoryReportManager service (skeleton)
 5. Implement DefaultAccountingAdapter (basic P&L, Balance Sheet)
 6. Implement DefaultPayrollStatutoryAdapter (zero deductions)
-7. Atomy: migrations for statutory_reports, statutory_report_instances tables
+7. consuming application: migrations for statutory_reports, statutory_report_instances tables
 
 **Deliverables**:
 - Package skeletons passing composer validation
@@ -536,7 +536,7 @@ statutory_rate_tables (
 - Integration tests for database persistence
 - Performance benchmarks documented
 
-### Phase 3: Atomy Integration (Weeks 6-7)
+### Phase 3: consuming application Integration (Weeks 6-7)
 **Goal**: Implement Eloquent models, repositories, and API endpoints
 
 **Nexus\Compliance**:
@@ -700,7 +700,7 @@ statutory_rate_tables (
 2. **Week 1**: Start Phase 1 (Foundation) - establish core contracts
 3. **Week 2**: Complete Phase 1 - default adapters functional
 4. **Week 3-5**: Phase 2 (Core Engine) - implement processing logic
-5. **Week 6-7**: Phase 3 (Atomy Integration) - API and persistence
+5. **Week 6-7**: Phase 3 (consuming application Integration) - API and persistence
 6. **Week 8+**: Advanced features and country-specific adapters
 
 **Risk Mitigation**:

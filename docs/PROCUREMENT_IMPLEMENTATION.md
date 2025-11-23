@@ -89,10 +89,10 @@ packages/Procurement/
 │       └── InvalidGoodsReceiptDataException.php
 ```
 
-### Laravel Implementation (Atomy)
+### Laravel Implementation (consuming application)
 
 ```
-apps/Atomy/
+consuming application (e.g., Laravel app)
 ├── database/migrations/
 │   ├── 2025_11_20_000001_create_requisitions_table.php
 │   ├── 2025_11_20_000002_create_requisition_lines_table.php
@@ -221,7 +221,7 @@ compareQuotes(string $requisitionId): array // Returns comparison matrix with re
 ```
 
 #### **ProcurementManager** (Orchestrator)
-- **Responsibility**: Main API consumed by Atomy
+- **Responsibility**: Main API consumed by consuming application
 - **Implements**: `ProcurementManagerInterface`
 - **Delegates**: All business logic to specialized managers
 
@@ -495,7 +495,7 @@ if ($matchResult['matched']) {
 
 **Integration:** Validate `unit` fields in requisitions, POs, and GRNs.
 
-**Implementation:** Application layer (Atomy) validates units before calling package services.
+**Implementation:** Application layer (consuming application) validates units before calling package services.
 
 ---
 
@@ -513,7 +513,7 @@ if ($matchResult['matched']) {
 
 **Example:**
 ```php
-// In Atomy controller after approval
+// In consuming application controller after approval
 $this->auditLogger->log(
     $requisition->getId(),
     'requisition_approved',
@@ -561,7 +561,7 @@ $elapsedMs = (microtime(true) - $startTime) * 1000;
 
 ## Configuration
 
-**File:** `apps/Atomy/config/procurement.php`
+**File:** `consuming application (e.g., Laravel app)config/procurement.php`
 
 ```php
 return [
@@ -714,7 +714,7 @@ if ($matchResult['matched']) {
 
 ### Integration Tests (Application Layer)
 
-**Location:** `apps/Atomy/tests/Feature/`
+**Location:** `consuming application (e.g., Laravel app)tests/Feature/`
 
 **Database:** SQLite in-memory for speed
 
@@ -727,7 +727,7 @@ if ($matchResult['matched']) {
 
 ### Performance Tests
 
-**Location:** `apps/Atomy/tests/Performance/`
+**Location:** `consuming application (e.g., Laravel app)tests/Performance/`
 
 **Benchmark:** PER-PRO-0327 (3-way matching < 500ms for 100 lines)
 

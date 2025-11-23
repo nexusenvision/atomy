@@ -16,8 +16,8 @@ Complete implementation of **Nexus\Payable** - a framework-agnostic Accounts Pay
 - **Namespace**: `Nexus\Payable`
 - **Pattern**: Pure PHP 8.3+ with interfaces, services, value objects, enums
 
-### Application Layer (Laravel/Atomy)
-- **Location**: `apps/Atomy/`
+### Application Layer (Laravel/consuming application)
+- **Location**: `consuming application (e.g., Laravel app)`
 - **Components**: Eloquent models, migrations, repositories, controllers
 - **Integration**: Service provider binds contracts to implementations
 
@@ -85,7 +85,7 @@ packages/Payable/
 ## Application Layer Structure
 
 ```
-apps/Atomy/
+consuming application (e.g., Laravel app)
 ├── app/
 │   ├── Models/                      # 5 Eloquent models
 │   │   ├── Vendor.php                           # Implements VendorInterface
@@ -477,7 +477,7 @@ created_at, updated_at
 - `hasSplitInvoicingPattern(string $vendorId): bool`
 - `getLastPaymentDate(string $vendorId): ?DateTimeImmutable`
 
-**Implementation Location**: `apps/Atomy/app/Repositories/Payable/VendorPaymentAnalyticsRepository.php` (pending)
+**Implementation Location**: `consuming application (e.g., Laravel app)app/Repositories/Payable/VendorPaymentAnalyticsRepository.php` (pending)
 
 #### Integration Point (Planned)
 
@@ -567,7 +567,7 @@ ROI: ($500,000 - $250) / $250 = 199,900% ROI
 - [ ] Add unit tests for extractor (mock analytics repository)
 - [ ] Add integration test (seed duplicate scenario, assert exception)
 - [ ] Create historical data seeder (12 months vendor bills with duplicates)
-- [ ] Configure thresholds in Atomy settings
+- [ ] Configure thresholds in consuming application settings
 - [ ] Deploy to staging for UAT
 
 ---
@@ -612,7 +612,7 @@ Add to `config/app.php`:
 ```php
 'providers' => [
     // ...
-    Atomy\Providers\PayableServiceProvider::class,
+    consuming application\Providers\PayableServiceProvider::class,
 ],
 ```
 
