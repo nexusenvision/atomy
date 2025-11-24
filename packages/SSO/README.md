@@ -270,7 +270,7 @@ packages/SSO/
 - [x] Exceptions (10 classes)
 - [x] AttributeMapper service
 - [x] CallbackStateValidator service
-- [x] Unit tests (51 tests passing)
+- [x] Unit tests (81 tests passing)
 
 ### ✅ Phase 2: SAML 2.0 Provider (COMPLETED)
 - [x] Saml2Provider implementation
