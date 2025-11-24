@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace Nexus\MachineLearning\Services;
 
 use DateTimeImmutable;
-use Nexus\MachineLearning\Contracts\SchemaVersionManagerInterface;
+use Nexus\MachineLearning\Contracts\FeatureVersionManagerInterface;
 use Nexus\Setting\Contracts\SettingsManagerInterface;
 
 /**
- * Schema version manager
+ * Feature version manager
  * 
- * Manages extractor schema versions, deprecation lifecycle, and backward compatibility.
+ * Manages feature extractor schema versions, deprecation lifecycle, and backward compatibility.
  * Implements 6-month minimum support policy for deprecated schemas.
  */
-final readonly class SchemaVersionManager implements SchemaVersionManagerInterface
+final readonly class FeatureVersionManager implements FeatureVersionManagerInterface
 {
-    private const SETTING_PREFIX = 'intelligence.schema';
+    private const SETTING_PREFIX = 'machinelearning.feature_schema';
     
     public function __construct(
         private SettingsManagerInterface $settings

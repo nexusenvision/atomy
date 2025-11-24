@@ -19,11 +19,11 @@ use Nexus\MachineLearning\ValueObjects\AnomalyResult;
 use Psr\Log\LoggerInterface;
 
 /**
- * Intelligence manager (main orchestrator)
+ * ML Model Manager (main orchestrator)
  * 
- * Coordinates AI operations with validation, fallback, and monitoring.
+ * Coordinates ML operations with validation, fallback, and monitoring.
  */
-final readonly class IntelligenceManager implements AnomalyDetectionServiceInterface
+final readonly class MLModelManager implements AnomalyDetectionServiceInterface
 {
     /**
      * @param array<string, ProviderInterface> $providers Provider instances keyed by name

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Nexus\MachineLearning\Contracts;
 
 /**
- * Schema version manager interface
+ * Feature version manager interface
  * 
  * Manages feature extractor schema versions and deprecation lifecycle.
  */
-interface SchemaVersionManagerInterface
+interface FeatureVersionManagerInterface
 {
     /**
      * Mark a schema version as deprecated
