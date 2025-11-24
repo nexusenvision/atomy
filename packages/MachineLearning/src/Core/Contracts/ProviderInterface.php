@@ -18,7 +18,7 @@ interface ProviderInterface
      * 
      * @param array<string, mixed> $request Request payload
      * @return array<string, mixed> Provider response
-     * @throws \Nexus\Intelligence\Exceptions\ProviderUnavailableException
+     * @throws \Nexus\MachineLearning\Exceptions\ProviderUnavailableException
      */
     public function sendRequest(array $request): array;
 
@@ -63,7 +63,7 @@ interface ProviderInterface
      * @param array<array<string, mixed>> $trainingData Training examples
      * @param array<string, mixed> $config Fine-tuning configuration
      * @return string Job ID
-     * @throws \Nexus\Intelligence\Exceptions\FineTuningNotSupportedException
+     * @throws \Nexus\MachineLearning\Exceptions\FineTuningNotSupportedException
      */
     public function submitFineTuningJob(array $trainingData, array $config): string;
 
