@@ -93,3 +93,32 @@ For large enterprises requiring complete audit trail with replay capability:
 - `AccountDebitedEvent` - Published when an account is debited
 - `JournalPostedEvent` - Published when a journal entry is posted
 - Supports temporal queries: "What was the balance on 2024-10-15?"
+
+---
+
+## Documentation
+
+### Getting Started
+- **[Getting Started Guide](docs/getting-started.md)** - Installation, setup, and core concepts
+
+### API Reference
+- **[API Reference](docs/api-reference.md)** - Complete interface documentation
+
+### Integration Guides
+- **[Integration Guide](docs/integration-guide.md)** - Laravel and Symfony examples
+
+### Code Examples
+- **[Basic Usage](docs/examples/basic-usage.php)** - Common GL operations
+- **[Advanced Usage](docs/examples/advanced-usage.php)** - Multi-currency transactions
+
+### Implementation Documentation
+- **[Implementation Summary](IMPLEMENTATION_SUMMARY.md)** - Development progress and metrics
+- **[Requirements](REQUIREMENTS.md)** - Complete requirements traceability
+- **[Test Suite Summary](TEST_SUITE_SUMMARY.md)** - Testing strategy and coverage
+- **[Valuation Matrix](VALUATION_MATRIX.md)** - Package valuation ($720K value, 4,515% ROI)
+
+---
+
+## License
+
+MIT License

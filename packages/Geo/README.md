@@ -369,6 +369,57 @@ php artisan test --filter=Geo
 | Polygon simplification (100 vertices) | <20ms | 10-15ms |
 | Geofence check | <10ms | 3-5ms |
 
+## Documentation
+
+Comprehensive documentation is available in the `docs/` directory:
+
+### Getting Started
+- **[Getting Started Guide](docs/getting-started.md)** - Prerequisites, installation, core concepts, and your first integration
+- **[Quick Start](docs/getting-started.md#your-first-integration)** - Complete working example
+
+### API Reference
+- **[API Reference](docs/api-reference.md)** - Complete interface and method documentation
+  - All 7 interfaces (GeoRepositoryInterface, GeocoderInterface, GeofenceInterface, etc.)
+  - All 6 services (GeocodingManager, DistanceCalculator, BearingCalculator, etc.)
+  - All 8 value objects (Coordinates, Distance, BearingResult, Polygon, etc.)
+  - All 5 exceptions with named constructors
+
+### Integration Guides
+- **[Integration Guide](docs/integration-guide.md)** - Framework-specific implementation examples
+  - Laravel integration (complete with migrations, repositories, service providers)
+  - Symfony integration (Doctrine entities, services.yaml configuration)
+  - Common patterns (batch geocoding, delivery zones, nearest warehouse)
+
+### Code Examples
+- **[Basic Usage](docs/examples/basic-usage.php)** - Essential operations
+  - Geocoding and reverse geocoding
+  - Distance calculations
+  - Geofencing (point-in-polygon)
+  - Complete delivery fee workflow
+- **[Advanced Usage](docs/examples/advanced-usage.php)** - Complex scenarios
+  - Batch geocoding with rate limiting
+  - Polygon simplification
+  - Bearing and compass direction
+  - Travel time estimation
+  - Multi-warehouse routing
+  - Dynamic geofence validation
+
+### Implementation Details
+- **[Implementation Summary](IMPLEMENTATION_SUMMARY.md)** - Project metrics and progress tracking
+- **[Requirements](REQUIREMENTS.md)** - 35 tracked requirements across 9 categories
+- **[Test Suite Summary](TEST_SUITE_SUMMARY.md)** - Test coverage and strategy (target: 95%)
+- **[Valuation Matrix](VALUATION_MATRIX.md)** - Package financial analysis ($46,848 value, 681% ROI)
+
+### Quick Links
+| What You Need | Where to Look |
+|---------------|---------------|
+| First-time setup | [Getting Started Guide](docs/getting-started.md) |
+| Method signatures | [API Reference](docs/api-reference.md) |
+| Laravel example | [Integration Guide - Laravel](docs/integration-guide.md#laravel-integration) |
+| Symfony example | [Integration Guide - Symfony](docs/integration-guide.md#symfony-integration) |
+| Working code | [Basic Usage Examples](docs/examples/basic-usage.php) |
+| Complex patterns | [Advanced Usage Examples](docs/examples/advanced-usage.php) |
+
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.

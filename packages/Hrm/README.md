@@ -113,6 +113,22 @@ $summary = $attendanceManager->getMonthlyAttendanceSummary($employeeId, 2025, 6)
 - Integration with `Nexus\Workflow` for approval workflows
 - Integration with `Nexus\AuditLogger` for change tracking
 
+## 📖 Documentation
+
+### Package Documentation
+- **[Getting Started Guide](docs/getting-started.md)** - Quick start guide with prerequisites, concepts, and first integration
+- **[API Reference](docs/api-reference.md)** - Complete documentation of all interfaces, value objects, and exceptions
+- **[Integration Guide](docs/integration-guide.md)** - Laravel and Symfony integration examples
+- **[Basic Usage Example](docs/examples/basic-usage.php)** - Simple usage patterns (employee, leave, attendance)
+- **[Advanced Usage Example](docs/examples/advanced-usage.php)** - Advanced scenarios (reviews, disciplinary, training)
+
+### Additional Resources
+- `IMPLEMENTATION_SUMMARY.md` - Implementation progress and metrics
+- `REQUIREMENTS.md` - Detailed requirements (159 requirements documented)
+- `TEST_SUITE_SUMMARY.md` - Test coverage and results (85%+ coverage)
+- `VALUATION_MATRIX.md` - Package valuation metrics ($236,626 estimated value)
+- See root `ARCHITECTURE.md` for overall system architecture
+
 ## License
 
 MIT License - see LICENSE file for details.
