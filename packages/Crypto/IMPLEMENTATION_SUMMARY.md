@@ -56,33 +56,7 @@ packages/Crypto/
         └── FeatureNotImplementedException.php  # For Phase 2 PQC
 ```
 
-**Total Files Created:** 28 files in package + 4 Atomy integration files
-
----
-
-## 🔧 Atomy Integration
-
-### Files Created
-
-```
-apps/Atomy/
-├── config/crypto.php                      # Configuration with CRYPTO_LEGACY_MODE flag
-├── app/
-│   ├── Providers/
-│   │   └── CryptoServiceProvider.php      # Service bindings + handler registration
-│   └── Services/
-│       └── LaravelKeyStorage.php          # Database-backed key storage with envelope encryption
-└── database/migrations/
-    └── 2025_11_20_000001_create_crypto_tables.php  # encryption_keys + key_rotation_history
-```
-
-### Modified Files
-
-1. **`apps/Atomy/composer.json`** - Added `"nexus/crypto": "*@dev"` dependency
-2. **`apps/Atomy/bootstrap/app.php`** - Registered `CryptoServiceProvider`
-3. **`composer.json`** (root) - Added Crypto package to repositories
-4. **`packages/Connector/src/Services/WebhookVerifier.php`** - Dual code path with CRYPTO_LEGACY_MODE
-5. **`packages/EventStream/src/Core/Engine/SnapshotManager.php`** - Dual code path with CRYPTO_LEGACY_MODE
+**Total Files Created:** 28 files in package
 
 ---
 
@@ -116,12 +90,6 @@ apps/Atomy/
 - ✅ Key versioning for rotation tracking
 - ✅ Automated rotation via Scheduler
 
-#### Migration Support
-- ✅ `CRYPTO_LEGACY_MODE` feature flag
-- ✅ Dual code paths in `WebhookVerifier`
-- ✅ Dual code paths in `SnapshotManager`
-- ✅ Graceful fallback when signer not injected
-
 ### Phase 2: Post-Quantum (🔮 Planned Q3 2026)
 
 - ⏳ `HybridSignerInterface` (stub - throws `FeatureNotImplementedException`)
@@ -147,11 +115,11 @@ apps/Atomy/
 
 ┌──────────────────────────────────────────────────────┐
 │ Data Encryption Key (DEK) - Base64                   │
-└──────────────────┬───────────────────────────────────┘
-                   │ Encrypt with Master Key (APP_KEY)
+└──────────────────┤───────────────────────────────────┘
+                   │ Encrypt with Master Key
                    ▼
 ┌──────────────────────────────────────────────────────┐
-│ Encrypted DEK (Stored in encryption_keys table)     │
+│ Encrypted DEK (Stored via KeyStorageInterface)      │
 └──────────────────────────────────────────────────────┘
 ```
 
@@ -181,39 +149,23 @@ apps/Atomy/
 
 ---
 
-## 📝 Configuration
+## 📝 Package Configuration
 
-### Environment Variables
+The package itself is stateless and requires no configuration. Configuration is the responsibility of the consuming application when binding implementations.
 
-```bash
-# Feature flag (default: true for safe rollout)
-CRYPTO_LEGACY_MODE=true
+### Algorithm Defaults
 
-# Default algorithms
-CRYPTO_HASHER=sha256
-CRYPTO_ENCRYPTOR=aes-256-gcm
-CRYPTO_SIGNER=ed25519
+Package services use these defaults if not overridden:
 
-# Key storage
-CRYPTO_KEY_STORAGE=database
+- **Hashing**: SHA-256 (general purpose), BLAKE2b (performance)
+- **Encryption**: AES-256-GCM (authenticated encryption)
+- **Signing**: Ed25519 (modern), RSA-2048 (legacy compatibility)
 
-# Automated rotation
-CRYPTO_ROTATION_ENABLED=true
-CRYPTO_KEY_EXPIRATION_DAYS=90
-CRYPTO_ROTATION_WARNING_DAYS=7
-CRYPTO_ROTATION_TIME=03:00
+### Key Rotation Recommendations
 
-# Performance
-CRYPTO_CACHE_KEYS=true
-CRYPTO_CACHE_TTL=3600
-
-# Audit logging
-CRYPTO_AUDIT_ENABLED=true
-CRYPTO_AUDIT_ENCRYPTION=true
-CRYPTO_AUDIT_DECRYPTION=false
-CRYPTO_AUDIT_SIGNING=true
-CRYPTO_AUDIT_KEYS=true
-```
+- **Rotation Frequency**: 90 days (industry standard)
+- **Warning Period**: 7 days before expiration
+- **Old Key Retention**: Indefinite (for decryption of existing data)
 
 ---
 
@@ -289,74 +241,35 @@ if ($crypto->verifyHmac($payload, $signature, $secret)) {
 
 ---
 
-## 🔄 Migration Path
+## 🔄 Integration Path
 
-### Stage 1: Deploy with Legacy Mode (Current)
+Consuming applications should:
 
-```bash
-# In .env
-CRYPTO_LEGACY_MODE=true
-```
-
-- ✅ New crypto package installed
-- ✅ Service providers registered
-- ✅ Database tables created
-- ✅ All packages use legacy code paths
-- ✅ **Zero breaking changes**
-
-### Stage 2: Test in Staging
-
-```bash
-# In staging .env
-CRYPTO_LEGACY_MODE=false
-```
-
-- Test webhook verification with Nexus\Crypto
-- Test snapshot checksums with Nexus\Crypto
-- Verify key storage and rotation
-- Monitor performance metrics
-
-### Stage 3: Production Rollout
-
-```bash
-# Gradually roll out to production
-# Week 1: 10% of requests
-# Week 2: 50% of requests
-# Week 3: 100% of requests
-CRYPTO_LEGACY_MODE=false
-```
-
-### Stage 4: Remove Legacy Code
-
-- Remove `isLegacyMode()` checks
-- Remove legacy methods
-- Clean up dual code paths
+1. Implement `KeyStorageInterface` for their persistence layer
+2. Bind all crypto interfaces in their service container
+3. Optionally register `KeyRotationHandler` with their scheduler
+4. Configure algorithm preferences via their configuration system
 
 ---
 
-## 📊 Database Schema
+## 📊 Key Storage Schema (Application Layer Responsibility)
 
-### `encryption_keys`
+Consuming applications implementing `KeyStorageInterface` should design their persistence layer with:
 
-| Column | Type | Description |
+### Recommended Key Storage Fields
+
+| Field | Type | Description |
 |--------|------|-------------|
-| `id` | BIGINT | Primary key |
-| `key_id` | VARCHAR(191) | Unique identifier (e.g., `tenant-123-finance`) |
-| `encrypted_key` | TEXT | Key encrypted with master key (APP_KEY) |
-| `algorithm` | VARCHAR(50) | Algorithm (e.g., `aes-256-gcm`) |
-| `version` | UNSIGNED INT | Version number (incremented on rotation) |
+| `key_id` | STRING | Unique identifier (e.g., `tenant-123-finance`) |
+| `encrypted_key` | TEXT | Key encrypted with master key |
+| `algorithm` | STRING | Algorithm (e.g., `aes-256-gcm`) |
+| `version` | INTEGER | Version number (incremented on rotation) |
 | `created_at` | TIMESTAMP | Creation timestamp |
-| `expires_at` | TIMESTAMP NULL | Expiration timestamp |
-| `updated_at` | TIMESTAMP | Last update |
+| `expires_at` | TIMESTAMP | Expiration timestamp |
 
-**Indexes:**
-- `key_id` - Fast lookup
-- `(key_id, version)` - Latest version queries
-- `expires_at` - Rotation queries
+### Recommended Rotation History Fields
 
-### `key_rotation_history`
-
-| Column | Type | Description |
+| Field | Type | Description |
 |--------|------|-------------|
 | `id` | BIGINT | Primary key |
 | `key_id` | VARCHAR(191) | Rotated key ID |
@@ -384,15 +297,16 @@ test_verify_hash_with_correct_data()
 test_verify_hash_with_incorrect_data()
 ```
 
-### Integration Tests (Atomy Level)
+### Integration Tests (Application Layer)
+
+Consuming applications should test:
 
 ```php
-// apps/Atomy/tests/Feature/CryptoTest.php
+// Application-level tests
 test_encrypt_decrypt_cycle()
-test_key_storage_with_envelope_encryption()
+test_key_storage_implementation()
 test_key_rotation_creates_new_version()
-test_webhook_verifier_with_crypto_mode()
-test_snapshot_checksum_with_crypto_mode()
+test_crypto_service_bindings()
 ```
 
 ---
@@ -467,17 +381,15 @@ test_snapshot_checksum_with_crypto_mode()
 ## 📚 Related Packages
 
 | Package | Integration Point | Benefit |
-|---------|------------------|---------|
-| `Nexus\Connector` | WebhookVerifier | Secure webhook signature verification |
-| `Nexus\EventStream` | SnapshotManager | Tamper-proof snapshot checksums |
-| `Nexus\Export` | PDF encryption | Password-protected financial reports |
+|---------|------------------|---------|  
+| `Nexus\Connector` | Webhook verification | Secure webhook signature verification |
+| `Nexus\EventStream` | Snapshot integrity | Tamper-proof snapshot checksums |
+| `Nexus\Export` | Document encryption | Password-protected financial reports |
 | `Nexus\AuditLogger` | Log signing | Tamper-evident audit trail |
-| `Nexus\Scheduler` | KeyRotationHandler | Automated key rotation |
+| `Nexus\Scheduler` | Key rotation | Automated key rotation support |
 | `Nexus\Finance` | Data encryption | Secure financial data at rest |
-| `Nexus\Payroll` | AES-256 encryption | Payroll data protection |
-| `Nexus\Statutory` | Report signing | Authenticated statutory reports |
-
----
+| `Nexus\Payroll` | Data protection | Payroll data encryption |
+| `Nexus\Statutory` | Report authentication | Authenticated statutory reports |---
 
 ## 🎯 Success Criteria
 
@@ -486,9 +398,7 @@ test_snapshot_checksum_with_crypto_mode()
 - [x] Package structure follows Nexus architecture
 - [x] All Phase 1 algorithms implemented
 - [x] Zero framework dependencies in package
-- [x] Dual code paths for migration
-- [x] Database integration complete
-- [x] Scheduler integration complete
+- [x] Scheduler integration ready
 - [x] Documentation comprehensive
 
 ### Phase 2 (Planned)

@@ -510,6 +510,29 @@ This package fulfills all requirements documented in `docs/REQUIREMENTS_DOCUMENT
 - Audit logging for compliance
 - Content processing extensibility
 
+## Documentation
+
+### Core Documentation
+- **[Getting Started Guide](docs/getting-started.md)** - Quick start with prerequisites, core concepts, and troubleshooting
+- **[API Reference](docs/api-reference.md)** - Complete interface and service documentation
+- **[Integration Guide](docs/integration-guide.md)** - Laravel and Symfony integration examples
+
+### Implementation Details
+- **[Requirements](REQUIREMENTS.md)** - Complete requirements tracking with status
+- **[Implementation Summary](IMPLEMENTATION_SUMMARY.md)** - Progress metrics and design decisions
+- **[Test Suite Summary](TEST_SUITE_SUMMARY.md)** - Test coverage and testing strategy
+- **[Valuation Matrix](VALUATION_MATRIX.md)** - Package valuation metrics
+
+### Code Examples
+- **[Basic Usage Examples](docs/examples/basic-usage.php)** - 15 common document operations
+- **[Advanced Usage Examples](docs/examples/advanced-usage.php)** - 18 advanced scenarios
+
+## Quick Links
+
+- **Package Reference**: [`docs/NEXUS_PACKAGES_REFERENCE.md`](../../docs/NEXUS_PACKAGES_REFERENCE.md)
+- **Architecture Overview**: [`ARCHITECTURE.md`](../../ARCHITECTURE.md)
+- **Coding Standards**: [`.github/copilot-instructions.md`](../../.github/copilot-instructions.md)
+
 ## License
 
 MIT License - see LICENSE file for details.

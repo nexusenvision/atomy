@@ -684,6 +684,35 @@ class InMemoryCurrencyRepository implements CurrencyRepositoryInterface
 }
 ```
 
+## Documentation
+
+### 📚 Complete Documentation
+
+- **[Getting Started Guide](docs/getting-started.md)** - Quick start, installation, and basic configuration
+- **[API Reference](docs/api-reference.md)** - Complete interface and method documentation
+- **[Integration Guide](docs/integration-guide.md)** - Laravel, Symfony, and custom framework integration
+- **[Code Examples](docs/examples/)** - Practical usage examples
+  - [Basic Usage](docs/examples/basic-usage.php) - Currency validation, formatting, and retrieval
+  - [Advanced Usage](docs/examples/advanced-usage.php) - Exchange rates, conversion, and caching
+- **[Requirements](REQUIREMENTS.md)** - Detailed functional and architectural requirements
+- **[Implementation Summary](IMPLEMENTATION_SUMMARY.md)** - Development progress and metrics
+- **[Test Suite Summary](TEST_SUITE_SUMMARY.md)** - Testing strategy and coverage
+- **[Valuation Matrix](VALUATION_MATRIX.md)** - Package valuation and ROI metrics
+
+### 🔗 Quick Links
+
+| Documentation | Description |
+|---------------|-------------|
+| [Prerequisites](docs/getting-started.md#prerequisites) | System requirements and dependencies |
+| [Core Concepts](docs/getting-started.md#core-concepts) | ISO 4217, non-breaking augmentation, caching |
+| [Configuration Steps](docs/getting-started.md#configuration-steps) | Complete setup guide |
+| [Laravel Integration](docs/integration-guide.md#laravel-integration) | Laravel migrations, repositories, service providers |
+| [Symfony Integration](docs/integration-guide.md#symfony-integration) | Symfony entities, services, configuration |
+| [Testing Examples](docs/integration-guide.md#testing-your-integration) | Unit and integration test examples |
+| [Troubleshooting](docs/getting-started.md#troubleshooting) | Common issues and solutions |
+
+---
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.

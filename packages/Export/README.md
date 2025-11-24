@@ -258,6 +258,33 @@ $result = $exportManager->exportFromTemplate(
 - [ ] Schema versioning (v1.1+)
 - [ ] Advanced template builder UI
 
+## Documentation
+
+### 📚 Complete Documentation
+
+- **[Getting Started Guide](docs/getting-started.md)** - Quick start tutorial with examples
+- **[API Reference](docs/api-reference.md)** - Complete API documentation for all interfaces, services, and value objects
+- **[Integration Guide](docs/integration-guide.md)** - Laravel, Symfony, and custom PHP integration examples
+- **[Basic Usage Examples](docs/examples/basic-usage.php)** - Simple export scenarios (CSV, JSON, XML, invoices, large datasets)
+- **[Advanced Usage Examples](docs/examples/advanced-usage.php)** - Template rendering, custom formatters, nested sections, error handling
+
+### 📋 Package Documentation
+
+- **[REQUIREMENTS.md](REQUIREMENTS.md)** - Detailed package requirements (42 requirements)
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Implementation tracking and metrics
+- **[TEST_SUITE_SUMMARY.md](TEST_SUITE_SUMMARY.md)** - Test coverage plan (38 unit + 8 integration tests)
+- **[VALUATION_MATRIX.md](VALUATION_MATRIX.md)** - Package valuation analysis ($121,600 estimated value)
+- **[DOCUMENTATION_COMPLIANCE_SUMMARY.md](DOCUMENTATION_COMPLIANCE_SUMMARY.md)** - Documentation compliance report
+
+### 🎯 Quick Links
+
+- **Architecture:** See [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) for ExportDefinition intermediate representation pattern
+- **Testing:** See [TEST_SUITE_SUMMARY.md](TEST_SUITE_SUMMARY.md) for planned test suite (46 tests)
+- **Integration:** See [docs/integration-guide.md](docs/integration-guide.md) for framework integration examples
+- **Examples:** See [docs/examples/](docs/examples/) for runnable code examples
+
+---
+
 ## License
 
 MIT License - See LICENSE file for details

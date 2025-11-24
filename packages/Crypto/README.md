@@ -37,59 +37,34 @@ The **Nexus\Crypto** package provides a complete cryptographic primitive library
 
 ## Installation
 
-### 1. Install Package
-
 ```bash
-composer require nexus/crypto:*@dev
+composer require nexus/crypto
 ```
 
-### 2. Verify Extensions
+### Required PHP Extensions
 
 ```bash
 php -m | grep -E "(sodium|openssl)"
 ```
 
-### 3. Implement Required Contracts in Your Application
+- **ext-sodium**: Required for modern algorithms (ChaCha20, Ed25519, BLAKE2b)
+- **ext-openssl**: Required for legacy algorithms (RSA, AES-CBC)
 
-```php
-// app/Services/LaravelKeyStorage.php
-class LaravelKeyStorage implements KeyStorageInterface
-{
-    public function store(string $keyId, EncryptionKey $key): void { /* ... */ }
-    public function retrieve(string $keyId): EncryptionKey { /* ... */ }
-    // ... other methods
-}
-```
+### Integration Requirements
 
-### 4. Bind Interfaces in Service Provider
+Consuming applications must implement:
 
-```php
-// app/Providers/CryptoServiceProvider.php
-public function register(): void
-{
-    // Core crypto services
-    $this->app->singleton(HasherInterface::class, NativeHasher::class);
-    $this->app->singleton(SymmetricEncryptorInterface::class, SodiumEncryptor::class);
-    $this->app->singleton(AsymmetricSignerInterface::class, SodiumSigner::class);
-    $this->app->singleton(KeyGeneratorInterface::class, KeyGenerator::class);
-    
-    // Key storage
-    $this->app->singleton(KeyStorageInterface::class, LaravelKeyStorage::class);
-    
-    // Facade
-    $this->app->singleton(CryptoManager::class);
-    
-    // Register key rotation handler for Scheduler
-    $this->app->tag([KeyRotationHandler::class], 'scheduler.handlers');
-}
-```
+1. **`KeyStorageInterface`** - For persistent key storage
+2. **Service Container Bindings** - Bind all crypto interfaces
+3. **Master Key Management** - Secure master key for envelope encryption
+4. **(Optional)** **Scheduler Integration** - For automated key rotation
 
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                      DOMAIN PACKAGE                              │
-│  (e.g., Nexus\Export, Nexus\Connector)                          │
+│                      CONSUMING PACKAGE                          │
+│  (e.g., Nexus\Export, Nexus\Connector, Nexus\Finance)         │
 │                                                                   │
 │  Calls: $crypto->encrypt(data)                                  │
 │  Calls: $crypto->sign(data)                                     │
@@ -112,12 +87,12 @@ public function register(): void
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                     APPLICATION LAYER                            │
-│                      (Nexus\Atomy)                               │
+│               APPLICATION LAYER (Consuming App)                 │
 │                                                                   │
-│  LaravelKeyStorage ──► Eloquent Model (encryption_keys)         │
-│  SodiumEncryptor ──► ext-sodium functions                       │
-│  KeyRotationHandler ──► Nexus\Scheduler integration            │
+│  KeyStorage Implementation ─► Database/Redis/Filesystem         │
+│  Service Bindings ─► IoC Container (Laravel/Symfony)           │
+│  Master Key Management ─► Secure configuration                  │
+│  KeyRotationHandler ─► Scheduler integration (optional)       │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -380,37 +355,6 @@ SymmetricAlgorithm::AES256CBC   // Backward compatibility
 AsymmetricAlgorithm::RSA2048    // Standards compliance
 ```
 
-## Migration from Legacy Code
-
-### Feature Flag Approach
-
-```php
-// config/crypto.php
-return [
-    'legacy_mode' => env('CRYPTO_LEGACY_MODE', true),
-];
-
-// In consuming package
-if (config('crypto.legacy_mode')) {
-    // Use old direct hash() calls
-    $checksum = hash('sha256', $data);
-} else {
-    // Use Nexus\Crypto
-    $result = $crypto->hash($data);
-    $checksum = $result->hash;
-}
-```
-
-### Refactoring Checklist
-
-1. ✅ Update package to inject `CryptoManager` (optional dependency)
-2. ✅ Add feature flag check in relevant methods
-3. ✅ Implement new crypto path using interfaces
-4. ✅ Deploy with `CRYPTO_LEGACY_MODE=true` (safe)
-5. ✅ Test in staging with `CRYPTO_LEGACY_MODE=false`
-6. ✅ Roll out to production gradually
-7. ✅ Remove legacy code path after full migration
-
 ## Error Handling
 
 ```php
@@ -486,6 +430,23 @@ This package follows the Nexus architecture principles:
 - **Contract-driven**: All persistence via interfaces
 - **Immutable**: Readonly value objects only
 - **Testable**: All dependencies injected
+
+## Documentation
+
+### User Documentation
+
+- **[Getting Started](docs/getting-started.md)** - Quick start guide with prerequisites, core concepts, and first integration
+- **[API Reference](docs/api-reference.md)** - Complete documentation of all interfaces, services, value objects, enums, and exceptions
+- **[Integration Guide](docs/integration-guide.md)** - Laravel and Symfony integration with complete examples
+- **[Basic Usage Examples](docs/examples/basic-usage.php)** - Common cryptographic operations
+- **[Advanced Usage Examples](docs/examples/advanced-usage.php)** - Key rotation, envelope encryption, multi-tenant patterns
+
+### Project Documentation
+
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Development progress, metrics, and design decisions
+- **[REQUIREMENTS.md](REQUIREMENTS.md)** - Complete requirements tracking (42 requirements, 88.1% complete)
+- **[TEST_SUITE_SUMMARY.md](TEST_SUITE_SUMMARY.md)** - Testing strategy and recommendations (85 tests at application layer)
+- **[VALUATION_MATRIX.md](VALUATION_MATRIX.md)** - Package valuation metrics ($225K estimated value, 1,719% ROI)
 
 ## License
 

@@ -213,6 +213,28 @@ class MailchimpEmailAdapter implements EmailServiceConnectorInterface
 - PHP 8.3 or higher
 - No framework dependencies (pure PHP)
 
+## Documentation
+
+### 📘 Package Documentation
+
+- **[Getting Started Guide](docs/getting-started.md)** - Quick start, core concepts, and basic configuration
+- **[API Reference](docs/api-reference.md)** - Complete interface, value object, enum, and exception documentation
+- **[Integration Guide](docs/integration-guide.md)** - Laravel and Symfony integration examples with database migrations
+- **[Basic Usage Examples](docs/examples/basic-usage.php)** - Email, SMS, payment, and bulk email examples
+- **[Advanced Usage Examples](docs/examples/advanced-usage.php)** - Custom endpoints, multi-tenant, webhooks, OAuth, cloud storage, metrics
+
+### 📊 Implementation & Planning
+
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Implementation status, metrics, and key design decisions
+- **[REQUIREMENTS.md](REQUIREMENTS.md)** - Detailed requirements tracking (110 requirements across 10 categories)
+- **[TEST_SUITE_SUMMARY.md](TEST_SUITE_SUMMARY.md)** - Testing philosophy and application-layer integration test examples
+- **[VALUATION_MATRIX.md](VALUATION_MATRIX.md)** - Package valuation metrics and ROI analysis
+
+### 🔗 Related Documentation
+
+- **[Root Implementation Docs](../../docs/CONNECTOR_IMPLEMENTATION.md)** - Original comprehensive implementation document
+- **[Resiliency & OAuth](../../docs/CONNECTOR_RESILIENCY_OAUTH_IMPLEMENTATION.md)** - Circuit breaker, retry logic, and OAuth implementation details
+
 ## Integration
 
 Works seamlessly with other Nexus packages:

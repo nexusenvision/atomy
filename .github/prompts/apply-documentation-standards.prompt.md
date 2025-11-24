@@ -88,8 +88,8 @@ composer.lock
 
 **If YES:**
 ```bash
-# Copy from root docs/ to package root
-cp docs/PACKAGENAME_IMPLEMENTATION_SUMMARY.md packages/PackageName/IMPLEMENTATION_SUMMARY.md
+# move from root docs/ to package root
+mv docs/PACKAGENAME_IMPLEMENTATION_SUMMARY.md packages/PackageName/IMPLEMENTATION_SUMMARY.md or similar implementation summary file for this package
 ```
 
 **If NO:** Create new file using this template:
@@ -182,17 +182,19 @@ composer test
 
 #### 2.3 Move/Create `REQUIREMENTS.md`
 
-**Check:** Does `docs/REQUIREMENTS_PACKAGENAME.md` exist in root `docs/` folder?
+**Check:** Does `docs/REQUIREMENTS_PACKAGENAME.md`, or all related requirements file bearing other name format exist in root `docs/` folder?
 
 **If YES:**
 ```bash
-# Copy from root docs/ to package root
-cp docs/REQUIREMENTS_PACKAGENAME.md packages/PackageName/REQUIREMENTS.md
+# Move from root docs/ to package root
+mv docs/REQUIREMENTS_PACKAGENAME.md packages/PackageName/REQUIREMENTS.md
 ```
 
 **If NO:** Create new file using standard format:
 
-**File:** `packages/PackageName/REQUIREMENTS.md`
+**File:** `packages/PackageName/REQUIREMENTS.md` 
+
+**Update:** Remove all requirements that are not relevant to this package i its atomic nature or not confirming to Nexus standards of package atomicity, statelessness, and framework-agnostic design. Any requirements that are in application layer or the ochestration layer should be removed. Only requirements that pertain to the package itself, or its integration with first party Nexus packages should remain
 
 **Content Template:**
 ```markdown

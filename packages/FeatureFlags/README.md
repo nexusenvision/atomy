@@ -563,6 +563,29 @@ if ($manager->isEnabled('new.feature', $context)) {
 - (Optional) Nexus\Monitoring for metrics
 - (Optional) Nexus\AuditLogger for audit trail
 
+## 📖 Documentation
+
+### Core Documentation
+- **[Getting Started Guide](docs/getting-started.md)** - Quick start with prerequisites, 5 strategies, and troubleshooting
+- **[API Reference](docs/api-reference.md)** - Complete interface and service documentation
+- **[Integration Guide](docs/integration-guide.md)** - Laravel and Symfony integration examples
+
+### Implementation Details
+- **[Requirements](REQUIREMENTS.md)** - Complete requirements tracking with status
+- **[Implementation Summary](IMPLEMENTATION_SUMMARY.md)** - Progress metrics and design decisions
+- **[Test Suite Summary](TEST_SUITE_SUMMARY.md)** - Test coverage and testing strategy
+- **[Valuation Matrix](VALUATION_MATRIX.md)** - Package valuation metrics ($145K value, 1,364% ROI)
+
+### Code Examples
+- **[Basic Usage Examples](docs/examples/basic-usage.php)** - Simple feature flag operations
+- **[Advanced Usage Examples](docs/examples/advanced-usage.php)** - Custom evaluators, percentage analysis
+
+## Quick Links
+
+- **Package Reference**: [`docs/NEXUS_PACKAGES_REFERENCE.md`](../../docs/NEXUS_PACKAGES_REFERENCE.md)
+- **Architecture Overview**: [`ARCHITECTURE.md`](../../ARCHITECTURE.md)
+- **Coding Standards**: [`.github/copilot-instructions.md`](../../.github/copilot-instructions.md)
+
 ## Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
