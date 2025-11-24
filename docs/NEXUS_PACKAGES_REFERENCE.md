@@ -1135,18 +1135,74 @@ use Nexus\Analytics\Contracts\PredictionEngineInterface;
 
 ---
 
-#### **Nexus\Intelligence**
+#### **Nexus\MachineLearning** (formerly `Nexus\Intelligence`)
 **Capabilities:**
-- AI-assisted automation
-- Intelligent predictions
-- Natural language processing
-- Machine learning model integration
+- **Anomaly Detection** via external AI providers (OpenAI, Anthropic, Gemini)
+- **Local Model Inference** via PyTorch, ONNX, remote serving
+- **MLflow Integration** for model registry and experiment tracking
+- **Provider Strategy** for flexible AI backend selection per domain
+- **Feature Versioning** with schema compatibility checking
+
+**Version:** v2.0.0 (breaking changes from v1.x)
+
+**When to Use:**
+- ✅ Detect anomalies in business processes (receivable, payable, procurement)
+- ✅ Load and execute ML models from MLflow registry
+- ✅ Track experiments with automated metrics logging
+- ✅ Fine-tune OpenAI models for domain-specific tasks
+- ✅ Run local PyTorch or ONNX models
+- ✅ Serve models via MLflow/TensorFlow Serving
 
 **Key Interfaces:**
 ```php
-use Nexus\Intelligence\Contracts\IntelligenceManagerInterface;
-use Nexus\Intelligence\Contracts\PredictionServiceInterface;
+use Nexus\MachineLearning\Contracts\AnomalyDetectionServiceInterface;
+use Nexus\MachineLearning\Contracts\FeatureExtractorInterface;
+use Nexus\MachineLearning\Contracts\FeatureVersionManagerInterface;
+use Nexus\MachineLearning\Contracts\ProviderStrategyInterface;
+use Nexus\MachineLearning\Contracts\ModelLoaderInterface;
+use Nexus\MachineLearning\Contracts\InferenceEngineInterface;
+use Nexus\MachineLearning\Contracts\MLflowClientInterface;
 ```
+
+**Example:**
+```php
+// Anomaly detection with external AI providers
+public function __construct(
+    private readonly AnomalyDetectionServiceInterface $mlService,
+    private readonly InvoiceAnomalyExtractor $extractor
+) {}
+
+public function validateInvoice(Invoice $invoice): void
+{
+    $features = $this->extractor->extract($invoice);
+    $result = $this->mlService->detectAnomalies('receivable', $features);
+    
+    if ($result->isAnomaly() && $result->getConfidence() >= 0.85) {
+        throw new AnomalyDetectedException($result->getReason());
+    }
+}
+
+// Load and run local ML model from MLflow
+public function __construct(
+    private readonly ModelLoaderInterface $loader,
+    private readonly InferenceEngineInterface $engine
+) {}
+
+public function predict(array $data): array
+{
+    $model = $this->loader->load('invoice_classifier', stage: 'production');
+    return $this->engine->predict($model, $data);
+}
+```
+
+**Migration from v1.x:**
+See `docs/MIGRATION_INTELLIGENCE_TO_MACHINELEARNING.md` for complete guide.
+
+**Breaking Changes (v1.x → v2.0):**
+- Namespace: `Nexus\Intelligence` → `Nexus\MachineLearning`
+- Service: `IntelligenceManager` → `MLModelManager`
+- Service: `SchemaVersionManager` → `FeatureVersionManager`
+- Config keys: `intelligence.schema.*` → `machinelearning.feature_schema.*`
 
 ---
 
@@ -1540,6 +1596,11 @@ public function getInvoices(): array {
 | **OAuth2/OIDC login** | **`Nexus\SSO`** | **`OAuthProviderInterface`** |
 | **Azure AD/Google login** | **`Nexus\SSO`** | **`SsoManagerInterface`** |
 | **JIT user provisioning** | **`Nexus\SSO`** | **`UserProvisioningInterface`** |
+| **Detect anomalies with AI** | **`Nexus\MachineLearning`** | **`AnomalyDetectionServiceInterface`** |
+| **Load ML models from MLflow** | **`Nexus\MachineLearning`** | **`ModelLoaderInterface`** |
+| **Execute ML model inference** | **`Nexus\MachineLearning`** | **`InferenceEngineInterface`** |
+| **Configure AI provider per domain** | **`Nexus\MachineLearning`** | **`ProviderStrategyInterface`** |
+| **Manage feature schemas** | **`Nexus\MachineLearning`** | **`FeatureVersionManagerInterface`** |
 | Export to Excel | `Nexus\Export` | `ExportManagerInterface` |
 | Generate reports | `Nexus\Reporting` | `ReportManagerInterface` |
 | Event sourcing (GL/Inventory) | `Nexus\EventStream` | `EventStoreInterface` |
