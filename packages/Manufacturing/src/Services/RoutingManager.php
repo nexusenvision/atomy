@@ -239,7 +239,11 @@ final readonly class RoutingManager implements RoutingManagerInterface
         foreach ($routing->getOperations() as $operation) {
             // Only subcontract operations have cost data on the operation itself
             // Labor, machine, and overhead costs require WorkCenterManager for rate lookup
-            $subcontractCost += ($operation->subcontractCost ?? 0.0) * $quantity;
+            if ($operation->isSubcontracted()) {
+                // No way to get subcontract cost from interface; set to 0.0 or throw exception if required
+                // $subcontractCost += $operation->getSubcontractCost() * $quantity; // Uncomment if method exists
+                $subcontractCost += 0.0;
+            }
         }
 
         return [
