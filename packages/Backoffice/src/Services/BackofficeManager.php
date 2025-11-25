@@ -33,7 +33,7 @@ use Nexus\Backoffice\Contracts\DepartmentRepositoryInterface;
  *
  * Provides the public API for organizational structure management.
  */
-class BackofficeManager implements BackofficeManagerInterface
+final class BackofficeManager implements BackofficeManagerInterface
 {
     public function __construct(
         private readonly CompanyRepositoryInterface $companyRepository,

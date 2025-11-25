@@ -19,7 +19,7 @@ use Nexus\Backoffice\Exceptions\InvalidOperationException;
 /**
  * Service for managing staff transfer workflows.
  */
-class TransferManager implements TransferManagerInterface
+final class TransferManager implements TransferManagerInterface
 {
     public function __construct(
         private readonly TransferRepositoryInterface $transferRepository,
