@@ -201,6 +201,44 @@ $this->eventStore->append(
 $balance = $this->eventStream->getStateAt($accountId, '2024-10-15');
 ```
 
+## Architectural Violations Summary for Nexus ERP Packages
+
+These guidelines must be enforced when designing any new package (e.g., `Nexus\Case`, `Nexus\Content`, `Nexus\Messaging`).
+
+### I. Violations of Atomicity and Decoupling (ISP)
+
+The primary goal of an atomic package is to be small, focused, and independently deployable. Violating the **Interface Segregation Principle (ISP)** leads to tightly coupled "God Repositories."
+
+| Anti-Pattern | Violation Example | Correct Principle |
+| :--- | :--- | :--- |
+| **Fat/God Repository** | The `TenantRepositoryInterface` contained methods for CRUD, validation, querying, and reporting. | **Interface Segregation Principle (ISP):** Split the repository into several single-purpose interfaces (e.g., `TenantQueryInterface`, `TenantPersistInterface`, `TenantReadModelInterface`). |
+| **Domain Logic in Repository** | Including methods that imply business decisions (e.g., `getExpiredTrials`, `getSuspended`). | **Domain Service:** All business logic must reside in a dedicated, pure Domain Service (e.g., `TenantStatusService`) which uses the `TenantQueryInterface` to retrieve VOs. |
+| **Coupling Entities** | A VO containing an ORM/Database-specific entity object. | **Value Objects (VO) Only:** All data transferred across the package boundary must be a plain, immutable VO defined within the domain package. |
+
+### II. Violations of Framework Agnosticism
+
+The atomic package must be a pure PHP library. It cannot depend on any external framework (Eloquent, Doctrine, Symfony, Laravel, etc.).
+
+| Anti-Pattern | Violation Example | Correct Principle |
+| :--- | :--- | :--- |
+| **Leaky Abstraction** | Including framework-specific terms (e.g., "This must be implemented using Eloquent") in the package docblocks. | **Pure Contracts:** Contracts must reference only native PHP types, exceptions defined within the package, or other Nexus VOs/Interfaces. **Never mention the ORM.** |
+| **Infrastructure Types** | Methods relying on framework-specific types (e.g., returning a `$builder` object, or accepting a proprietary `$Query` object). | **Simple Types:** Repository methods must return simple collections/arrays of Domain VOs or single VOs. |
+| **Coupling Services** | A Service relying on a specific third-party client (e.g., `ArticleManager` depending on `ElasticSearchClient`). | **External Contract:** The Service must depend on a package-defined contract (e.g., `ContentSearchInterface`), which is implemented by the external client in the Application Layer. |
+
+### III. Violations of Statelessness and CQRS
+
+Statelessness means the Domain Layer focuses only on pure computation and rules, relying on contracts for state (I/O) management. **Command Query Responsibility Segregation (CQRS)** means separating write models from read models.
+
+| Anti-Pattern | Violation Example | Correct Principle |
+| :--- | :--- | :--- |
+| **Mixing Reads & Reports** | Including complex querying/pagination logic (e.g., `all(array $filters, int $page)`) in the persistence interface. | **CQRS:** Core repositories manage the **Write Model** (the source of truth). Reporting, pagination, and customized views must be handled by **Read Models** (separate interfaces/services) in the Application Layer. |
+| **Leaky Pagination** | The repository method signature dictates specific pagination parameters (`$page`, `$perPage`) or returns a UI-specific format (e.g., `{data: [], total: 100}`). | **Simple Collections:** Repositories should return raw collections (`array<TenantInterface>`) or generators. The Application Layer is responsible for applying pagination logic to the returned collection. |
+| **Direct I/O** | A Domain Service directly calling a database connection or writing to a file system. | **Dependency Injection:** Domain Services must be stateless and receive all state-dependent capabilities (persistence, searching, external APIs) via injected **interfaces (Contracts)** defined within the package. |
+
+This summary ensures that your developer instructions will proactively address the most common pitfalls in layered, atomic architecture.
+
+---
+
 ## 🛡️ Statutory and Compliance Architecture
 
 All compliance activities are divided into two distinct packages:
