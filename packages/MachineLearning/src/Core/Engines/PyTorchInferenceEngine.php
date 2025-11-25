@@ -61,6 +61,13 @@ final readonly class PyTorchInferenceEngine implements InferenceEngineInterface
      */
     private function validateExecutablePath(string $path): void
     {
+        // Reject directory traversal attempts
+        if (str_contains($path, '..')) {
+            throw new \InvalidArgumentException(
+                'Python path cannot contain directory traversal sequences (..)'
+            );
+        }
+
         // Only allow alphanumeric, underscores, hyphens, dots, and forward slashes
         if (!preg_match('#^[a-zA-Z0-9_.\-/]+$#', $path)) {
             throw new \InvalidArgumentException(
@@ -241,9 +248,19 @@ PYTHON;
      */
     private function validateModelPath(Model $model): void
     {
+        $path = $model->artifactPath;
+
+        // Reject directory traversal attempts
+        if (str_contains($path, '..')) {
+            throw InferenceException::forModel(
+                $model->getIdentifier(),
+                'Invalid model path: directory traversal sequences (..) are not allowed'
+            );
+        }
+
         // Only allow alphanumeric, underscores, hyphens, dots, and forward slashes
         // This prevents shell injection and Python code injection via single quotes
-        if (!preg_match('#^[a-zA-Z0-9_.\-/]+$#', $model->artifactPath)) {
+        if (!preg_match('#^[a-zA-Z0-9_.\-/]+$#', $path)) {
             throw InferenceException::forModel(
                 $model->getIdentifier(),
                 'Invalid model path: only alphanumeric characters, underscores, hyphens, dots, and forward slashes are allowed'
@@ -251,8 +268,8 @@ PYTHON;
         }
 
         // Validate artifact exists
-        if (!file_exists($model->artifactPath)) {
-            throw InferenceException::forModel($model->getIdentifier(), 'Model artifact not found: ' . $model->artifactPath);
+        if (!file_exists($path)) {
+            throw InferenceException::forModel($model->getIdentifier(), 'Model artifact not found: ' . $path);
         }
     }
 
