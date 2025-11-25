@@ -4,12 +4,26 @@ declare(strict_types=1);
 
 namespace Nexus\Backoffice\Contracts;
 
+use Nexus\Backoffice\Contracts\Persistence\CompanyPersistenceInterface;
+use Nexus\Backoffice\Contracts\Query\CompanyQueryInterface;
+use Nexus\Backoffice\Contracts\Validation\CompanyValidationInterface;
+
 /**
  * Repository interface for Company persistence operations.
  *
- * Defines all data access methods needed for company management.
+ * @deprecated This fat interface violates ISP and CQRS. Use the segregated interfaces instead:
+ *             - CompanyPersistenceInterface for write operations
+ *             - CompanyQueryInterface for read operations
+ *             - CompanyValidationInterface for validation operations
+ *             - CompanyHierarchyService for business logic (getActive, getSubsidiaries, etc.)
+ *
+ * This interface is kept for backward compatibility and now extends the new interfaces.
+ * It will be removed in v2.0.
  */
-interface CompanyRepositoryInterface
+interface CompanyRepositoryInterface extends
+    CompanyPersistenceInterface,
+    CompanyQueryInterface,
+    CompanyValidationInterface
 {
     /**
      * Find a company by its unique identifier.
@@ -36,6 +50,7 @@ interface CompanyRepositoryInterface
     /**
      * Get all active companies.
      *
+     * @deprecated Use CompanyHierarchyService::getActive() instead. Business logic should not be in repositories.
      * @return array<CompanyInterface>
      */
     public function getActive(): array;
@@ -43,6 +58,7 @@ interface CompanyRepositoryInterface
     /**
      * Get all subsidiaries of a parent company.
      *
+     * @deprecated Use CompanyHierarchyService::getSubsidiaries() instead. Business logic should not be in repositories.
      * @return array<CompanyInterface>
      */
     public function getSubsidiaries(string $parentCompanyId): array;
@@ -50,6 +66,7 @@ interface CompanyRepositoryInterface
     /**
      * Get the parent company chain for a company.
      *
+     * @deprecated Use CompanyHierarchyService::getParentChain() instead. Business logic should not be in repositories.
      * @return array<CompanyInterface>
      */
     public function getParentChain(string $companyId): array;
@@ -85,6 +102,8 @@ interface CompanyRepositoryInterface
 
     /**
      * Check for circular parent reference.
+     *
+     * @deprecated Use CompanyHierarchyService::hasCircularReference() instead. Business logic should not be in repositories.
      */
     public function hasCircularReference(string $companyId, string $proposedParentId): bool;
 }
