@@ -108,6 +108,9 @@ final readonly class StaffAssignmentService
     private function getCompanyId(string $staffId): string
     {
         $staff = $this->staffQuery->findById($staffId);
-        return $staff?->getCompanyId() ?? '';
+        if ($staff === null) {
+            throw new \InvalidArgumentException("Staff with ID {$staffId} not found");
+        }
+        return $staff->getCompanyId();
     }
 }
