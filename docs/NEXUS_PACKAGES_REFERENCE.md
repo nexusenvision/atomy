@@ -1,9 +1,20 @@
 # 📚 NEXUS FIRST-PARTY PACKAGES REFERENCE GUIDE
 
-**Version:** 1.0  
-**Last Updated:** November 23, 2025  
+**Version:** 1.1  
+**Last Updated:** November 25, 2025  
 **Target Audience:** Coding Agents & Developers  
 **Purpose:** Prevent architectural violations by explicitly documenting available packages and their proper usage patterns.
+
+**Recent Updates:**
+- Added `Nexus\FeatureFlags` - Feature flag management system
+- Added `Nexus\SSO` - Single Sign-On integration (SAML, OAuth2, OIDC)
+- Added `Nexus\Tax` - Tax calculation and compliance engine
+- Added `Nexus\Messaging` - Message queue abstraction
+- Added `Nexus\Content` - Content management system
+- Added `Nexus\Audit` - Advanced audit trail management
+- Added `Nexus\Backoffice` - Company structure and organizational management
+- Added `Nexus\DataProcessor` - OCR, ETL, and data processing engine
+- Refactored `Nexus\Intelligence` → `Nexus\MachineLearning` (v2.0)
 
 ---
 
@@ -296,6 +307,60 @@ public function updateInvoiceStatus(string $invoiceId, string $newStatus): void
 
 ---
 
+#### **Nexus\Audit**
+**Capabilities:**
+- Advanced audit trail management (extends AuditLogger)
+- Change data capture (before/after snapshots)
+- Audit trail search and filtering
+- Compliance report generation
+- Audit event replay
+- Configurable retention policies
+- Tamper-proof audit logs
+
+**When to Use:**
+- ✅ Detailed change tracking with full snapshots
+- ✅ Compliance audits requiring historical data reconstruction
+- ✅ Forensic analysis of data changes
+- ✅ Regulatory compliance (HIPAA, SOX, GDPR)
+- ✅ Advanced audit reporting
+
+**Key Interfaces:**
+```php
+use Nexus\Audit\Contracts\AuditTrailManagerInterface;
+use Nexus\Audit\Contracts\ChangeTrackerInterface;
+use Nexus\Audit\Contracts\AuditReportGeneratorInterface;
+```
+
+**Example:**
+```php
+// ✅ CORRECT: Track detailed changes with before/after snapshots
+public function __construct(
+    private readonly ChangeTrackerInterface $changeTracker
+) {}
+
+public function updateCustomer(string $customerId, array $updates): void
+{
+    $customer = $this->repository->findById($customerId);
+    $beforeSnapshot = $customer->toArray();
+    
+    $customer->update($updates);
+    $this->repository->save($customer);
+    
+    $afterSnapshot = $customer->toArray();
+    
+    // Track with full before/after comparison
+    $this->changeTracker->trackChange(
+        entityType: 'customer',
+        entityId: $customerId,
+        before: $beforeSnapshot,
+        after: $afterSnapshot,
+        changedBy: $this->getCurrentUserId()
+    );
+}
+```
+
+---
+
 ### 🔔 **3. Communication**
 
 #### **Nexus\Notifier**
@@ -475,7 +540,108 @@ public function getBalanceAt(string $accountId, \DateTimeImmutable $timestamp): 
 
 ---
 
+#### **Nexus\DataProcessor**
+**Capabilities:**
+- OCR (Optical Character Recognition) integration
+- Document text extraction
+- ETL (Extract, Transform, Load) pipelines
+- Data transformation and normalization
+- Image processing and analysis
+- PDF parsing and extraction
+- Batch data processing
+
+**When to Use:**
+- ✅ Extract text from scanned documents/images
+- ✅ Process uploaded invoices/receipts via OCR
+- ✅ Transform data between formats
+- ✅ Build ETL data pipelines
+- ✅ Parse and extract data from PDFs
+- ✅ Batch process large datasets
+
+**Key Interfaces:**
+```php
+use Nexus\DataProcessor\Contracts\OcrProcessorInterface;
+use Nexus\DataProcessor\Contracts\DocumentExtractorInterface;
+use Nexus\DataProcessor\Contracts\EtlPipelineInterface;
+use Nexus\DataProcessor\Contracts\DataTransformerInterface;
+```
+
+**Example:**
+```php
+// ✅ CORRECT: Extract data from uploaded invoice image
+public function __construct(
+    private readonly OcrProcessorInterface $ocrProcessor
+) {}
+
+public function processInvoiceImage(string $imagePath): array
+{
+    $extractedData = $this->ocrProcessor->process(
+        filePath: $imagePath,
+        options: [
+            'language' => 'eng',
+            'extract_fields' => ['invoice_number', 'date', 'total', 'vendor'],
+        ]
+    );
+    
+    return [
+        'invoice_number' => $extractedData['invoice_number'],
+        'invoice_date' => $extractedData['date'],
+        'total_amount' => $extractedData['total'],
+        'vendor_name' => $extractedData['vendor'],
+        'confidence' => $extractedData['confidence_score'],
+    ];
+}
+```
+
+---
+
 ### 🏢 **5. Multi-Tenancy & Context**
+
+#### **Nexus\Backoffice**
+**Capabilities:**
+- Company structure management
+- Multi-entity organizational hierarchy
+- Branch and department management
+- Cost center and profit center tracking
+- Inter-company relationships
+- Organizational unit configuration
+
+**When to Use:**
+- ✅ Manage company organizational structure
+- ✅ Define branches, departments, divisions
+- ✅ Set up cost centers and profit centers
+- ✅ Configure inter-company relationships
+- ✅ Hierarchical organizational reporting
+
+**Key Interfaces:**
+```php
+use Nexus\Backoffice\Contracts\CompanyManagerInterface;
+use Nexus\Backoffice\Contracts\BranchManagerInterface;
+use Nexus\Backoffice\Contracts\DepartmentManagerInterface;
+use Nexus\Backoffice\Contracts\CostCenterManagerInterface;
+```
+
+**Example:**
+```php
+// ✅ CORRECT: Get organizational hierarchy
+public function __construct(
+    private readonly CompanyManagerInterface $companyManager
+) {}
+
+public function getCompanyStructure(string $companyId): array
+{
+    $company = $this->companyManager->findById($companyId);
+    
+    return [
+        'company' => $company,
+        'branches' => $company->getBranches(),
+        'departments' => $company->getDepartments(),
+        'cost_centers' => $company->getCostCenters(),
+    ];
+}
+```
+
+---
 
 #### **Nexus\Tenant**
 **Capabilities:**
@@ -810,6 +976,60 @@ use Nexus\Assets\Contracts\DepreciationCalculatorInterface;
 
 ---
 
+#### **Nexus\Tax**
+**Capabilities:**
+- Multi-jurisdiction tax calculation
+- Tax rate management (VAT, GST, sales tax)
+- Tax exemption handling
+- Tax reporting and filing
+- Reverse charge mechanism
+- Withholding tax calculation
+- Tax group and composite tax support
+
+**When to Use:**
+- ✅ Calculate sales tax on transactions
+- ✅ Multi-jurisdiction tax compliance
+- ✅ VAT/GST calculation and reporting
+- ✅ Tax exemption management
+- ✅ Withholding tax processing
+- ✅ Tax audit trail
+
+**Key Interfaces:**
+```php
+use Nexus\Tax\Contracts\TaxCalculatorInterface;
+use Nexus\Tax\Contracts\TaxRateManagerInterface;
+use Nexus\Tax\Contracts\TaxReportGeneratorInterface;
+use Nexus\Tax\Contracts\TaxExemptionManagerInterface;
+```
+
+**Example:**
+```php
+// ✅ CORRECT: Calculate tax on invoice line item
+public function __construct(
+    private readonly TaxCalculatorInterface $taxCalculator
+) {}
+
+public function calculateInvoiceTax(Invoice $invoice): Money
+{
+    $totalTax = Money::zero('MYR');
+    
+    foreach ($invoice->getLineItems() as $lineItem) {
+        $tax = $this->taxCalculator->calculate(
+            amount: $lineItem->getAmount(),
+            taxCode: $lineItem->getTaxCode(),
+            jurisdiction: $invoice->getShipToAddress()->getCountry(),
+            date: $invoice->getInvoiceDate()
+        );
+        
+        $totalTax = $totalTax->add($tax);
+    }
+    
+    return $totalTax;
+}
+```
+
+---
+
 ### 🛒 **8. Sales & Procurement**
 
 #### **Nexus\Party**
@@ -884,17 +1104,161 @@ use Nexus\Procurement\Contracts\RequisitionManagerInterface;
 
 #### **Nexus\Inventory**
 **Capabilities:**
-- Stock tracking (lot, serial, batch)
-- Stock movements (in, out, transfer, adjustment)
-- Stock reservation
-- Inventory valuation (FIFO, LIFO, Weighted Average)
-- Multi-location support
+- **Multi-Valuation Stock Tracking**: FIFO (O(n)), Weighted Average (O(1)), Standard Cost (O(1))
+- **Lot Tracking with FEFO**: First-Expiry-First-Out enforcement for regulatory compliance (FDA, HACCP)
+- **Serial Number Management**: Tenant-scoped uniqueness with history tracking
+- **Stock Reservations**: Auto-expiry with configurable TTL (24-72 hours)
+- **Inter-Warehouse Transfers**: FSM-based workflow (pending → in_transit → completed/cancelled)
+- **Stock Movements**: Receipt, issue, adjustment (cycle count, damage, scrap)
+- **Event-Driven GL Integration**: 8 domain events for Finance package integration
+
+**When to Use:**
+- ✅ Multi-warehouse inventory management
+- ✅ Accurate COGS calculation (valuation method selection)
+- ✅ Lot tracking with expiry date management
+- ✅ Serial number tracking for high-value items
+- ✅ Stock reservations for sales orders
+- ✅ Inter-warehouse stock transfers
 
 **Key Interfaces:**
 ```php
-use Nexus\Inventory\Contracts\InventoryManagerInterface;
-use Nexus\Inventory\Contracts\StockRepositoryInterface;
-use Nexus\Inventory\Contracts\StockMovementRepositoryInterface;
+use Nexus\Inventory\Contracts\StockManagerInterface;
+use Nexus\Inventory\Contracts\LotManagerInterface;
+use Nexus\Inventory\Contracts\SerialNumberManagerInterface;
+use Nexus\Inventory\Contracts\ReservationManagerInterface;
+use Nexus\Inventory\Contracts\TransferManagerInterface;
+```
+
+**Valuation Methods:**
+
+| Method | Performance | Best For | COGS Accuracy |
+|--------|-------------|----------|---------------|
+| **FIFO** | O(n) issue | Perishables, pharmaceuticals, food & beverage | Matches actual flow |
+| **Weighted Average** | O(1) both | Commodities, bulk materials, chemicals | Smooths fluctuations |
+| **Standard Cost** | O(1) both | Manufacturing, electronics | Variance analysis |
+
+**FEFO Enforcement:**
+
+Automatic allocation from lots with earliest expiry date:
+
+```php
+// System automatically picks from oldest expiring lots
+$allocations = $lotManager->allocateFromLots($tenantId, $productId, quantity: 80.0);
+
+// Example allocation result:
+// LOT-2024-001: 40 units (expires 2024-02-01) ← Oldest expiry
+// LOT-2024-002: 40 units (expires 2024-02-10) ← Next oldest
+```
+
+**Domain Events:**
+
+| Event | Triggered When | GL Impact |
+|-------|----------------|-----------|
+| `StockReceivedEvent` | Stock received | DR Inventory Asset / CR GR-IR Clearing |
+| `StockIssuedEvent` | Stock issued | DR COGS / CR Inventory Asset |
+| `StockAdjustedEvent` | Stock adjusted | DR/CR Inventory Asset (variance) |
+| `LotCreatedEvent` | Lot created | - |
+| `LotAllocatedEvent` | FEFO allocation | - |
+| `SerialRegisteredEvent` | Serial registered | - |
+| `ReservationCreatedEvent` | Reservation created | - |
+| `ReservationExpiredEvent` | Reservation expired | - |
+
+**Example:**
+```php
+// Receive stock with lot tracking
+public function __construct(
+    private readonly StockManagerInterface $stockManager,
+    private readonly LotManagerInterface $lotManager
+) {}
+
+public function receiveStock(): void
+{
+    // Create lot
+    $lotId = $this->lotManager->createLot(
+        tenantId: 'tenant-1',
+        productId: 'product-milk',
+        lotNumber: 'LOT-2024-001',
+        quantity: 100.0,
+        expiryDate: new \DateTimeImmutable('2024-02-01')
+    );
+    
+    // Receive stock
+    $this->stockManager->receiveStock(
+        tenantId: 'tenant-1',
+        productId: 'product-milk',
+        warehouseId: 'warehouse-main',
+        quantity: 100.0,
+        unitCost: Money::of(15.00, 'MYR'),
+        lotNumber: 'LOT-2024-001',
+        expiryDate: new \DateTimeImmutable('2024-02-01')
+    );
+    
+    // StockReceivedEvent published → GL posts: DR Inventory Asset / CR GR-IR
+}
+
+// Issue stock using FEFO
+public function issueStock(): void
+{
+    // Allocate from lots (FEFO automatically applied)
+    $allocations = $this->lotManager->allocateFromLots(
+        tenantId: 'tenant-1',
+        productId: 'product-milk',
+        quantity: 30.0
+    );
+    
+    // Issue stock and get COGS
+    $cogs = $this->stockManager->issueStock(
+        tenantId: 'tenant-1',
+        productId: 'product-milk',
+        warehouseId: 'warehouse-main',
+        quantity: 30.0,
+        reason: IssueReason::SALE,
+        reference: 'SO-2024-005'
+    );
+    
+    // StockIssuedEvent published → GL posts: DR COGS / CR Inventory Asset
+}
+
+// Reserve stock for sales order (with TTL)
+public function reserveStock(): void
+{
+    $reservationId = $this->reservationManager->reserve(
+        tenantId: 'tenant-1',
+        productId: 'product-widget',
+        warehouseId: 'warehouse-main',
+        quantity: 25.0,
+        referenceType: 'SALES_ORDER',
+        referenceId: 'SO-2024-015',
+        ttlHours: 48 // Auto-expire in 48 hours
+    );
+    
+    // ReservationCreatedEvent published
+}
+
+// Inter-warehouse transfer (FSM workflow)
+public function transferStock(): void
+{
+    // Initiate transfer (pending state)
+    $transferId = $this->transferManager->initiateTransfer(
+        tenantId: 'tenant-1',
+        productId: 'product-gadget',
+        fromWarehouseId: 'warehouse-main',
+        toWarehouseId: 'warehouse-branch',
+        quantity: 50.0,
+        reason: 'REBALANCING'
+    );
+    
+    // Start shipment (pending → in_transit)
+    $this->transferManager->startShipment(
+        transferId: $transferId,
+        trackingNumber: 'TRK-ABC-12345'
+    );
+    
+    // Complete transfer (in_transit → completed)
+    $this->transferManager->completeTransfer($transferId);
+    
+    // Stock decremented at source, incremented at destination
+}
 ```
 
 ---
@@ -1049,6 +1413,55 @@ public function syncCustomer(string $customerId): void
 
 ---
 
+#### **Nexus\Messaging**
+**Capabilities:**
+- Message queue abstraction (RabbitMQ, Redis, AWS SQS, Azure Service Bus)
+- Publish/subscribe patterns
+- Message routing and exchange management
+- Dead letter queue handling
+- Message retry logic
+- Priority queues
+
+**When to Use:**
+- ✅ Asynchronous job processing
+- ✅ Event-driven architecture
+- ✅ Microservice communication
+- ✅ Long-running background tasks
+- ✅ Message-based integration
+
+**Key Interfaces:**
+```php
+use Nexus\Messaging\Contracts\MessagePublisherInterface;
+use Nexus\Messaging\Contracts\MessageConsumerInterface;
+use Nexus\Messaging\Contracts\QueueManagerInterface;
+use Nexus\Messaging\Contracts\MessageRouterInterface;
+```
+
+**Example:**
+```php
+// ✅ CORRECT: Publish message to queue
+public function __construct(
+    private readonly MessagePublisherInterface $publisher
+) {}
+
+public function createInvoice(Invoice $invoice): void
+{
+    $this->repository->save($invoice);
+    
+    // Publish invoice created event
+    $this->publisher->publish(
+        queue: 'invoice.created',
+        message: new InvoiceCreatedMessage(
+            invoiceId: $invoice->getId(),
+            customerId: $invoice->getCustomerId(),
+            amount: $invoice->getTotal()
+        )
+    );
+}
+```
+
+---
+
 #### **Nexus\Workflow**
 **Capabilities:**
 - Workflow engine
@@ -1106,16 +1519,107 @@ use Nexus\Export\Contracts\ExporterInterface;
 
 #### **Nexus\Import**
 **Capabilities:**
-- Data import from multiple formats
-- Validation and transformation
-- Import templates
-- Error handling and reporting
+- Multi-format data import (CSV, JSON, XML, Excel)
+- Field mapping with transformations (13 built-in rules)
+- Validation engine (required, email, numeric, date, length, min/max)
+- Duplicate detection (internal and external)
+- Transaction strategies (TRANSACTIONAL, BATCH, STREAM)
+- Import modes (CREATE, UPDATE, UPSERT, DELETE, SYNC)
+- Comprehensive error reporting (row-level, severity-based)
+- Memory-efficient streaming for large datasets
+
+**When to Use:**
+- ✅ Bulk data import from CSV/Excel files
+- ✅ Customer, product, or inventory imports
+- ✅ Data migration from external systems
+- ✅ Field transformation and validation
+- ✅ Duplicate detection within import or against database
+- ✅ Transaction management (all-or-nothing vs partial success)
 
 **Key Interfaces:**
 ```php
-use Nexus\Import\Contracts\ImportManagerInterface;
-use Nexus\Import\Contracts\ImporterInterface;
+use Nexus\Import\Contracts\ImportParserInterface;
+use Nexus\Import\Contracts\TransactionManagerInterface;
+use Nexus\Import\Contracts\ImportHandlerInterface;
+use Nexus\Import\Contracts\ImportProcessorInterface;
+use Nexus\Import\Contracts\TransformerInterface;
+use Nexus\Import\Contracts\FieldMapperInterface;
+use Nexus\Import\Contracts\ImportValidatorInterface;
+use Nexus\Import\Contracts\DuplicateDetectorInterface;
 ```
+
+**Example:**
+```php
+// ✅ CORRECT: Import customers with validation and duplicate detection
+public function __construct(
+    private readonly ImportManager $importManager,
+    private readonly CustomerImportHandler $handler
+) {}
+
+public function importCustomers(string $filePath): ImportResult
+{
+    $result = $this->importManager->import(
+        filePath: $filePath,
+        format: ImportFormat::CSV,
+        handler: $this->handler,
+        mappings: [
+            new FieldMapping(
+                sourceField: 'customer_name',
+                targetField: 'name',
+                required: true,
+                transformations: ['trim', 'capitalize']
+            ),
+            new FieldMapping(
+                sourceField: 'email_address',
+                targetField: 'email',
+                required: true,
+                transformations: ['trim', 'lower']
+            ),
+        ],
+        mode: ImportMode::UPSERT,
+        strategy: ImportStrategy::BATCH,
+        validationRules: [
+            new ValidationRule('email', 'email', 'Invalid email format'),
+            new ValidationRule('name', 'required', 'Name is required'),
+        ]
+    );
+    
+    // Get detailed results
+    $successCount = $result->successCount;
+    $errorsByField = $result->getErrorsByField();
+    $successRate = $result->getSuccessRate();
+    
+    return $result;
+}
+```
+
+**❌ WRONG:**
+```php
+// Creating custom CSV parser violates DRY principle
+final class CustomCsvParser {
+    public function parse(string $file): array {
+        // ... duplicates Nexus\Import functionality
+    }
+}
+
+// Creating custom field transformer
+final class CustomFieldTransformer {
+    public function transform(array $data): array {
+        // ... should use FieldMapping with built-in transformations
+    }
+}
+```
+
+**Built-in Transformations:**
+- String: `trim`, `upper`, `lower`, `capitalize`, `slug`
+- Type: `to_bool`, `to_int`, `to_float`, `to_string`
+- Date: `parse_date:format`, `date_format:format`
+- Utility: `default:value`, `coalesce:val1,val2`
+
+**Transaction Strategies:**
+- **TRANSACTIONAL**: Single transaction, rollback on any error (critical imports)
+- **BATCH**: Transaction per batch, continue on failure (large imports)
+- **STREAM**: Row-by-row, no transaction wrapper (memory-efficient)
 
 ---
 
@@ -1135,18 +1639,74 @@ use Nexus\Analytics\Contracts\PredictionEngineInterface;
 
 ---
 
-#### **Nexus\Intelligence**
+#### **Nexus\MachineLearning** (formerly `Nexus\Intelligence`)
 **Capabilities:**
-- AI-assisted automation
-- Intelligent predictions
-- Natural language processing
-- Machine learning model integration
+- **Anomaly Detection** via external AI providers (OpenAI, Anthropic, Gemini)
+- **Local Model Inference** via PyTorch, ONNX, remote serving
+- **MLflow Integration** for model registry and experiment tracking
+- **Provider Strategy** for flexible AI backend selection per domain
+- **Feature Versioning** with schema compatibility checking
+
+**Version:** v2.0.0 (breaking changes from v1.x)
+
+**When to Use:**
+- ✅ Detect anomalies in business processes (receivable, payable, procurement)
+- ✅ Load and execute ML models from MLflow registry
+- ✅ Track experiments with automated metrics logging
+- ✅ Fine-tune OpenAI models for domain-specific tasks
+- ✅ Run local PyTorch or ONNX models
+- ✅ Serve models via MLflow/TensorFlow Serving
 
 **Key Interfaces:**
 ```php
-use Nexus\Intelligence\Contracts\IntelligenceManagerInterface;
-use Nexus\Intelligence\Contracts\PredictionServiceInterface;
+use Nexus\MachineLearning\Contracts\AnomalyDetectionServiceInterface;
+use Nexus\MachineLearning\Contracts\FeatureExtractorInterface;
+use Nexus\MachineLearning\Contracts\FeatureVersionManagerInterface;
+use Nexus\MachineLearning\Contracts\ProviderStrategyInterface;
+use Nexus\MachineLearning\Contracts\ModelLoaderInterface;
+use Nexus\MachineLearning\Contracts\InferenceEngineInterface;
+use Nexus\MachineLearning\Contracts\MLflowClientInterface;
 ```
+
+**Example:**
+```php
+// Anomaly detection with external AI providers
+public function __construct(
+    private readonly AnomalyDetectionServiceInterface $mlService,
+    private readonly InvoiceAnomalyExtractor $extractor
+) {}
+
+public function validateInvoice(Invoice $invoice): void
+{
+    $features = $this->extractor->extract($invoice);
+    $result = $this->mlService->detectAnomalies('receivable', $features);
+    
+    if ($result->isAnomaly() && $result->getConfidence() >= 0.85) {
+        throw new AnomalyDetectedException($result->getReason());
+    }
+}
+
+// Load and run local ML model from MLflow
+public function __construct(
+    private readonly ModelLoaderInterface $loader,
+    private readonly InferenceEngineInterface $engine
+) {}
+
+public function predict(array $data): array
+{
+    $model = $this->loader->load('invoice_classifier', stage: 'production');
+    return $this->engine->predict($model, $data);
+}
+```
+
+**Migration from v1.x:**
+See `docs/MIGRATION_INTELLIGENCE_TO_MACHINELEARNING.md` for complete guide.
+
+**Breaking Changes (v1.x → v2.0):**
+- Namespace: `Nexus\Intelligence` → `Nexus\MachineLearning`
+- Service: `IntelligenceManager` → `MLModelManager`
+- Service: `SchemaVersionManager` → `FeatureVersionManager`
+- Config keys: `intelligence.schema.*` → `machinelearning.feature_schema.*`
 
 ---
 
@@ -1183,7 +1743,61 @@ use Nexus\Routing\Contracts\RouteCacheInterface;
 
 ---
 
-### ⚖️ **15. Compliance & Statutory**
+### 📝 **15. Content Management**
+
+#### **Nexus\Content**
+**Capabilities:**
+- Content management system (CMS)
+- Content versioning and publishing
+- Multi-language content support
+- Content templates and layouts
+- Media library management
+- SEO metadata management
+- Content workflow (draft, review, publish)
+
+**When to Use:**
+- ✅ Website content management
+- ✅ Product descriptions and catalogs
+- ✅ Marketing content
+- ✅ Help documentation
+- ✅ Knowledge base articles
+- ✅ Multi-language content
+
+**Key Interfaces:**
+```php
+use Nexus\Content\Contracts\ContentManagerInterface;
+use Nexus\Content\Contracts\ContentRepositoryInterface;
+use Nexus\Content\Contracts\MediaManagerInterface;
+use Nexus\Content\Contracts\ContentPublisherInterface;
+```
+
+**Example:**
+```php
+// ✅ CORRECT: Publish multi-language product description
+public function __construct(
+    private readonly ContentManagerInterface $contentManager
+) {}
+
+public function publishProductContent(string $productId, array $translations): void
+{
+    foreach ($translations as $locale => $content) {
+        $this->contentManager->publish(
+            entityType: 'product',
+            entityId: $productId,
+            locale: $locale,
+            content: $content,
+            metadata: [
+                'seo_title' => $content['seo_title'],
+                'seo_description' => $content['seo_description'],
+            ]
+        );
+    }
+}
+```
+
+---
+
+### ⚖️ **16. Compliance & Statutory**
 
 #### **Nexus\Compliance**
 **Capabilities:**
@@ -1229,7 +1843,7 @@ use Nexus\Statutory\Contracts\TaxonomyAdapterInterface;
 
 ---
 
-### ⚙️ **16. System Utilities**
+### ⚙️ **17. System Utilities**
 
 #### **Nexus\Setting**
 **Capabilities:**
@@ -1261,6 +1875,48 @@ public function __construct(
 public function getMaxRetries(): int
 {
     return $this->settings->getInt('api.max_retries', 3);
+}
+```
+
+---
+
+#### **Nexus\FeatureFlags**
+**Capabilities:**
+- Feature flag management (enable/disable features)
+- Percentage-based rollouts
+- User/tenant-specific flags
+- A/B testing support
+- Feature flag versioning
+- Scheduled feature releases
+
+**When to Use:**
+- ✅ Gradual feature rollout
+- ✅ A/B testing new features
+- ✅ Toggle features per tenant or user
+- ✅ Emergency feature kill-switch
+- ✅ Canary deployments
+
+**Key Interfaces:**
+```php
+use Nexus\FeatureFlags\Contracts\FeatureFlagManagerInterface;
+use Nexus\FeatureFlags\Contracts\FeatureFlagRepositoryInterface;
+use Nexus\FeatureFlags\Contracts\FeatureEvaluatorInterface;
+```
+
+**Example:**
+```php
+// ✅ CORRECT: Check if feature is enabled
+public function __construct(
+    private readonly FeatureFlagManagerInterface $featureFlags
+) {}
+
+public function processOrder(Order $order): void
+{
+    if ($this->featureFlags->isEnabled('advanced_pricing', $order->getCustomerId())) {
+        $this->applyAdvancedPricing($order);
+    } else {
+        $this->applyStandardPricing($order);
+    }
 }
 ```
 
@@ -1519,6 +2175,9 @@ public function getInvoices(): array {
 |--------------|------------------|---------------------|
 | Track metrics/performance | `Nexus\Monitoring` | `TelemetryTrackerInterface` |
 | Log user actions | `Nexus\AuditLogger` | `AuditLogManagerInterface` |
+| **Manage company structure** | **`Nexus\Backoffice`** | **`CompanyManagerInterface`** |
+| **Extract text from documents/OCR** | **`Nexus\DataProcessor`** | **`OcrProcessorInterface`** |
+| **Build ETL pipelines** | **`Nexus\DataProcessor`** | **`EtlPipelineInterface`** |
 | Send notifications | `Nexus\Notifier` | `NotificationManagerInterface` |
 | Store files | `Nexus\Storage` | `StorageInterface` |
 | Manage documents | `Nexus\Document` | `DocumentManagerInterface` |
@@ -1540,11 +2199,26 @@ public function getInvoices(): array {
 | **OAuth2/OIDC login** | **`Nexus\SSO`** | **`OAuthProviderInterface`** |
 | **Azure AD/Google login** | **`Nexus\SSO`** | **`SsoManagerInterface`** |
 | **JIT user provisioning** | **`Nexus\SSO`** | **`UserProvisioningInterface`** |
+| **Detect anomalies with AI** | **`Nexus\MachineLearning`** | **`AnomalyDetectionServiceInterface`** |
+| **Load ML models from MLflow** | **`Nexus\MachineLearning`** | **`ModelLoaderInterface`** |
+| **Execute ML model inference** | **`Nexus\MachineLearning`** | **`InferenceEngineInterface`** |
+| **Configure AI provider per domain** | **`Nexus\MachineLearning`** | **`ProviderStrategyInterface`** |
+| **Manage feature schemas** | **`Nexus\MachineLearning`** | **`FeatureVersionManagerInterface`** |
+| **Import data from CSV/Excel** | **`Nexus\Import`** | **`ImportParserInterface`, `ImportHandlerInterface`** |
+| **Validate imported data** | **`Nexus\Import`** | **`ImportValidatorInterface`** |
+| **Transform import fields** | **`Nexus\Import`** | **`TransformerInterface`, `FieldMapperInterface`** |
+| **Detect import duplicates** | **`Nexus\Import`** | **`DuplicateDetectorInterface`** |
+| **Manage import transactions** | **`Nexus\Import`** | **`TransactionManagerInterface`** |
 | Export to Excel | `Nexus\Export` | `ExportManagerInterface` |
 | Generate reports | `Nexus\Reporting` | `ReportManagerInterface` |
 | Event sourcing (GL/Inventory) | `Nexus\EventStream` | `EventStoreInterface` |
 | Encrypt data | `Nexus\Crypto` | `EncryptionManagerInterface` |
 | Get/set app config | `Nexus\Setting` | `SettingsManagerInterface` |
+| **Manage feature flags** | **`Nexus\FeatureFlags`** | **`FeatureFlagManagerInterface`** |
+| **Calculate taxes** | **`Nexus\Tax`** | **`TaxCalculatorInterface`** |
+| **Publish/consume messages** | **`Nexus\Messaging`** | **`MessagePublisherInterface`, `MessageConsumerInterface`** |
+| **Manage content/CMS** | **`Nexus\Content`** | **`ContentManagerInterface`** |
+| **Track detailed changes** | **`Nexus\Audit`** | **`ChangeTrackerInterface`** |
 
 ---
 
@@ -1585,6 +2259,6 @@ Before implementing ANY feature, run this mental checklist:
 
 ---
 
-**Last Updated:** November 23, 2025  
+**Last Updated:** November 25, 2025  
 **Maintained By:** Nexus Architecture Team  
 **Enforcement:** Mandatory for all coding agents and developers
