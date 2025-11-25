@@ -279,7 +279,7 @@ final class OpenAIProvider implements ProviderInterface
             'timeout' => $request['timeout'] ?? self::DEFAULT_TIMEOUT,
         ]);
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**

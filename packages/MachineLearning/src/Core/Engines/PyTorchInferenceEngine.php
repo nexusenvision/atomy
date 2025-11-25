@@ -39,12 +39,35 @@ final readonly class PyTorchInferenceEngine implements InferenceEngineInterface
      * @param string|null $pythonPath Path to Python executable (null for system default)
      * @param int $timeout Maximum execution time in seconds
      * @param LoggerInterface|null $logger Optional logger
+     * 
+     * @throws \InvalidArgumentException If pythonPath contains invalid characters
      */
     public function __construct(
         private ?string $pythonPath = null,
         private int $timeout = self::DEFAULT_TIMEOUT,
         private ?LoggerInterface $logger = null,
-    ) {}
+    ) {
+        if ($pythonPath !== null) {
+            $this->validateExecutablePath($pythonPath);
+        }
+    }
+
+    /**
+     * Validate executable path for security
+     * 
+     * @param string $path Path to validate
+     * 
+     * @throws \InvalidArgumentException If path contains dangerous characters
+     */
+    private function validateExecutablePath(string $path): void
+    {
+        // Only allow alphanumeric, underscores, hyphens, dots, and forward slashes
+        if (!preg_match('#^[a-zA-Z0-9_.\-/]+$#', $path)) {
+            throw new \InvalidArgumentException(
+                'Python path contains invalid characters. Only alphanumeric, underscores, hyphens, dots, and forward slashes are allowed.'
+            );
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -214,13 +237,17 @@ PYTHON;
      * 
      * @param Model $model
      * 
-     * @throws InferenceException If path is invalid or contains shell metacharacters
+     * @throws InferenceException If path is invalid or contains dangerous characters
      */
     private function validateModelPath(Model $model): void
     {
-        // Validate path doesn't contain shell metacharacters
-        if (preg_match('/[;&|`$\\\\]/', $model->artifactPath)) {
-            throw InferenceException::forModel($model->getIdentifier(), 'Invalid model path: contains shell metacharacters');
+        // Only allow alphanumeric, underscores, hyphens, dots, and forward slashes
+        // This prevents shell injection and Python code injection via single quotes
+        if (!preg_match('#^[a-zA-Z0-9_.\-/]+$#', $model->artifactPath)) {
+            throw InferenceException::forModel(
+                $model->getIdentifier(),
+                'Invalid model path: only alphanumeric characters, underscores, hyphens, dots, and forward slashes are allowed'
+            );
         }
 
         // Validate artifact exists
@@ -254,8 +281,8 @@ PYTHON;
         try {
             $startTime = microtime(true);
             
-            // Execute with timeout
-            $command = "{$pythonExec} {$tempFile} 2>&1";
+            // Execute with timeout using escapeshellarg for security
+            $command = escapeshellarg($pythonExec) . ' ' . escapeshellarg($tempFile) . ' 2>&1';
             $output = shell_exec($command);
             
             $duration = microtime(true) - $startTime;
