@@ -1104,17 +1104,161 @@ use Nexus\Procurement\Contracts\RequisitionManagerInterface;
 
 #### **Nexus\Inventory**
 **Capabilities:**
-- Stock tracking (lot, serial, batch)
-- Stock movements (in, out, transfer, adjustment)
-- Stock reservation
-- Inventory valuation (FIFO, LIFO, Weighted Average)
-- Multi-location support
+- **Multi-Valuation Stock Tracking**: FIFO (O(n)), Weighted Average (O(1)), Standard Cost (O(1))
+- **Lot Tracking with FEFO**: First-Expiry-First-Out enforcement for regulatory compliance (FDA, HACCP)
+- **Serial Number Management**: Tenant-scoped uniqueness with history tracking
+- **Stock Reservations**: Auto-expiry with configurable TTL (24-72 hours)
+- **Inter-Warehouse Transfers**: FSM-based workflow (pending → in_transit → completed/cancelled)
+- **Stock Movements**: Receipt, issue, adjustment (cycle count, damage, scrap)
+- **Event-Driven GL Integration**: 8 domain events for Finance package integration
+
+**When to Use:**
+- ✅ Multi-warehouse inventory management
+- ✅ Accurate COGS calculation (valuation method selection)
+- ✅ Lot tracking with expiry date management
+- ✅ Serial number tracking for high-value items
+- ✅ Stock reservations for sales orders
+- ✅ Inter-warehouse stock transfers
 
 **Key Interfaces:**
 ```php
-use Nexus\Inventory\Contracts\InventoryManagerInterface;
-use Nexus\Inventory\Contracts\StockRepositoryInterface;
-use Nexus\Inventory\Contracts\StockMovementRepositoryInterface;
+use Nexus\Inventory\Contracts\StockManagerInterface;
+use Nexus\Inventory\Contracts\LotManagerInterface;
+use Nexus\Inventory\Contracts\SerialNumberManagerInterface;
+use Nexus\Inventory\Contracts\ReservationManagerInterface;
+use Nexus\Inventory\Contracts\TransferManagerInterface;
+```
+
+**Valuation Methods:**
+
+| Method | Performance | Best For | COGS Accuracy |
+|--------|-------------|----------|---------------|
+| **FIFO** | O(n) issue | Perishables, pharmaceuticals, food & beverage | Matches actual flow |
+| **Weighted Average** | O(1) both | Commodities, bulk materials, chemicals | Smooths fluctuations |
+| **Standard Cost** | O(1) both | Manufacturing, electronics | Variance analysis |
+
+**FEFO Enforcement:**
+
+Automatic allocation from lots with earliest expiry date:
+
+```php
+// System automatically picks from oldest expiring lots
+$allocations = $lotManager->allocateFromLots($tenantId, $productId, quantity: 80.0);
+
+// Example allocation result:
+// LOT-2024-001: 40 units (expires 2024-02-01) ← Oldest expiry
+// LOT-2024-002: 40 units (expires 2024-02-10) ← Next oldest
+```
+
+**Domain Events:**
+
+| Event | Triggered When | GL Impact |
+|-------|----------------|-----------|
+| `StockReceivedEvent` | Stock received | DR Inventory Asset / CR GR-IR Clearing |
+| `StockIssuedEvent` | Stock issued | DR COGS / CR Inventory Asset |
+| `StockAdjustedEvent` | Stock adjusted | DR/CR Inventory Asset (variance) |
+| `LotCreatedEvent` | Lot created | - |
+| `LotAllocatedEvent` | FEFO allocation | - |
+| `SerialRegisteredEvent` | Serial registered | - |
+| `ReservationCreatedEvent` | Reservation created | - |
+| `ReservationExpiredEvent` | Reservation expired | - |
+
+**Example:**
+```php
+// Receive stock with lot tracking
+public function __construct(
+    private readonly StockManagerInterface $stockManager,
+    private readonly LotManagerInterface $lotManager
+) {}
+
+public function receiveStock(): void
+{
+    // Create lot
+    $lotId = $this->lotManager->createLot(
+        tenantId: 'tenant-1',
+        productId: 'product-milk',
+        lotNumber: 'LOT-2024-001',
+        quantity: 100.0,
+        expiryDate: new \DateTimeImmutable('2024-02-01')
+    );
+    
+    // Receive stock
+    $this->stockManager->receiveStock(
+        tenantId: 'tenant-1',
+        productId: 'product-milk',
+        warehouseId: 'warehouse-main',
+        quantity: 100.0,
+        unitCost: Money::of(15.00, 'MYR'),
+        lotNumber: 'LOT-2024-001',
+        expiryDate: new \DateTimeImmutable('2024-02-01')
+    );
+    
+    // StockReceivedEvent published → GL posts: DR Inventory Asset / CR GR-IR
+}
+
+// Issue stock using FEFO
+public function issueStock(): void
+{
+    // Allocate from lots (FEFO automatically applied)
+    $allocations = $this->lotManager->allocateFromLots(
+        tenantId: 'tenant-1',
+        productId: 'product-milk',
+        quantity: 30.0
+    );
+    
+    // Issue stock and get COGS
+    $cogs = $this->stockManager->issueStock(
+        tenantId: 'tenant-1',
+        productId: 'product-milk',
+        warehouseId: 'warehouse-main',
+        quantity: 30.0,
+        reason: IssueReason::SALE,
+        reference: 'SO-2024-005'
+    );
+    
+    // StockIssuedEvent published → GL posts: DR COGS / CR Inventory Asset
+}
+
+// Reserve stock for sales order (with TTL)
+public function reserveStock(): void
+{
+    $reservationId = $this->reservationManager->reserve(
+        tenantId: 'tenant-1',
+        productId: 'product-widget',
+        warehouseId: 'warehouse-main',
+        quantity: 25.0,
+        referenceType: 'SALES_ORDER',
+        referenceId: 'SO-2024-015',
+        ttlHours: 48 // Auto-expire in 48 hours
+    );
+    
+    // ReservationCreatedEvent published
+}
+
+// Inter-warehouse transfer (FSM workflow)
+public function transferStock(): void
+{
+    // Initiate transfer (pending state)
+    $transferId = $this->transferManager->initiateTransfer(
+        tenantId: 'tenant-1',
+        productId: 'product-gadget',
+        fromWarehouseId: 'warehouse-main',
+        toWarehouseId: 'warehouse-branch',
+        quantity: 50.0,
+        reason: 'REBALANCING'
+    );
+    
+    // Start shipment (pending → in_transit)
+    $this->transferManager->startShipment(
+        transferId: $transferId,
+        trackingNumber: 'TRK-ABC-12345'
+    );
+    
+    // Complete transfer (in_transit → completed)
+    $this->transferManager->completeTransfer($transferId);
+    
+    // Stock decremented at source, incremented at destination
+}
 ```
 
 ---
