@@ -242,10 +242,10 @@ The package emits framework-agnostic events for lifecycle changes:
 
 ### TenantStatus
 
-Immutable value object representing tenant status:
+Immutable enum representing tenant status:
 
 ```php
-use Nexus\Tenant\ValueObjects\TenantStatus;
+use Nexus\Tenant\Enums\TenantStatus;
 
 $status = TenantStatus::pending();    // Tenant created, not yet active
 $status = TenantStatus::active();     // Tenant active and operational
@@ -259,7 +259,7 @@ $status = TenantStatus::trial();      // Trial period
 Defines how tenants are identified:
 
 ```php
-use Nexus\Tenant\ValueObjects\IdentificationStrategy;
+use Nexus\Tenant\Enums\IdentificationStrategy;
 
 $strategy = IdentificationStrategy::domain();      // acme.example.com
 $strategy = IdentificationStrategy::subdomain();   // acme.myapp.com
