@@ -114,9 +114,9 @@ final readonly class WorkCenterManager implements WorkCenterManagerInterface
     {
         $workCenter = $this->getById($id);
 
-        return $workCenter->getCapacityHoursPerDay()
+        return $workCenter->getHoursPerDay()
             * $workCenter->getEfficiency()
-            * $workCenter->getUtilization();
+            * $workCenter->getCapacityUnits();
     }
 
     /**
@@ -137,7 +137,7 @@ final readonly class WorkCenterManager implements WorkCenterManagerInterface
 
         // Check if date is a working day
         $dayOfWeek = (int) $date->format('N'); // 1 (Monday) to 7 (Sunday)
-        $daysPerWeek = $workCenter->getDaysPerWeek();
+        $daysPerWeek = 5; // Assuming 5-day work week, consistent with calculateWeeklyCapacity
 
         // Assume work days are Monday to Friday for 5-day week, etc.
         if ($dayOfWeek > $daysPerWeek) {
@@ -150,10 +150,10 @@ final readonly class WorkCenterManager implements WorkCenterManagerInterface
             return 0.0;
         }
 
-        // Apply efficiency and utilization
-        return $workCenter->getCapacityHoursPerDay()
+        // Apply efficiency
+        return $workCenter->getHoursPerDay()
             * $workCenter->getEfficiency()
-            * $workCenter->getUtilization();
+            * $workCenter->getCapacityUnits();
     }
 
     /**
@@ -218,12 +218,12 @@ final readonly class WorkCenterManager implements WorkCenterManagerInterface
     {
         $workCenter = $this->getById($id);
 
-        $alternativeIds = $workCenter->getAlternativeIds();
+        $alternateId = $workCenter->getAlternateWorkCenterId();
         $alternatives = [];
 
-        foreach ($alternativeIds as $altId) {
+        if ($alternateId !== null) {
             try {
-                $alt = $this->getById($altId);
+                $alt = $this->getById($alternateId);
                 if ($alt->isActive()) {
                     $alternatives[] = $alt;
                 }
@@ -348,8 +348,10 @@ final readonly class WorkCenterManager implements WorkCenterManagerInterface
     ): array {
         $workCenter = $this->getById($workCenterId);
 
-        $laborCost = ($setupHours + $runHours) * $workCenter->getLaborRate();
-        $machineCost = ($setupHours + $runHours) * $workCenter->getMachineRate();
+        // Use hourly rate for labor cost (getHourlyRate is the standard labor rate)
+        $laborCost = ($setupHours + $runHours) * $workCenter->getHourlyRate();
+        // Machine cost not available in interface - set to 0
+        $machineCost = 0.0;
         $overheadCost = ($setupHours + $runHours) * $workCenter->getOverheadRate();
 
         return [

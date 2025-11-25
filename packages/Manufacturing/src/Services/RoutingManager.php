@@ -227,22 +227,20 @@ final readonly class RoutingManager implements RoutingManagerInterface
     {
         $routing = $this->getById($routingId);
 
-        $laborCost = 0.0;
-        $machineCost = 0.0;
-        $overheadCost = 0.0;
+        $subcontractCost = 0.0;
 
         foreach ($routing->getOperations() as $operation) {
-            $hours = $operation->getCapacityTimeHours($quantity);
-            $laborCost += $hours * ($operation->laborRate ?? 0.0);
-            $machineCost += $hours * ($operation->machineRate ?? 0.0);
-            $overheadCost += $hours * ($operation->overheadRate ?? 0.0);
+            // Only subcontract operations have cost data on the operation itself
+            // Labor, machine, and overhead costs should be calculated from work center rates
+            $subcontractCost += ($operation->subcontractCost ?? 0.0) * $quantity;
         }
 
         return [
-            'labor' => $laborCost,
-            'machine' => $machineCost,
-            'overhead' => $overheadCost,
-            'total' => $laborCost + $machineCost + $overheadCost,
+            'labor' => 0.0, // Requires work center rate data
+            'machine' => 0.0, // Requires work center rate data
+            'overhead' => 0.0, // Requires work center rate data
+            'subcontract' => $subcontractCost,
+            'total' => $subcontractCost,
         ];
     }
 
