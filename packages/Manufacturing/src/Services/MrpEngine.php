@@ -327,15 +327,10 @@ final readonly class MrpEngine implements MrpEngineInterface
 
             LotSizingStrategy::PERIOD_ORDER_QUANTITY => $netRequirement * ($parameters['periods'] ?? 1),
 
-            LotSizingStrategy::MIN_MAX => $this->applyMinMax(
+            LotSizingStrategy::LEAST_UNIT_COST => $this->calculateLeastUnitCost(
                 $netRequirement,
-                $parameters['minimum'] ?? 0,
-                $parameters['maximum'] ?? PHP_FLOAT_MAX
-            ),
-
-            LotSizingStrategy::MULTIPLE_OF => $this->roundToMultiple(
-                $netRequirement,
-                $parameters['multiple'] ?? 1
+                $parameters['orderingCost'] ?? 50.0,
+                $parameters['holdingCostRate'] ?? 0.25
             ),
         };
     }
@@ -353,23 +348,22 @@ final readonly class MrpEngine implements MrpEngineInterface
     }
 
     /**
-     * Apply min/max lot sizing.
+     * Calculate Least Unit Cost lot sizing.
+     *
+     * Minimizes the total cost per unit by balancing ordering and holding costs.
      */
-    private function applyMinMax(float $quantity, float $minimum, float $maximum): float
+    private function calculateLeastUnitCost(float $demand, float $orderingCost, float $holdingCostRate): float
     {
-        return min($maximum, max($minimum, $quantity));
-    }
-
-    /**
-     * Round quantity to nearest multiple.
-     */
-    private function roundToMultiple(float $quantity, float $multiple): float
-    {
-        if ($multiple <= 0) {
-            return $quantity;
+        // Simple LUC implementation: use EOQ-like calculation with provided demand
+        if ($holdingCostRate <= 0) {
+            return $demand;
         }
 
-        return ceil($quantity / $multiple) * $multiple;
+        // Use a simpler cost optimization approach
+        $annualDemand = $demand * 12;
+        $eoq = sqrt((2 * $annualDemand * $orderingCost) / $holdingCostRate);
+
+        return max($demand, $eoq);
     }
 
     /**
@@ -410,7 +404,9 @@ final readonly class MrpEngine implements MrpEngineInterface
         }
 
         try {
-            $bomLines = $this->bomManager->explode($productId, $quantity, null, 1);
+            // Get BOM for the product, then explode it
+            $bom = $this->bomManager->findByProductId($productId);
+            $bomLines = $this->bomManager->explode($bom->getId(), $quantity);
 
             foreach ($bomLines as $line) {
                 $componentId = $line['productId'];

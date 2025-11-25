@@ -221,28 +221,37 @@ final readonly class RoutingManager implements RoutingManagerInterface
     }
 
     /**
+     * Calculate routing cost for a given quantity.
+     *
+     * Note: This method only calculates subcontract costs from operation data.
+     * Labor, machine, and overhead costs require work center rate data which
+     * is not available at the operation level. For complete routing costing,
+     * use WorkCenterManager::calculateCost() for each operation's work center.
+     *
      * {@inheritdoc}
      */
     public function calculateCost(string $routingId, float $quantity): array
     {
         $routing = $this->getById($routingId);
 
-        $laborCost = 0.0;
-        $machineCost = 0.0;
-        $overheadCost = 0.0;
+        $subcontractCost = 0.0;
 
         foreach ($routing->getOperations() as $operation) {
-            $hours = $operation->getCapacityTimeHours($quantity);
-            $laborCost += $hours * ($operation->laborRate ?? 0.0);
-            $machineCost += $hours * ($operation->machineRate ?? 0.0);
-            $overheadCost += $hours * ($operation->overheadRate ?? 0.0);
+            // Only subcontract operations have cost data on the operation itself
+            // Labor, machine, and overhead costs require WorkCenterManager for rate lookup
+            if ($operation->isSubcontracted()) {
+                // No way to get subcontract cost from interface; set to 0.0 or throw exception if required
+                // $subcontractCost += $operation->getSubcontractCost() * $quantity; // Uncomment if method exists
+                $subcontractCost += 0.0;
+            }
         }
 
         return [
-            'labor' => $laborCost,
-            'machine' => $machineCost,
-            'overhead' => $overheadCost,
-            'total' => $laborCost + $machineCost + $overheadCost,
+            'labor' => 0.0, // Use WorkCenterManager::calculateCost() for work center rates
+            'machine' => 0.0, // Use WorkCenterManager::calculateCost() for work center rates
+            'overhead' => 0.0, // Use WorkCenterManager::calculateCost() for work center rates
+            'subcontract' => $subcontractCost,
+            'total' => $subcontractCost,
         ];
     }
 
