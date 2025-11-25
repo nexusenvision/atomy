@@ -399,42 +399,6 @@ MIT License - See LICENSE file for details.
 
 
 # Get review queue
-query {
-  intelligenceReviewQueue(status: PENDING) {
-    id
-    processContext
-    aiDecision
-    entitySnapshot
-    assignedTo
-  }
-}
-
-# Get A/B test report
-query {
-  intelligenceABTestReport(
-    modelA: "openai_gpt4"
-    modelB: "anthropic_claude"
-    since: "2025-01-01"
-  ) {
-    modelACorrect
-    modelBCorrect
-    significanceLevel
-    isStatisticallySignificant
-  }
-}
-
-# Get cost recommendations
-query {
-  intelligenceCostRecommendations(status: PENDING) {
-    modelName
-    recommendedModel
-    estimatedSavings
-    accuracyImpact
-    rationale
-  }
-}
-```
-
 ## Security & Compliance
 
 ### GDPR Article 22 Compliance
