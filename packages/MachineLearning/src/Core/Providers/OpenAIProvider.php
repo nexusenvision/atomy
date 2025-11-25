@@ -126,12 +126,12 @@ final class OpenAIProvider implements ProviderInterface
             ]);
 
             throw ProviderUnavailableException::forProvider('openai', $e->getMessage());
-        } catch (\Throwable $e) {
-            $this->logger?->error('Unexpected error in OpenAI provider', [
+        } catch (\JsonException $e) {
+            $this->logger?->error('Failed to parse OpenAI response', [
                 'error' => $e->getMessage(),
             ]);
 
-            throw ProviderUnavailableException::forProvider('openai', $e->getMessage());
+            throw ProviderUnavailableException::forProvider('openai', 'Invalid JSON response: ' . $e->getMessage());
         }
     }
 

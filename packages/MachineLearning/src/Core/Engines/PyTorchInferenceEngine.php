@@ -210,6 +210,26 @@ PYTHON;
     }
 
     /**
+     * Validate model path for security
+     * 
+     * @param Model $model
+     * 
+     * @throws InferenceException If path is invalid or contains shell metacharacters
+     */
+    private function validateModelPath(Model $model): void
+    {
+        // Validate path doesn't contain shell metacharacters
+        if (preg_match('/[;&|`$\\\\]/', $model->artifactPath)) {
+            throw InferenceException::forModel($model->getIdentifier(), 'Invalid model path: contains shell metacharacters');
+        }
+
+        // Validate artifact exists
+        if (!file_exists($model->artifactPath)) {
+            throw InferenceException::forModel($model->getIdentifier(), 'Model artifact not found: ' . $model->artifactPath);
+        }
+    }
+
+    /**
      * Execute Python script and return results
      * 
      * @param string $script Python code to execute
@@ -222,6 +242,9 @@ PYTHON;
      */
     private function executePythonScript(string $script, Model $model): array
     {
+        // Validate model path before execution
+        $this->validateModelPath($model);
+
         $pythonExec = $this->pythonPath ?? self::PYTHON_EXECUTABLE;
         
         // Create temporary script file
