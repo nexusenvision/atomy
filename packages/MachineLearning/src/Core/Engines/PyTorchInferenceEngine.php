@@ -39,12 +39,42 @@ final readonly class PyTorchInferenceEngine implements InferenceEngineInterface
      * @param string|null $pythonPath Path to Python executable (null for system default)
      * @param int $timeout Maximum execution time in seconds
      * @param LoggerInterface|null $logger Optional logger
+     * 
+     * @throws \InvalidArgumentException If pythonPath contains invalid characters
      */
     public function __construct(
         private ?string $pythonPath = null,
         private int $timeout = self::DEFAULT_TIMEOUT,
         private ?LoggerInterface $logger = null,
-    ) {}
+    ) {
+        if ($pythonPath !== null) {
+            $this->validateExecutablePath($pythonPath);
+        }
+    }
+
+    /**
+     * Validate executable path for security
+     * 
+     * @param string $path Path to validate
+     * 
+     * @throws \InvalidArgumentException If path contains dangerous characters
+     */
+    private function validateExecutablePath(string $path): void
+    {
+        // Reject directory traversal attempts
+        if (str_contains($path, '..')) {
+            throw new \InvalidArgumentException(
+                'Python path cannot contain directory traversal sequences (..)'
+            );
+        }
+
+        // Only allow alphanumeric, underscores, hyphens, dots, and forward slashes
+        if (!preg_match('#^[a-zA-Z0-9_.\-/]+$#', $path)) {
+            throw new \InvalidArgumentException(
+                'Python path contains invalid characters. Only alphanumeric, underscores, hyphens, dots, and forward slashes are allowed.'
+            );
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -210,6 +240,40 @@ PYTHON;
     }
 
     /**
+     * Validate model path for security
+     * 
+     * @param Model $model
+     * 
+     * @throws InferenceException If path is invalid or contains dangerous characters
+     */
+    private function validateModelPath(Model $model): void
+    {
+        $path = $model->artifactPath;
+
+        // Reject directory traversal attempts
+        if (str_contains($path, '..')) {
+            throw InferenceException::forModel(
+                $model->getIdentifier(),
+                'Invalid model path: directory traversal sequences (..) are not allowed'
+            );
+        }
+
+        // Only allow alphanumeric, underscores, hyphens, dots, and forward slashes
+        // This prevents shell injection and Python code injection via single quotes
+        if (!preg_match('#^[a-zA-Z0-9_.\-/]+$#', $path)) {
+            throw InferenceException::forModel(
+                $model->getIdentifier(),
+                'Invalid model path: only alphanumeric characters, underscores, hyphens, dots, and forward slashes are allowed'
+            );
+        }
+
+        // Validate artifact exists
+        if (!file_exists($path)) {
+            throw InferenceException::forModel($model->getIdentifier(), 'Model artifact not found: ' . $path);
+        }
+    }
+
+    /**
      * Execute Python script and return results
      * 
      * @param string $script Python code to execute
@@ -222,6 +286,9 @@ PYTHON;
      */
     private function executePythonScript(string $script, Model $model): array
     {
+        // Validate model path before execution
+        $this->validateModelPath($model);
+
         $pythonExec = $this->pythonPath ?? self::PYTHON_EXECUTABLE;
         
         // Create temporary script file
@@ -231,8 +298,8 @@ PYTHON;
         try {
             $startTime = microtime(true);
             
-            // Execute with timeout
-            $command = "{$pythonExec} {$tempFile} 2>&1";
+            // Execute with timeout using escapeshellarg for security
+            $command = escapeshellarg($pythonExec) . ' ' . escapeshellarg($tempFile) . ' 2>&1';
             $output = shell_exec($command);
             
             $duration = microtime(true) - $startTime;

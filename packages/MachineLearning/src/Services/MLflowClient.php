@@ -273,7 +273,17 @@ final readonly class MLflowClient implements MLflowClientInterface
                 'timeout' => 5,
             ]);
             return true;
-        } catch (\Throwable) {
+        } catch (ClientExceptionInterface $e) {
+            $this->logger?->debug('MLflow health check failed', [
+                'error' => $e->getMessage(),
+                'type' => $e::class,
+            ]);
+            return false;
+        } catch (\Throwable $e) {
+            $this->logger?->debug('MLflow health check failed with unexpected error', [
+                'error' => $e->getMessage(),
+                'type' => $e::class,
+            ]);
             return false;
         }
     }
