@@ -90,18 +90,18 @@ interface MfaEnrollmentQueryInterface
      *
      * @param string $userId User identifier
      * @param string $method MFA method
-     * @return array|null Enrollment data or null if not found
+     * @return MfaEnrollmentInterface|null The pending enrollment or null if not found
      */
-    public function findPendingByUserAndMethod(string $userId, string $method): ?array;
+    public function findPendingByUserAndMethod(string $userId, string $method): ?MfaEnrollmentInterface;
 
     /**
      * Find active enrollment by user and method.
      *
      * @param string $userId User identifier
      * @param string $method MFA method
-     * @return array|null Enrollment data or null if not found
+     * @return MfaEnrollmentInterface|null The active enrollment or null if not found
      */
-    public function findActiveByUserAndMethod(string $userId, string $method): ?array;
+    public function findActiveByUserAndMethod(string $userId, string $method): ?MfaEnrollmentInterface;
 
     /**
      * Find active backup codes for a user.
