@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Nexus\Payroll\Services;
 
 use Nexus\Payroll\Contracts\PayslipInterface;
-use Nexus\Payroll\Contracts\PayslipRepositoryInterface;
+use Nexus\Payroll\Contracts\PayslipQueryInterface;
+use Nexus\Payroll\Contracts\PayslipPersistInterface;
 use Nexus\Payroll\Exceptions\PayslipNotFoundException;
 use Nexus\Payroll\Exceptions\PayslipValidationException;
 use Nexus\Payroll\ValueObjects\PayslipStatus;
@@ -13,16 +14,17 @@ use Nexus\Payroll\ValueObjects\PayslipStatus;
 /**
  * Service for managing payslips.
  */
-readonly class PayslipManager
+final readonly class PayslipManager
 {
     public function __construct(
-        private PayslipRepositoryInterface $payslipRepository,
+        private PayslipQueryInterface $payslipQuery,
+        private PayslipPersistInterface $payslipPersist,
     ) {
     }
     
     public function getPayslipById(string $id): PayslipInterface
     {
-        $payslip = $this->payslipRepository->findById($id);
+        $payslip = $this->payslipQuery->findById($id);
         
         if (!$payslip) {
             throw PayslipNotFoundException::forId($id);
@@ -39,7 +41,7 @@ readonly class PayslipManager
             throw PayslipValidationException::cannotModifyApproved();
         }
         
-        return $this->payslipRepository->update($id, [
+        return $this->payslipPersist->update($id, [
             'status' => PayslipStatus::APPROVED->value,
             'approved_by' => $approvedBy,
             'approved_at' => new \DateTime(),
@@ -54,13 +56,13 @@ readonly class PayslipManager
             throw new PayslipValidationException("Payslip must be approved before marking as paid.");
         }
         
-        return $this->payslipRepository->update($id, [
+        return $this->payslipPersist->update($id, [
             'status' => PayslipStatus::PAID->value,
         ]);
     }
     
     public function getEmployeePayslips(string $employeeId, ?int $year = null): array
     {
-        return $this->payslipRepository->getEmployeePayslips($employeeId, $year);
+        return $this->payslipQuery->getEmployeePayslips($employeeId, $year);
     }
 }

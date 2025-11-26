@@ -5,17 +5,12 @@ declare(strict_types=1);
 namespace Nexus\Payroll\Contracts;
 
 /**
- * Repository contract for employee component persistence.
+ * Combined repository contract for employee component operations.
+ *
+ * @deprecated Use EmployeeComponentQueryInterface and EmployeeComponentPersistInterface separately for CQRS compliance.
+ *             This interface is maintained for backward compatibility only.
  */
-interface EmployeeComponentRepositoryInterface
+interface EmployeeComponentRepositoryInterface extends EmployeeComponentQueryInterface, EmployeeComponentPersistInterface
 {
-    public function findById(string $id): ?EmployeeComponentInterface;
-    
-    public function getActiveComponentsForEmployee(string $employeeId): array;
-    
-    public function create(array $data): EmployeeComponentInterface;
-    
-    public function update(string $id, array $data): EmployeeComponentInterface;
-    
-    public function delete(string $id): bool;
+    // All methods are inherited from EmployeeComponentQueryInterface and EmployeeComponentPersistInterface
 }

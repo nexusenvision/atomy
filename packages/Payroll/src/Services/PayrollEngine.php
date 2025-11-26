@@ -7,21 +7,23 @@ namespace Nexus\Payroll\Services;
 use DateTimeInterface;
 use Nexus\Payroll\Contracts\StatutoryCalculatorInterface;
 use Nexus\Payroll\Contracts\PayslipInterface;
-use Nexus\Payroll\Contracts\PayslipRepositoryInterface;
-use Nexus\Payroll\Contracts\ComponentRepositoryInterface;
-use Nexus\Payroll\Contracts\EmployeeComponentRepositoryInterface;
+use Nexus\Payroll\Contracts\PayslipQueryInterface;
+use Nexus\Payroll\Contracts\PayslipPersistInterface;
+use Nexus\Payroll\Contracts\ComponentQueryInterface;
+use Nexus\Payroll\Contracts\EmployeeComponentQueryInterface;
 use Nexus\Payroll\Contracts\PayloadInterface;
 use Nexus\Payroll\ValueObjects\PayslipStatus;
 
 /**
  * Core country-agnostic payroll processing engine.
  */
-readonly class PayrollEngine
+final readonly class PayrollEngine
 {
     public function __construct(
-        private PayslipRepositoryInterface $payslipRepository,
-        private ComponentRepositoryInterface $componentRepository,
-        private EmployeeComponentRepositoryInterface $employeeComponentRepository,
+        private PayslipQueryInterface $payslipQuery,
+        private PayslipPersistInterface $payslipPersist,
+        private ComponentQueryInterface $componentQuery,
+        private EmployeeComponentQueryInterface $employeeComponentQuery,
         private StatutoryCalculatorInterface $statutoryCalculator,
     ) {
     }
@@ -96,7 +98,7 @@ readonly class PayrollEngine
         $netPay = $grossPay - $totalDeductions;
         
         // 6. Create payslip
-        return $this->payslipRepository->create([
+        return $this->payslipPersist->create([
             'employee_id' => $employeeId,
             'period_start' => $periodStart->format('Y-m-d'),
             'period_end' => $periodEnd->format('Y-m-d'),
@@ -124,11 +126,11 @@ readonly class PayrollEngine
      */
     private function calculateEarnings(string $employeeId): array
     {
-        $employeeComponents = $this->employeeComponentRepository->getActiveComponentsForEmployee($employeeId);
+        $employeeComponents = $this->employeeComponentQuery->getActiveComponentsForEmployee($employeeId);
         $earnings = [];
         
         foreach ($employeeComponents as $empComponent) {
-            $component = $this->componentRepository->findById($empComponent->getComponentId());
+            $component = $this->componentQuery->findById($empComponent->getComponentId());
             
             if (!$component || $component->getType() !== 'earning') {
                 continue;
@@ -155,11 +157,11 @@ readonly class PayrollEngine
      */
     private function calculateNonStatutoryDeductions(string $employeeId): array
     {
-        $employeeComponents = $this->employeeComponentRepository->getActiveComponentsForEmployee($employeeId);
+        $employeeComponents = $this->employeeComponentQuery->getActiveComponentsForEmployee($employeeId);
         $deductions = [];
         
         foreach ($employeeComponents as $empComponent) {
-            $component = $this->componentRepository->findById($empComponent->getComponentId());
+            $component = $this->componentQuery->findById($empComponent->getComponentId());
             
             if (!$component || $component->getType() !== 'deduction' || $component->isStatutory()) {
                 continue;
