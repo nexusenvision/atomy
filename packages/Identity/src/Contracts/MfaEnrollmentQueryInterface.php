@@ -18,15 +18,15 @@ interface MfaEnrollmentQueryInterface
      * Find an enrollment by its unique identifier.
      *
      * @param string $enrollmentId The ULID enrollment identifier
-     * @return MfaEnrollmentInterface|null The enrollment or null if not found
+     * @return MfaEnrollmentDataInterface|null The enrollment or null if not found
      */
-    public function findById(string $enrollmentId): ?MfaEnrollmentInterface;
+    public function findById(string $enrollmentId): ?MfaEnrollmentDataInterface;
 
     /**
      * Find all enrollments for a specific user.
      *
      * @param string $userId The user identifier
-     * @return array<MfaEnrollmentInterface> Array of enrollments
+     * @return array<MfaEnrollmentDataInterface> Array of enrollments
      */
     public function findByUserId(string $userId): array;
 
@@ -36,7 +36,7 @@ interface MfaEnrollmentQueryInterface
      * Active enrollments are those that are verified and not deleted.
      *
      * @param string $userId The user identifier
-     * @return array<MfaEnrollmentInterface> Array of active enrollments
+     * @return array<MfaEnrollmentDataInterface> Array of active enrollments
      */
     public function findActiveByUserId(string $userId): array;
 
@@ -45,9 +45,9 @@ interface MfaEnrollmentQueryInterface
      *
      * @param string $userId The user identifier
      * @param MfaMethod $method The MFA method
-     * @return MfaEnrollmentInterface|null The enrollment or null if not found
+     * @return MfaEnrollmentDataInterface|null The enrollment or null if not found
      */
-    public function findByUserAndMethod(string $userId, MfaMethod $method): ?MfaEnrollmentInterface;
+    public function findByUserAndMethod(string $userId, MfaMethod $method): ?MfaEnrollmentDataInterface;
 
     /**
      * Find the primary enrollment for a user.
@@ -55,9 +55,9 @@ interface MfaEnrollmentQueryInterface
      * The primary enrollment is used as the default MFA method.
      *
      * @param string $userId The user identifier
-     * @return MfaEnrollmentInterface|null The primary enrollment or null if none set
+     * @return MfaEnrollmentDataInterface|null The primary enrollment or null if none set
      */
-    public function findPrimaryByUserId(string $userId): ?MfaEnrollmentInterface;
+    public function findPrimaryByUserId(string $userId): ?MfaEnrollmentDataInterface;
 
     /**
      * Count active enrollments for a user.
@@ -81,7 +81,7 @@ interface MfaEnrollmentQueryInterface
      * Returns unverified enrollments older than a specified time.
      *
      * @param int $hoursOld Minimum age in hours
-     * @return array<MfaEnrollmentInterface> Enrollments needing reminder
+     * @return array<MfaEnrollmentDataInterface> Enrollments needing reminder
      */
     public function findUnverifiedOlderThan(int $hoursOld): array;
 
@@ -89,25 +89,25 @@ interface MfaEnrollmentQueryInterface
      * Find pending (unverified) enrollment by user and method.
      *
      * @param string $userId User identifier
-     * @param string $method MFA method
-     * @return MfaEnrollmentInterface|null The pending enrollment or null if not found
+     * @param MfaMethod $method MFA method
+     * @return MfaEnrollmentDataInterface|null The pending enrollment or null if not found
      */
-    public function findPendingByUserAndMethod(string $userId, string $method): ?MfaEnrollmentInterface;
+    public function findPendingByUserAndMethod(string $userId, MfaMethod $method): ?MfaEnrollmentDataInterface;
 
     /**
      * Find active enrollment by user and method.
      *
      * @param string $userId User identifier
-     * @param string $method MFA method
-     * @return MfaEnrollmentInterface|null The active enrollment or null if not found
+     * @param MfaMethod $method MFA method
+     * @return MfaEnrollmentDataInterface|null The active enrollment or null if not found
      */
-    public function findActiveByUserAndMethod(string $userId, string $method): ?MfaEnrollmentInterface;
+    public function findActiveByUserAndMethod(string $userId, MfaMethod $method): ?MfaEnrollmentDataInterface;
 
     /**
      * Find active backup codes for a user.
      *
      * @param string $userId User identifier
-     * @return array<MfaEnrollmentInterface> Array of backup code enrollments
+     * @return array<MfaEnrollmentDataInterface> Array of backup code enrollments
      */
     public function findActiveBackupCodes(string $userId): array;
 }
