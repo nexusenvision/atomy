@@ -14,11 +14,12 @@
 3. [Repository Interface Design](#3-repository-interface-design)
 4. [Service Class Design](#4-service-class-design)
 5. [Contract-Driven Development](#5-contract-driven-development)
-6. [Error Handling](#6-error-handling)
-7. [Testing Standards](#7-testing-standards)
-8. [Documentation Requirements](#8-documentation-requirements)
-9. [Code Quality Checklist](#9-code-quality-checklist)
-10. [Anti-Patterns to Avoid](#10-anti-patterns-to-avoid)
+6. [Value Objects & Data Protection](#6-value-objects--data-protection)
+7. [Error Handling](#7-error-handling)
+8. [Testing Standards](#8-testing-standards)
+9. [Documentation Requirements](#9-documentation-requirements)
+10. [Code Quality Checklist](#10-code-quality-checklist)
+11. [Anti-Patterns to Avoid](#11-anti-patterns-to-avoid)
 
 ---
 
@@ -530,7 +531,488 @@ $this->app->singleton(
 
 ---
 
-## 6. Error Handling
+## 6. Value Objects & Data Protection
+
+Value Objects (VOs) are immutable objects that represent domain concepts without identity. They are compared by their values, not by reference. This section provides comprehensive guidance on when to create VOs, when to avoid them, and how to use them to protect sensitive data.
+
+### 6.1 When to Create a Value Object
+
+**CREATE a VO when:**
+
+| Scenario | Example | Rationale |
+|----------|---------|-----------|
+| **Domain concept with validation** | `Money`, `EmailAddress`, `PhoneNumber` | Encapsulates validation rules; invalid states are impossible |
+| **Multi-field composite values** | `Address`, `DateRange`, `Coordinates` | Groups related fields that always travel together |
+| **Unit-sensitive quantities** | `Weight`, `Distance`, `Temperature` | Prevents unit confusion (kg vs lb, km vs miles) |
+| **Formatted identifiers** | `InvoiceNumber`, `TaxId`, `Iban` | Enforces format validation and normalization |
+| **Safe data projection** | `UserProfile`, `InvoiceSummary` | Exposes only safe-to-share fields, hides sensitive data |
+| **Calculations with precision** | `Money`, `Percentage`, `ExchangeRate` | Ensures correct arithmetic (no floating point errors) |
+
+**Example - Domain Concept VO:**
+```php
+// ✅ CORRECT: Money VO with validation and precision
+final readonly class Money
+{
+    public function __construct(
+        public int $amountInCents,
+        public string $currency
+    ) {
+        if ($amountInCents < 0) {
+            throw new InvalidMoneyException('Amount cannot be negative');
+        }
+        if (strlen($currency) !== 3) {
+            throw new InvalidMoneyException('Currency must be ISO 4217 code');
+        }
+    }
+    
+    public function add(Money $other): self
+    {
+        if ($this->currency !== $other->currency) {
+            throw new CurrencyMismatchException();
+        }
+        return new self($this->amountInCents + $other->amountInCents, $this->currency);
+    }
+}
+```
+
+### 6.2 When NOT to Create a Value Object
+
+**DO NOT create a VO when:**
+
+| Scenario | Use Instead | Rationale |
+|----------|-------------|-----------|
+| **Single primitive with no validation** | Native type (`string`, `int`, `float`) | Unnecessary abstraction; adds complexity without value |
+| **Fixed set of options** | Native PHP Enum | Enums are purpose-built for finite option sets |
+| **Simple boolean flags** | `bool` | No benefit to wrapping a boolean |
+| **Temporary calculation result** | Local variable or array | VOs are for domain concepts, not intermediate values |
+| **Entity with identity** | Entity class | If it has an ID and lifecycle, it's not a VO |
+| **Wrapper with no behavior** | Native type | If the VO only has getters, it's just noise |
+
+**❌ WRONG: Unnecessary VO for simple string**
+```php
+// ❌ Over-engineering: No validation, no behavior
+final readonly class CustomerName
+{
+    public function __construct(
+        public string $value
+    ) {}
+}
+
+// Just use string directly in the entity
+interface CustomerInterface
+{
+    public function getName(): string;  // ✅ Simple is better
+}
+```
+
+**❌ WRONG: VO instead of Enum**
+```php
+// ❌ Should be an Enum, not a VO
+final readonly class InvoiceStatus
+{
+    public const DRAFT = 'draft';
+    public const PENDING = 'pending';
+    public const PAID = 'paid';
+    
+    public function __construct(
+        public string $value
+    ) {
+        if (!in_array($value, [self::DRAFT, self::PENDING, self::PAID])) {
+            throw new InvalidArgumentException();
+        }
+    }
+}
+
+// ✅ CORRECT: Use native PHP Enum
+enum InvoiceStatus: string
+{
+    case DRAFT = 'draft';
+    case PENDING = 'pending';
+    case PAID = 'paid';
+}
+```
+
+### 6.3 Value Object Categories
+
+#### Category 1: Domain Primitive VOs
+
+Wrap single values with domain-specific validation and behavior.
+
+| VO Name | Wraps | Validation | Behavior |
+|---------|-------|------------|----------|
+| `EmailAddress` | `string` | RFC 5322 format | `getDomain()`, `getLocalPart()` |
+| `PhoneNumber` | `string` | E.164 format | `getCountryCode()`, `format()` |
+| `Percentage` | `float` | 0-100 range | `of()`, `apply()`, `asDecimal()` |
+| `Ulid` | `string` | 26 chars, Crockford Base32 | `toDateTime()`, `compare()` |
+
+**Example:**
+```php
+final readonly class EmailAddress
+{
+    public function __construct(
+        public string $value
+    ) {
+        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidEmailException("Invalid email: {$value}");
+        }
+    }
+    
+    public function getDomain(): string
+    {
+        return substr($this->value, strpos($this->value, '@') + 1);
+    }
+    
+    public function equals(self $other): bool
+    {
+        return strtolower($this->value) === strtolower($other->value);
+    }
+}
+```
+
+#### Category 2: Composite VOs
+
+Group related fields that always travel together.
+
+| VO Name | Fields | Use Case |
+|---------|--------|----------|
+| `Address` | street, city, state, postalCode, country | Shipping, billing addresses |
+| `DateRange` | startDate, endDate | Fiscal periods, contracts |
+| `Coordinates` | latitude, longitude | Geolocation |
+| `Money` | amount, currency | Financial calculations |
+
+**Example:**
+```php
+final readonly class DateRange
+{
+    public function __construct(
+        public \DateTimeImmutable $startDate,
+        public \DateTimeImmutable $endDate
+    ) {
+        if ($endDate < $startDate) {
+            throw new InvalidDateRangeException('End date must be after start date');
+        }
+    }
+    
+    public function contains(\DateTimeImmutable $date): bool
+    {
+        return $date >= $this->startDate && $date <= $this->endDate;
+    }
+    
+    public function overlaps(self $other): bool
+    {
+        return $this->startDate <= $other->endDate && $this->endDate >= $other->startDate;
+    }
+    
+    public function getDays(): int
+    {
+        return $this->startDate->diff($this->endDate)->days;
+    }
+}
+```
+
+#### Category 3: Projection VOs (Read Models)
+
+Expose only safe-to-share fields from entities. **Critical for preventing data leakage.**
+
+| VO Name | Source Entity | Excluded Fields | Use Case |
+|---------|---------------|-----------------|----------|
+| `UserProfile` | `User` | passwordHash, apiTokens, mfaSecret | API responses, views |
+| `InvoiceSummary` | `Invoice` | internalNotes, costPrice | Customer portal |
+| `EmployeeCard` | `Employee` | salary, ssn, bankAccount | Org chart display |
+
+**Example - Preventing Sensitive Data Leakage:**
+```php
+// ❌ DANGEROUS: Entity interface exposes sensitive data
+interface UserInterface
+{
+    public function getId(): string;
+    public function getEmail(): string;
+    public function getPasswordHash(): string;  // ⚠️ NEVER EXPOSE!
+    public function getMfaSecret(): ?string;    // ⚠️ NEVER EXPOSE!
+    public function getApiTokens(): array;      // ⚠️ NEVER EXPOSE!
+}
+
+// ✅ SAFE: Projection VO for external use
+final readonly class UserProfile
+{
+    public function __construct(
+        public string $id,
+        public string $email,
+        public string $name,
+        public ?string $avatarUrl,
+        public \DateTimeImmutable $createdAt
+        // NO password, NO tokens, NO MFA secrets
+    ) {}
+    
+    public static function fromUser(UserInterface $user): self
+    {
+        return new self(
+            id: $user->getId(),
+            email: $user->getEmail(),
+            name: $user->getName(),
+            avatarUrl: $user->getAvatarUrl(),
+            createdAt: $user->getCreatedAt()
+        );
+    }
+}
+
+// ✅ SAFE: Query interface returns projection, not entity
+interface UserQueryInterface
+{
+    public function findById(string $id): UserInterface;           // Internal use only
+    public function getProfileById(string $id): UserProfile;       // Safe for API/views
+    public function getProfilesByTenant(string $tenantId): array;  // Returns UserProfile[]
+}
+```
+
+### 6.4 Enum vs Value Object Decision Matrix
+
+| Characteristic | Use Enum | Use Value Object |
+|----------------|----------|------------------|
+| **Finite, known set of values** | ✅ Yes | ❌ No |
+| **Values can change at runtime** | ❌ No | ✅ Yes |
+| **Needs validation logic** | ❌ Limited | ✅ Yes |
+| **Has behavior/methods** | ❌ Limited | ✅ Yes |
+| **Composite (multiple fields)** | ❌ No | ✅ Yes |
+| **Backed by database lookup** | ❌ No | ✅ Yes |
+| **Type safety for options** | ✅ Yes | ⚠️ Overkill |
+
+**Use Enum for:**
+```php
+// Status with fixed options - ENUM
+enum OrderStatus: string
+{
+    case PENDING = 'pending';
+    case CONFIRMED = 'confirmed';
+    case SHIPPED = 'shipped';
+    case DELIVERED = 'delivered';
+    case CANCELLED = 'cancelled';
+}
+
+// Type classification - ENUM
+enum AccountType: string
+{
+    case ASSET = 'asset';
+    case LIABILITY = 'liability';
+    case EQUITY = 'equity';
+    case REVENUE = 'revenue';
+    case EXPENSE = 'expense';
+}
+
+// Permission level - ENUM
+enum AccessLevel: int
+{
+    case NONE = 0;
+    case READ = 1;
+    case WRITE = 2;
+    case ADMIN = 3;
+}
+```
+
+**Use Value Object for:**
+```php
+// Dynamic tax rate with validation - VO
+final readonly class TaxRate
+{
+    public function __construct(
+        public string $code,
+        public float $rate,
+        public string $jurisdiction,
+        public \DateTimeImmutable $effectiveFrom,
+        public ?\DateTimeImmutable $effectiveTo = null
+    ) {
+        if ($rate < 0 || $rate > 100) {
+            throw new InvalidTaxRateException();
+        }
+    }
+    
+    public function isEffectiveOn(\DateTimeImmutable $date): bool
+    {
+        return $date >= $this->effectiveFrom 
+            && ($this->effectiveTo === null || $date <= $this->effectiveTo);
+    }
+}
+
+// Currency with conversion behavior - VO (not enum, too many currencies)
+final readonly class Currency
+{
+    public function __construct(
+        public string $code,
+        public string $symbol,
+        public int $decimalPlaces
+    ) {
+        if (strlen($code) !== 3) {
+            throw new InvalidCurrencyException();
+        }
+    }
+}
+```
+
+### 6.5 Data Protection Rules
+
+#### Rule 1: Never Expose Password Hashes
+
+```php
+// ❌ FORBIDDEN: Password hash in interface
+interface UserInterface
+{
+    public function getPasswordHash(): string;  // NEVER!
+}
+
+// ✅ CORRECT: Verification method instead
+interface UserInterface
+{
+    public function verifyPassword(string $plainPassword): bool;
+}
+```
+
+#### Rule 2: Never Expose API Tokens/Secrets
+
+```php
+// ❌ FORBIDDEN: Tokens exposed via getter
+interface UserInterface
+{
+    public function getApiTokens(): array;      // NEVER!
+    public function getMfaSecret(): ?string;    // NEVER!
+}
+
+// ✅ CORRECT: Separate, secured interface
+interface TokenManagerInterface
+{
+    public function validateToken(string $token): bool;
+    public function revokeToken(string $tokenId): void;
+}
+```
+
+#### Rule 3: Use Projections for External APIs
+
+```php
+// ❌ DANGEROUS: Returning entity to controller
+final readonly class UserController
+{
+    public function show(string $id): JsonResponse
+    {
+        $user = $this->userQuery->findById($id);
+        return response()->json($user);  // Exposes everything!
+    }
+}
+
+// ✅ SAFE: Return projection VO
+final readonly class UserController
+{
+    public function show(string $id): JsonResponse
+    {
+        $profile = $this->userQuery->getProfileById($id);
+        return response()->json($profile);  // Only safe fields
+    }
+}
+```
+
+#### Rule 4: Audit Log Protection
+
+```php
+// ❌ DANGEROUS: Logging sensitive data
+$this->auditLogger->log($userId, 'password_change', [
+    'old_hash' => $user->getPasswordHash(),  // NEVER LOG!
+    'new_hash' => $newHash,                   // NEVER LOG!
+]);
+
+// ✅ SAFE: Log action without sensitive details
+$this->auditLogger->log($userId, 'password_change', [
+    'changed_at' => now()->toIso8601String(),
+    'ip_address' => $request->ip(),
+]);
+```
+
+### 6.6 Value Object Checklist
+
+Before creating a VO, answer these questions:
+
+- [ ] **Does it have validation rules?** If no, consider using native type
+- [ ] **Does it have behavior (methods)?** If no, consider using native type
+- [ ] **Is it a finite set of options?** If yes, use Enum instead
+- [ ] **Does it group related fields?** If yes, VO is appropriate
+- [ ] **Does it protect sensitive data?** If yes, create projection VO
+- [ ] **Will it be reused across packages?** If yes, place in `src/ValueObjects/`
+- [ ] **Is it immutable?** VOs MUST be immutable (use `readonly`)
+
+### 6.7 VO Anti-Patterns
+
+**❌ Anti-Pattern 1: Wrapper with no value**
+```php
+// ❌ WRONG: Just a wrapper, no validation, no behavior
+final readonly class CustomerId
+{
+    public function __construct(public string $value) {}
+}
+
+// ✅ Just use string - less code, same effect
+public function findCustomer(string $customerId): CustomerInterface;
+```
+
+**❌ Anti-Pattern 2: Mutable "Value Object"**
+```php
+// ❌ WRONG: VOs must be immutable
+final class Money  // Missing readonly!
+{
+    public int $amount;  // Mutable!
+    
+    public function setAmount(int $amount): void  // Setter!
+    {
+        $this->amount = $amount;
+    }
+}
+
+// ✅ CORRECT: Immutable VO
+final readonly class Money
+{
+    public function __construct(
+        public int $amountInCents,
+        public string $currency
+    ) {}
+    
+    public function add(Money $other): self  // Returns new instance
+    {
+        return new self($this->amountInCents + $other->amountInCents, $this->currency);
+    }
+}
+```
+
+**❌ Anti-Pattern 3: VO with identity**
+```php
+// ❌ WRONG: If it has an ID, it's an Entity, not a VO
+final readonly class Address
+{
+    public function __construct(
+        public string $id,  // VOs don't have IDs!
+        public string $street,
+        public string $city
+    ) {}
+}
+
+// ✅ CORRECT: VO without identity
+final readonly class Address
+{
+    public function __construct(
+        public string $street,
+        public string $city,
+        public string $postalCode,
+        public string $country
+    ) {}
+    
+    public function equals(self $other): bool
+    {
+        return $this->street === $other->street
+            && $this->city === $other->city
+            && $this->postalCode === $other->postalCode
+            && $this->country === $other->country;
+    }
+}
+```
+
+---
+
+## 7. Error Handling
 
 ### Custom Exceptions
 
@@ -612,7 +1094,7 @@ public function findById(string $id): InvoiceInterface
 
 ---
 
-## 7. Testing Standards
+## 8. Testing Standards
 
 ### Test Organization
 
@@ -667,7 +1149,7 @@ public function test_find_invoice_by_id_when_not_found_throws_exception(): void
 
 ---
 
-## 8. Documentation Requirements
+## 9. Documentation Requirements
 
 ### Method Docblocks
 
@@ -716,7 +1198,7 @@ Every package must have comprehensive README.md:
 
 ---
 
-## 9. Code Quality Checklist
+## 10. Code Quality Checklist
 
 Before committing any code:
 
@@ -754,7 +1236,7 @@ Before committing any code:
 
 ---
 
-## 10. Anti-Patterns to Avoid
+## 11. Anti-Patterns to Avoid
 
 ### ❌ Anti-Pattern 1: God Repository
 
@@ -1035,7 +1517,7 @@ Is this a read operation?
 
 ---
 
-## 11. Architectural Violation Detection
+## 12. Architectural Violation Detection
 
 ### Automated Violation Scans
 
@@ -1141,7 +1623,7 @@ grep -r "private array\|private int\|private string" src/Services/ | grep -v "re
 
 ---
 
-## 12. Package Documentation Standards
+## 13. Package Documentation Standards
 
 ### Required Package Files
 
@@ -1186,7 +1668,7 @@ Create a `Core/` folder when your package is **complex** and contains internal c
 
 ---
 
-## 13. Hybrid Event Architecture
+## 14. Hybrid Event Architecture
 
 Nexus uses two event patterns for different needs:
 
@@ -1240,7 +1722,7 @@ $balance = $this->eventStream->getStateAt($accountId, '2024-10-15');
 
 ---
 
-## 14. Compliance & Statutory Architecture
+## 15. Compliance & Statutory Architecture
 
 All compliance activities are divided into two distinct packages:
 
@@ -1254,7 +1736,7 @@ Manages **Reporting Compliance** and the specific formats mandated by a legal au
 
 ---
 
-## 15. Naming Conventions
+## 16. Naming Conventions
 
 | Element | Convention | Example |
 |---------|-----------|---------|
@@ -1269,7 +1751,7 @@ Manages **Reporting Compliance** and the specific formats mandated by a legal au
 
 ---
 
-## 16. Mandatory Pre-Implementation Checklist
+## 17. Mandatory Pre-Implementation Checklist
 
 **BEFORE implementing ANY feature, you MUST:**
 
@@ -1287,7 +1769,7 @@ Manages **Reporting Compliance** and the specific formats mandated by a legal au
 
 ---
 
-## 17. Package Folder Structure
+## 18. Package Folder Structure
 
 ### Clear Separation of Concerns
 
@@ -1302,7 +1784,7 @@ Manages **Reporting Compliance** and the specific formats mandated by a legal au
 
 ---
 
-## 18. Development Workflow
+## 19. Development Workflow
 
 ### Creating a New Package
 
@@ -1349,7 +1831,7 @@ Manages **Reporting Compliance** and the specific formats mandated by a legal au
 
 ---
 
-## 19. Facade & Global Helper Prohibition
+## 20. Facade & Global Helper Prohibition
 
 The use of framework Facades and global helpers is **strictly forbidden** in all code within the `packages/` directory.
 
@@ -1407,7 +1889,7 @@ public function isExpired(\DateTimeImmutable $expiresAt): bool
 
 ---
 
-## 20. Key Reminders
+## 21. Key Reminders
 
 1. **Packages are pure engines**: Pure logic, no persistence, no framework coupling
 2. **Interfaces define needs**: Every external dependency is an interface

@@ -8,6 +8,7 @@ Before implementing ANY feature or writing ANY code, you MUST fully read and und
    - All coding standards, patterns, and best practices
    - Repository interface design principles
    - PHP 8.3+ language standards
+   - **Value Objects & Data Protection** (Section 6) - When to use VOs, data leakage prevention
    - Architectural violation detection rules
    - Testing and documentation requirements
    - Complete anti-patterns reference
