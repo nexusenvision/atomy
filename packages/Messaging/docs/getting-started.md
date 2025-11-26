@@ -1,4 +1,4 @@
-# Getting Started with Nexus Tenant
+# Getting Started with Nexus Messaging
 
 ## Prerequisites
 
@@ -9,7 +9,7 @@
 ## Installation
 
 ```bash
-composer require nexus/tenant:"*@dev"
+composer require nexus/messaging:"*@dev"
 ```
 
 ## Basic Configuration

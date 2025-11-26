@@ -1,4 +1,4 @@
-# API Reference: Tax
+# API Reference: Messaging
 
 ## Interfaces
 

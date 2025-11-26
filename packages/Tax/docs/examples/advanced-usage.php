@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 /**
- * Advanced Usage Example: Tenant
+ * Advanced Usage Example: Tax
  * 
  * This example demonstrates advanced package features.
  */
 
-use Nexus\Tenant\Contracts\ManagerInterface;
+use Nexus\Tax\Contracts\ManagerInterface;
 
 // Inject services
 $manager = app(ManagerInterface::class);

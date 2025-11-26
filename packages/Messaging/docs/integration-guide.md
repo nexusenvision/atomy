@@ -1,11 +1,11 @@
-# Integration Guide: Tenant
+# Integration Guide: Messaging
 
 ## Laravel Integration
 
 ### Step 1: Install Package
 
 ```bash
-composer require nexus/tenant:"*@dev"
+composer require nexus/messaging:"*@dev"
 ```
 
 ### Step 2: Create Repository Implementation
@@ -25,7 +25,7 @@ Inject the manager interface and use it in your controllers.
 ### Step 1: Install Package
 
 ```bash
-composer require nexus/tenant:"*@dev"
+composer require nexus/messaging:"*@dev"
 ```
 
 ### Step 2: Configure Services

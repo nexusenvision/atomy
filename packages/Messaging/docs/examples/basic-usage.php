@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 /**
- * Basic Usage Example: Tenant
+ * Basic Usage Example: Messaging
  * 
  * This example demonstrates basic package usage.
  */
 
-use Nexus\Tenant\Contracts\ManagerInterface;
+use Nexus\Messaging\Contracts\ManagerInterface;
 
 // Inject the manager
 $manager = app(ManagerInterface::class);
