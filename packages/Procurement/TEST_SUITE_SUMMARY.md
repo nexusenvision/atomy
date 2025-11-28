@@ -50,19 +50,6 @@ The Procurement package test suite ensures comprehensive coverage of all busines
 | `BudgetExceededExceptionTest` | 3 | 9 | Factory methods |
 | **TOTAL** | **22** | **66** | |
 
-#### ML Extractor Tests
-
-| Test Class | Methods | Assertions | Coverage |
-|------------|---------|------------|----------|
-| `VendorFraudDetectionExtractorTest` | 8 | 25 | 25 features validated |
-| `VendorPricingAnomalyExtractorTest` | 7 | 22 | 22 features validated |
-| `RequisitionApprovalRiskExtractorTest` | 6 | 20 | 20 features validated |
-| `BudgetOverrunPredictionExtractorTest` | 5 | 16 | 16 features validated |
-| `GRNDiscrepancyPredictionExtractorTest` | 6 | 18 | 18 features validated |
-| `POConversionEfficiencyExtractorTest` | 5 | 14 | 14 features validated |
-| `ProcurementPOQtyExtractorTest` | 4 | 12 | 12 features validated |
-| **TOTAL** | **41** | **127** | |
-
 ---
 
 ## Business Rule Test Coverage

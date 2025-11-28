@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Procurement\Contracts;
+namespace Nexus\ProcurementML\Contracts;
 
 /**
- * Historical data repository interface for Intelligence features
+ * Historical data repository interface for ML features
  * 
  * Provides statistical aggregations of historical purchase data.
  */

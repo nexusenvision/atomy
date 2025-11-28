@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Procurement\MachineLearning;
+namespace Nexus\ProcurementML\Extractors;
 
 use Nexus\MachineLearning\Contracts\FeatureExtractorInterface;
 use Nexus\MachineLearning\Contracts\FeatureSetInterface;
 use Nexus\MachineLearning\ValueObjects\FeatureSet;
-use Nexus\Procurement\Contracts\HistoricalDataRepositoryInterface;
+use Nexus\ProcurementML\Contracts\HistoricalDataRepositoryInterface;
 use Nexus\Scheduler\Contracts\ClockInterface;
 
 /**
