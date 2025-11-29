@@ -203,16 +203,14 @@ if ($matchResult['matched']) {
 
 ## Integration Points
 
-- **Nexus\Payable**: Provides PO and GRN data for 3-way matching
+- **Nexus\Payable**: Provides PO and GRN data for 3-way matching and handles vendor bill payments
+- **Nexus\Inventory**: Manages stock levels, which are updated upon successful goods receipt
+- **Nexus\Finance**: Receives journal entries for all procurement-related financial events
+- **Nexus\Budget**: Provides budget data for validation against requisitions and purchase orders
+- **Nexus\Workflow**: Requisition approval workflows and multi-step approval processes
 - **Nexus\Uom**: Unit of measurement validation
 - **Nexus\Currency**: Multi-currency support
-- **Nexus\Workflow**: Requisition approval workflows
 - **Nexus\AuditLogger**: Comprehensive change tracking
-- **Nexus\Payable**: Handles vendor bill payments and integrates with the matching engine.
-- **Nexus\Inventory**: Manages stock levels, which are updated upon successful goods receipt.
-- **Nexus\Finance**: Receives journal entries for all procurement-related financial events.
-- **Nexus\Budget**: Provides budget data for validation against requisitions and purchase orders.
-- **Nexus\Workflow**: Can be used to drive complex, multi-step approval processes.
 - **Nexus\Sequencing**: Auto-numbering for REQ/PO/GRN
 
 ## Exception Handling
