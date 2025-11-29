@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Procurement\Contracts;
+namespace Nexus\ProcurementML\Contracts;
 
 /**
  * Delivery analytics repository interface for GRN discrepancy prediction

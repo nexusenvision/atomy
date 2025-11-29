@@ -16,6 +16,7 @@
         "psr/http-client": "^1.0",
         "nexus/event-stream": "*@dev",
         "nexus/tax": "*@dev",
+        "nexus/procurement-ml": "*@dev"
         "nexus/identity": "dev-main",
         "nexus/tenant": "dev-main",
         "nexus/backoffice": "dev-main"
@@ -224,6 +225,10 @@
         {
             "type": "path",
             "url": "./packages/Content"
+        },
+        {
+            "type": "path",
+            "url": "./packages/ProcurementML"
         }
     ],
     "minimum-stability": "dev",

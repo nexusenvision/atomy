@@ -15,7 +15,6 @@ The Procurement package provides a comprehensive, pure PHP solution for purchase
 - ✅ **Vendor Quote Management** - RFQ process and quote comparison
 - ✅ **Segregation of Duties** - Requester ≠ Approver ≠ Receiver ≠ Payment Authorizer
 - ✅ **Budget Controls** - PO cannot exceed requisition by >10% without re-approval
-- ✅ **AI-Powered Analytics** - 7 ML feature extractors for fraud detection and optimization
 - ✅ **Multi-Tenant** - Tenant-scoped requisitions, POs, and GRNs
 
 ## Installation
@@ -52,14 +51,6 @@ packages/Procurement/
 │   │   ├── GoodsReceiptManager.php
 │   │   ├── MatchingEngine.php
 │   │   └── VendorQuoteManager.php
-│   ├── MachineLearning/        # 7 ML Feature Extractors
-│   │   ├── VendorFraudDetectionExtractor.php
-│   │   ├── VendorPricingAnomalyExtractor.php
-│   │   ├── RequisitionApprovalRiskExtractor.php
-│   │   ├── BudgetOverrunPredictionExtractor.php
-│   │   ├── GRNDiscrepancyPredictionExtractor.php
-│   │   ├── POConversionEfficiencyExtractor.php
-│   │   └── ProcurementPOQtyExtractor.php
 │   └── Exceptions/             # 10 Domain Exceptions
 │       ├── ProcurementException.php
 │       ├── RequisitionNotFoundException.php
@@ -210,59 +201,16 @@ if ($matchResult['matched']) {
 
 ## Business Rules
 
-### Segregation of Duties (3-Person Rule)
-
-The package enforces strict segregation of duties for fraud prevention:
-
-| Action | Cannot Be Performed By |
-|--------|------------------------|
-| Approve Requisition | Requester (BUS-PRO-0095) |
-| Create GRN | PO Creator (BUS-PRO-0100) |
-| Authorize Payment | GRN Creator (BUS-PRO-0105) |
-
-### Budget Controls
-
-- **BUS-PRO-0069**: PO total cannot exceed requisition by >10% without re-approval
-- **BUS-PRO-0110**: Blanket PO releases cannot exceed committed value
-- **BUS-PRO-0041**: Requisition must have at least one line item
-- **BUS-PRO-0076**: GRN quantity cannot exceed PO quantity
-
-## AI Intelligence Features
-
-The package includes **7 production-ready ML feature extractors** for AI-powered procurement optimization:
-
-| Extractor | Features | Purpose |
-|-----------|----------|---------|
-| **VendorFraudDetectionExtractor** | 25 | Real-time fraud screening on PO creation |
-| **VendorPricingAnomalyExtractor** | 22 | Cost optimization through pricing validation |
-| **RequisitionApprovalRiskExtractor** | 20 | Predict approval delays and prioritize requisitions |
-| **BudgetOverrunPredictionExtractor** | 16 | Prevent budget violations before approval |
-| **GRNDiscrepancyPredictionExtractor** | 18 | Predict goods receipt issues before delivery |
-| **POConversionEfficiencyExtractor** | 14 | Predict requisition-to-PO conversion time |
-| **ProcurementPOQtyExtractor** | 12 | Quantity prediction for reordering |
-
-### Integration with Nexus\Intelligence
-
-```php
-use Nexus\Procurement\MachineLearning\VendorFraudDetectionExtractor;
-use Nexus\Intelligence\Contracts\IntelligenceManagerInterface;
-
-$features = $fraudExtractor->extract($poTransaction);
-$result = $intelligence->evaluate('procurement_fraud_check', $features);
-
-if ($result->isFlagged() && $result->getSeverity() === SeverityLevel::CRITICAL) {
-    throw new FraudDetectedException($result->getReason());
-}
-```
-
 ## Integration Points
 
-- **Nexus\Payable**: Provides PO and GRN data for 3-way matching
+- **Nexus\Payable**: Provides PO and GRN data for 3-way matching and handles vendor bill payments
+- **Nexus\Inventory**: Manages stock levels, which are updated upon successful goods receipt
+- **Nexus\Finance**: Receives journal entries for all procurement-related financial events
+- **Nexus\Budget**: Provides budget data for validation against requisitions and purchase orders
+- **Nexus\Workflow**: Requisition approval workflows and multi-step approval processes
 - **Nexus\Uom**: Unit of measurement validation
 - **Nexus\Currency**: Multi-currency support
-- **Nexus\Workflow**: Requisition approval workflows
 - **Nexus\AuditLogger**: Comprehensive change tracking
-- **Nexus\Intelligence**: AI-powered analytics and predictions
 - **Nexus\Sequencing**: Auto-numbering for REQ/PO/GRN
 
 ## Exception Handling

@@ -36,7 +36,7 @@ All mandatory documentation items have been created and updated to match the gol
 | `api-reference.md` | ✅ Complete | ~550 | All interfaces, services, exceptions documented |
 | `integration-guide.md` | ✅ Complete | ~800 | Laravel and Symfony examples with migrations |
 | `examples/basic-usage.php` | ✅ Complete | ~180 | Complete workflow example with comments |
-| `examples/advanced-usage.php` | ✅ Complete | ~350 | ML extractors, blanket POs, batch matching |
+| `examples/advanced-usage.php` | ✅ Complete | ~350 | Blanket POs, batch matching, vendor quotes |
 
 ---
 
@@ -52,7 +52,6 @@ All mandatory documentation items have been created and updated to match the gol
 | **Interface Documentation** | 19 interfaces |
 | **Service Documentation** | 6 services |
 | **Exception Documentation** | 10 exceptions |
-| **ML Extractor Documentation** | 7 extractors |
 
 ### Quality Metrics
 

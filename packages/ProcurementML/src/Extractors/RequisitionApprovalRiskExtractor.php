@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Procurement\MachineLearning;
+namespace Nexus\ProcurementML\Extractors;
 
 use Nexus\MachineLearning\Contracts\FeatureExtractorInterface;
 use Nexus\MachineLearning\Contracts\FeatureSetInterface;
 use Nexus\MachineLearning\ValueObjects\FeatureSet;
-use Nexus\Procurement\Contracts\ApprovalAnalyticsRepositoryInterface;
+use Nexus\ProcurementML\Contracts\ApprovalAnalyticsRepositoryInterface;
 
 /**
  * Feature extractor for requisition approval risk prediction

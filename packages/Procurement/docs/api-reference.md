@@ -4,7 +4,7 @@ Complete API documentation for all interfaces, services, and exceptions.
 
 ---
 
-## Interfaces (19 total)
+## Interfaces (12 total)
 
 ### Core Entity Interfaces
 
@@ -281,19 +281,7 @@ echo $requisition->getStatus(); // "approved"
 
 ---
 
-### Analytics Repository Interfaces
 
-These interfaces support the ML feature extractors:
-
-| Interface | Location | Purpose |
-|-----------|----------|---------|
-| `ApprovalAnalyticsRepositoryInterface` | `src/Contracts/` | Historical approval metrics |
-| `BudgetAnalyticsRepositoryInterface` | `src/Contracts/` | Budget utilization data |
-| `ConversionAnalyticsRepositoryInterface` | `src/Contracts/` | Req-to-PO conversion metrics |
-| `DeliveryAnalyticsRepositoryInterface` | `src/Contracts/` | Delivery performance data |
-| `HistoricalDataRepositoryInterface` | `src/Contracts/` | Historical procurement data |
-| `PricingAnalyticsRepositoryInterface` | `src/Contracts/` | Pricing comparison data |
-| `VendorAnalyticsRepositoryInterface` | `src/Contracts/` | Vendor performance metrics |
 
 ---
 
@@ -442,100 +430,6 @@ public function performBatchMatch(array $matchSet): array
 - `acceptQuote(string $quoteId, string $acceptorId): VendorQuoteInterface`
 - `rejectQuote(string $quoteId, string $reason): VendorQuoteInterface`
 - `compareQuotes(string $requisitionId): array`
-
----
-
-## ML Feature Extractors (7 total)
-
-### VendorFraudDetectionExtractor
-
-**Location:** `src/MachineLearning/VendorFraudDetectionExtractor.php`
-
-**Purpose:** Extract 25 features for fraud detection.
-
-**Features Include:**
-- Duplicate vendor pattern detection
-- Behavioral anomaly detection
-- Relationship red flags
-- Document integrity checks
-
----
-
-### VendorPricingAnomalyExtractor
-
-**Location:** `src/MachineLearning/VendorPricingAnomalyExtractor.php`
-
-**Purpose:** Extract 22 features for pricing validation.
-
-**Features Include:**
-- Historical vendor pricing analysis
-- Market benchmark comparison
-- Contract pricing compliance
-- Volume discount verification
-
----
-
-### RequisitionApprovalRiskExtractor
-
-**Location:** `src/MachineLearning/RequisitionApprovalRiskExtractor.php`
-
-**Purpose:** Extract 20 features for approval delay prediction.
-
-**Features Include:**
-- Requester historical performance
-- Department budget analysis
-- Approval chain complexity
-- Urgency scoring
-
----
-
-### BudgetOverrunPredictionExtractor
-
-**Location:** `src/MachineLearning/BudgetOverrunPredictionExtractor.php`
-
-**Purpose:** Extract 16 features for budget violation prediction.
-
-**Features Include:**
-- Current budget status
-- Historical burn rate
-- Period analysis
-- Seasonality factors
-
----
-
-### GRNDiscrepancyPredictionExtractor
-
-**Location:** `src/MachineLearning/GRNDiscrepancyPredictionExtractor.php`
-
-**Purpose:** Extract 18 features for delivery issue prediction.
-
-**Features Include:**
-- Vendor delivery performance
-- Lead time reliability
-- Quality metrics
-- Transit risk calculation
-
----
-
-### POConversionEfficiencyExtractor
-
-**Location:** `src/MachineLearning/POConversionEfficiencyExtractor.php`
-
-**Purpose:** Extract 14 features for conversion time prediction.
-
-**Features Include:**
-- Vendor catalog availability
-- Specification completeness
-- Procurement officer capacity
-- Multi-vendor complexity
-
----
-
-### ProcurementPOQtyExtractor
-
-**Location:** `src/MachineLearning/ProcurementPOQtyExtractor.php`
-
-**Purpose:** Extract 12 features for quantity prediction.
 
 ---
 

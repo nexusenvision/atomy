@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Procurement\Contracts;
+namespace Nexus\ProcurementML\Contracts;
 
 /**
  * Conversion analytics repository interface for efficiency prediction

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Procurement\MachineLearning;
+namespace Nexus\ProcurementML\Extractors;
 
 use Nexus\MachineLearning\Contracts\FeatureExtractorInterface;
 use Nexus\MachineLearning\Contracts\FeatureSetInterface;
 use Nexus\MachineLearning\ValueObjects\FeatureSet;
-use Nexus\Procurement\Contracts\VendorAnalyticsRepositoryInterface;
+use Nexus\ProcurementML\Contracts\VendorAnalyticsRepositoryInterface;
 
 /**
  * Feature extractor for vendor fraud detection
@@ -71,7 +71,7 @@ final readonly class VendorFraudDetectionExtractor implements FeatureExtractorIn
             'max_name_similarity_score' => $nameSimilarityScore,
             'same_bank_account_count' => count($bankDuplicates),
             'same_contact_count' => count($contactDuplicates),
-            'has_duplicate_indicators' => (count($duplicates) > 0 || count($bankDuplicates) > 0 || count($contactDuplicates) > 0),
+            'has_duplicate_indicators' => (count($duplicates) > 0 || count($bankDuplicates) > 0 || count($contactDuplicates) > 0) ? 1 : 0,
             
             // === Behavioral Anomalies (7 features) ===
             'price_increase_rate_6m' => $priceIncreaseRate, // % increase over 6 months
@@ -87,14 +87,14 @@ final readonly class VendorFraudDetectionExtractor implements FeatureExtractorIn
             'after_hours_submission_count' => $afterHoursCount,
             'approval_bypass_attempts' => $this->vendorAnalytics->getApprovalBypassAttempts($vendorId),
             'threshold_split_order_count' => $splitOrderCount, // Orders split to avoid approval thresholds
-            'exclusive_requester_flag' => ($requesterVendorFreq > 0.8), // >80% of orders from one requester
-            'unusual_requester_vendor_pairing' => $this->vendorAnalytics->isUnusualRequesterVendorPairing($requesterId, $vendorId),
+            'exclusive_requester_flag' => ($requesterVendorFreq > 0.8) ? 1 : 0, // >80% of orders from one requester
+            'unusual_requester_vendor_pairing' => $this->vendorAnalytics->isUnusualRequesterVendorPairing($requesterId, $vendorId) ? 1 : 0,
             
             // === Document Anomalies (4 features) ===
             'missing_certification_count' => $missingDocs,
             'invoice_number_gap_count' => $invoiceGaps, // Gaps in sequential invoice numbers
             'document_metadata_anomaly_score' => $this->vendorAnalytics->getDocumentMetadataAnomalyScore($vendorId),
-            'registration_verification_failed' => !$this->vendorAnalytics->isRegistrationVerified($vendorId),
+            'registration_verification_failed' => !$this->vendorAnalytics->isRegistrationVerified($vendorId) ? 1 : 0,
             
             // === Transaction Context (3 features) ===
             'current_unit_price' => $unitPrice,
@@ -159,9 +159,9 @@ final readonly class VendorFraudDetectionExtractor implements FeatureExtractorIn
     }
 
     /**
-     * Calculate price increase rate over 6 months
+     * Calculate price increase rate over last 6 months
      * 
-     * @param array<array{price: float, date: string}> $priceHistory
+     * @param array<array{price: float, date: string}> $priceHistory Price history records
      * @return float Percentage increase (0.15 = 15% increase)
      */
     private function calculatePriceIncreaseRate(array $priceHistory): float
@@ -170,19 +170,11 @@ final readonly class VendorFraudDetectionExtractor implements FeatureExtractorIn
             return 0.0;
         }
 
-        // Get prices from last 6 months
-        $sixMonthsAgo = (new \DateTimeImmutable())->modify('-6 months');
-        $recentPrices = array_filter($priceHistory, function ($item) use ($sixMonthsAgo) {
-            return new \DateTimeImmutable($item['date']) >= $sixMonthsAgo;
-        });
+        // Sort by date
+        usort($priceHistory, fn($a, $b) => $a['date'] <=> $b['date']);
 
-        if (count($recentPrices) < 2) {
-            return 0.0;
-        }
-
-        usort($recentPrices, fn($a, $b) => $a['date'] <=> $b['date']);
-        $firstPrice = reset($recentPrices)['price'];
-        $lastPrice = end($recentPrices)['price'];
+        $firstPrice = $priceHistory[0]['price'] ?? 0.0;
+        $lastPrice = $priceHistory[count($priceHistory) - 1]['price'] ?? 0.0;
 
         if ($firstPrice <= 0) {
             return 0.0;
@@ -192,43 +184,48 @@ final readonly class VendorFraudDetectionExtractor implements FeatureExtractorIn
     }
 
     /**
-     * Calculate price volatility using coefficient of variation
+     * Calculate price volatility (coefficient of variation)
      * 
-     * @param array<array{price: float, date: string}> $priceHistory
-     * @return float Coefficient of variation (std/mean)
+     * @param array<array{price: float, date: string}> $priceHistory Price history records
+     * @return float Coefficient of variation (0.0 = no variation, >0.5 = high variation)
      */
     private function calculatePriceVolatility(array $priceHistory): float
     {
-        if (count($priceHistory) < 2) {
+        $prices = array_column($priceHistory, 'price');
+        
+        if (count($prices) < 2) {
             return 0.0;
         }
 
-        $prices = array_column($priceHistory, 'price');
         $mean = array_sum($prices) / count($prices);
-
+        
         if ($mean <= 0) {
             return 0.0;
         }
 
-        $variance = array_sum(array_map(fn($p) => ($p - $mean) ** 2, $prices)) / count($prices);
-        $std = sqrt($variance);
+        $variance = 0.0;
+        foreach ($prices as $price) {
+            $variance += ($price - $mean) ** 2;
+        }
+        $variance /= count($prices);
+        $stdDev = sqrt($variance);
 
-        return $std / $mean; // Coefficient of variation
+        return $stdDev / $mean; // Coefficient of variation
     }
 
     /**
-     * Calculate price consistency score (inverse of volatility)
-     * Higher score = more consistent pricing
+     * Calculate price consistency score
+     * Higher score = more consistent pricing (less suspicious)
      * 
-     * @param array<array{price: float, date: string}> $priceHistory
-     * @return float Score from 0 (inconsistent) to 1 (very consistent)
+     * @param array<array{price: float, date: string}> $priceHistory Price history records
+     * @return float Consistency score (0.0 to 1.0)
      */
     private function calculatePriceConsistency(array $priceHistory): float
     {
         $volatility = $this->calculatePriceVolatility($priceHistory);
         
-        // Convert volatility to consistency score
-        // volatility=0 => consistency=1, high volatility => consistency approaches 0
-        return 1.0 / (1.0 + $volatility);
+        // Convert volatility to consistency (inverse relationship)
+        // CV of 0 = 1.0 consistency, CV of 0.5+ = 0 consistency
+        return max(0.0, 1.0 - ($volatility * 2));
     }
 }

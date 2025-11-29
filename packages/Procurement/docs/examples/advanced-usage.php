@@ -8,18 +8,13 @@ declare(strict_types=1);
  * Demonstrates:
  * 1. Blanket Purchase Orders
  * 2. Batch Three-Way Matching
- * 3. ML Feature Extraction for Fraud Detection
- * 4. Vendor Quote Comparison
- * 5. Error Handling Patterns
+ * 3. Vendor Quote Comparison
+ * 4. Error Handling Patterns
  */
 
 use Nexus\Procurement\Contracts\ProcurementManagerInterface;
 use Nexus\Procurement\Services\{MatchingEngine, VendorQuoteManager, PurchaseOrderManager};
-use Nexus\Procurement\MachineLearning\{
-    VendorFraudDetectionExtractor,
-    VendorPricingAnomalyExtractor,
-    RequisitionApprovalRiskExtractor
-};
+
 use Nexus\Procurement\Exceptions\{
     BudgetExceededException,
     InvalidGoodsReceiptDataException
@@ -141,72 +136,7 @@ if ($batchResult['overall_matched']) {
 }
 
 // ============================================
-// Example 3: ML Feature Extraction
-// ============================================
-
-/**
- * Extract features for AI-powered fraud detection.
- * Integrate with Nexus\Intelligence for evaluation.
- */
-
-// Vendor Fraud Detection
-/** @var VendorFraudDetectionExtractor $fraudExtractor */
-
-$poTransaction = [
-    'po_id' => 'po-123',
-    'vendor_id' => 'vendor-456',
-    'creator_id' => 'user-789',
-    'amount' => 75000.00,
-    'created_at' => new \DateTimeImmutable(),
-];
-
-$fraudFeatures = $fraudExtractor->extract($poTransaction);
-
-echo "\n=== Fraud Detection Features (25 total) ===\n";
-echo "Duplicate vendor pattern: {$fraudFeatures['duplicate_vendor_score']}\n";
-echo "Price volatility: {$fraudFeatures['price_volatility_index']}\n";
-echo "RFQ win rate: {$fraudFeatures['rfq_win_rate']}\n";
-echo "Budget proximity: {$fraudFeatures['budget_proximity_score']}\n";
-echo "After-hours flag: {$fraudFeatures['after_hours_submission']}\n";
-
-// If integrated with Nexus\Intelligence:
-// $result = $intelligence->evaluate('procurement_fraud_check', $fraudFeatures);
-// if ($result->isFlagged()) { throw new FraudDetectedException(...); }
-
-// Pricing Anomaly Detection
-/** @var VendorPricingAnomalyExtractor $pricingExtractor */
-
-$pricingFeatures = $pricingExtractor->extract([
-    'vendor_id' => 'vendor-456',
-    'item_code' => 'LAPTOP-001',
-    'unit_price' => 1500.00,
-    'quantity' => 10,
-]);
-
-echo "\n=== Pricing Anomaly Features (22 total) ===\n";
-echo "Historical avg price: {$pricingFeatures['vendor_avg_price']}\n";
-echo "Market benchmark: {$pricingFeatures['market_benchmark_price']}\n";
-echo "Price variance: {$pricingFeatures['price_variance_percent']}%\n";
-echo "Volume discount expected: {$pricingFeatures['volume_discount_expected']}\n";
-
-// Requisition Approval Risk
-/** @var RequisitionApprovalRiskExtractor $approvalExtractor */
-
-$approvalFeatures = $approvalExtractor->extract([
-    'requisition_id' => 'req-123',
-    'requester_id' => 'user-456',
-    'department' => 'IT',
-    'amount' => 25000.00,
-]);
-
-echo "\n=== Approval Risk Features (20 total) ===\n";
-echo "Requester approval rate: {$approvalFeatures['requester_approval_rate']}%\n";
-echo "Avg approval duration: {$approvalFeatures['avg_approval_duration_days']} days\n";
-echo "Department budget utilization: {$approvalFeatures['dept_budget_utilization']}%\n";
-echo "Approval chain complexity: {$approvalFeatures['approval_chain_levels']} levels\n";
-
-// ============================================
-// Example 4: Vendor Quote Comparison
+// Example 3: Vendor Quote Comparison
 // ============================================
 
 /**
@@ -268,7 +198,7 @@ $acceptedQuote = $quoteManager->acceptQuote(
 );
 
 // ============================================
-// Example 5: Comprehensive Error Handling
+// Example 4: Comprehensive Error Handling
 // ============================================
 
 /**
@@ -343,7 +273,7 @@ function processProcurementWorkflow(
 }
 
 // ============================================
-// Example 6: Partial Goods Receipt
+// Example 5: Partial Goods Receipt
 // ============================================
 
 /**
@@ -415,7 +345,6 @@ try {
 echo "\n=== Advanced Features Demonstrated ===\n";
 echo "1. Blanket POs with release tracking\n";
 echo "2. Batch 3-way matching for performance\n";
-echo "3. ML feature extraction for fraud detection\n";
-echo "4. Vendor quote comparison and selection\n";
-echo "5. Comprehensive exception handling\n";
-echo "6. Partial goods receipt handling\n";
+echo "3. Vendor quote comparison and selection\n";
+echo "4. Comprehensive exception handling\n";
+echo "5. Partial goods receipt handling\n";

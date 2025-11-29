@@ -7,7 +7,7 @@
 - **PSR-3 compatible logger** (e.g., Monolog)
 
 ### Optional
-- **Nexus\Intelligence** for AI-powered fraud detection and analytics
+- **Nexus\ProcurementML** for AI-powered fraud detection and analytics
 - **Nexus\Workflow** for advanced approval workflows
 - **Nexus\Currency** for multi-currency support
 
@@ -22,7 +22,7 @@ This package is designed for:
 ✅ **Applications with 3-way matching** requirements (PO ↔ GRN ↔ Invoice)  
 ✅ **Applications requiring segregation of duties** (fraud prevention)  
 ✅ **Applications needing framework flexibility** (Laravel today, Symfony tomorrow)  
-✅ **AI-powered procurement** with fraud detection and optimization
+✅ **Procurement with fraud detection and optimization**
 
 Do NOT use this package for:
 

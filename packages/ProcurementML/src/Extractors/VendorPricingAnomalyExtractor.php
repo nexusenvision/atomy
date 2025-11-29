@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Procurement\MachineLearning;
+namespace Nexus\ProcurementML\Extractors;
 
 use Nexus\MachineLearning\Contracts\FeatureExtractorInterface;
 use Nexus\MachineLearning\Contracts\FeatureSetInterface;
 use Nexus\MachineLearning\ValueObjects\FeatureSet;
-use Nexus\Procurement\Contracts\PricingAnalyticsRepositoryInterface;
+use Nexus\ProcurementML\Contracts\PricingAnalyticsRepositoryInterface;
 
 /**
  * Feature extractor for vendor pricing anomaly detection

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Procurement\Contracts;
+namespace Nexus\ProcurementML\Contracts;
 
 /**
  * Approval analytics repository interface for risk prediction
